@@ -17,13 +17,17 @@ vars = [
     ['kaonminptr', 'jet_minkaonpt/jet_pt', 100, 0, 1],
     ['kaonmaxptr', 'jet_maxkaonpt/jet_pt', 100, 0, 1],
     ['pionpt', 'jet_pionpt', 100, 0, 30],
+    ['pioncpt', 'jet_pioncpt', 100, 0, 30],
+    ['pioncptr', 'jet_pioncpt/jet_pt', 100, 0, 30],
     ['pionminpt', 'jet_minpionpt', 100, 0, 30],
     ['pionmaxpt', 'jet_maxpionpt', 100, 0, 30],
     ['pionptr', 'jet_pionpt/jet_pt', 100, 0, 1],
     ['pionminptr', 'jet_minpionpt/jet_pt', 100, 0, 1],
     ['pionmaxptr', 'jet_maxpionpt/jet_pt', 100, 0, 1],
     ['mult'      ,  'jet_mult',      30, -0.5, 29.5],
-    ['dR_maxkaon'      ,  'jet_dR_maxkaon',      20, 0, 1.0]
+    ['dR_maxkaon'      ,  'jet_dR_maxkaon',      20, 0, 1.0],
+    ['dR_maxpion'      ,  'jet_dR_maxpion',      20, 0, 1.0],
+    ['chargeFrac'      ,  'jet_chargedPt/(jet_chargedPt + jet_neutralPt)',      100, 0, 1.0]
 ]
 
 
@@ -53,7 +57,7 @@ for v in vars:
     for plot in p.plots: plot.UseCurrentStyle()
     p.setProp('labels', ['Inclusive', 'Strange'])
     p.setProp('colors', ['red', 'blue'])
-    p.setProp('location', '/user2/sfarry/workspaces/strange/figures/strange')
+    p.setProp('location', '/user2/sfarry/workspaces/strange/figures')
     p.setProp('filename', name+'.pdf')
     p.setProp('normalised', True)
     p.setProp('ylabel', '[A.U.]')
