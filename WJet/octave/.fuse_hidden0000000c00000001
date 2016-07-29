@@ -1,0 +1,213 @@
+1;
+function B = corr_errs(A)
+   B = zeros(columns(A));
+   for i = 1 : columns(A)
+       for j = 1 : i
+           B(i, j) = sum(A(:,i).*A(:,j))/sqrt(sumsq(A(:,i))*sumsq(A(:,j)));
+	   if (i != j)
+	       B(j, i) = B(i, j);
+	   endif
+       endfor
+   endfor
+endfunction
+
+function B = cov_errs(A)
+   B = zeros(columns(A));
+   for i = 1 : columns(A)
+       for j = 1 : i
+           B(i, j) = sum(A(:,i).*A(:,j));
+	   if (i != j)
+	       B(j, i) = B(i, j);
+	   endif
+       endfor
+   endfor
+endfunction
+
+function printEffErr(A, B)
+	 for i = 1 : columns(A)
+	     fprintf("%2.3f +/- %2.3f \n", A(1, i), B(1,i))
+	 endfor
+endfunction
+
+function printTGraph(A, B)
+	 for i = 1 : columns(A)
+	     fprintf("%2.5f  %2.5f \n", A(1, i), B(1,i))
+	 endfor
+endfunction
+
+
+function v = variable(a, b, L, Lerr)
+	 v.type = a;
+	 v.var  = b;
+         v.N  = dlmread(strcat('/user2/sfarry/WJet/dat/',a, '_n_', b, '.dat'));
+	 v.Ntot = v.N(1,:);
+	 v.Nsig = v.N(2,:);
+	 v.Nsig_err = v.N(3,:);
+
+	 #get efficiencies
+         v.trg_eff = dlmread(strcat('/user2/sfarry/WJet/dat/', a, '_trg_eff_',b,'.dat') );
+         v.trk_eff = dlmread(strcat('/user2/sfarry/WJet/dat/',a, '_trk_eff_',b,'.dat') );
+         v.id_eff  = dlmread(strcat('/user2/sfarry/WJet/dat/',a, '_id_eff_',b,'.dat') );
+         v.jet_eff = dlmread(strcat('/user2/sfarry/WJet/dat/',a, '_jet_eff_',b,'.dat') );
+         v.sel_eff = dlmread(strcat('/user2/sfarry/WJet/dat/',a, '_sel_eff_',b,'.dat') );
+	 v.gec_eff = ones(size(v.Nsig))*0.94;
+	 v.muonrec_eff = prod([v.trg_eff; v.trk_eff; v.id_eff]);
+	 v.rec_eff = prod([v.trg_eff; v.trk_eff; v.id_eff; v.jet_eff]);
+	 v.tot_eff = prod([v.trg_eff; v.trk_eff; v.id_eff; v.jet_eff; v.gec_eff; v.sel_eff]);
+	 #get rel. error on efficiencies
+	 v.trg_eff_errs = dlmread(strcat('/user2/sfarry/WJet/dat/', a, '_trg_', b, '_matrix.dat' ));
+	 v.trk_eff_errs = dlmread(strcat('/user2/sfarry/WJet/dat/', a, '_trk_', b, '_matrix.dat' ));
+	 v.id_eff_errs  = dlmread(strcat('/user2/sfarry/WJet/dat/', a, '_trk_', b, '_matrix.dat' ));
+v.jet_eff_errs = diag(max(dlmread(strcat('/user2/sfarry/WJet/dat/', a, '_jet_efferrs_', b, '.dat' ))));
+	 v.gec_eff_errs = zeros(size(v.Nsig))
+	 v.sel_eff_errs = diag(max(dlmread(strcat('/user2/sfarry/WJet/dat/',a, '_sel_efferrs_', b, '.dat' ))));
+         v.muonrec_eff_errs = [v.trg_eff_errs;
+		    v.trk_eff_errs;
+		    v.id_eff_errs;
+		    0.01 * ones(size(v.Nsig));
+		    ];
+	v.rec_eff_errs = [v.muonrec_eff_errs;
+		    v.jet_eff_errs;
+		    0.02 * ones(size(v.Nsig));
+		    ];
+
+	v.tot_eff_errs = [v.rec_eff_errs;
+		    v.sel_eff_errs;
+		    v.gec_eff_errs;
+		    diag(v.Nsig_err./v.Nsig);
+		    ];
+	v.L_err = ones(size(v.Nsig))*(Lerr/L)
+	v.muonrec_eff_err = sqrt(sumsq(v.muonrec_eff_errs));
+	v.rec_eff_err = sqrt(sumsq(v.rec_eff_errs));
+	v.tot_eff_err = sqrt(sumsq(v.tot_eff_errs));
+	v.cov  = cov_errs(v.tot_eff_errs);
+	v.corr = corr_errs(v.tot_eff_errs);
+	v.stat_err = 1./sqrt(v.Nsig)
+	v.syst_err = sqrt(sumsq([v.tot_eff_err;v.L_err]))
+	v.tot_err = sqrt(sumsq([v.syst_err;v.stat_err]))
+	v.xsec    = v.Nsig./(v.tot_eff*L)
+	
+	v.totxsec = sum(v.Nsig./v.tot_eff)/L
+	#v.totxsec_staterr = v.tot./sqrt(sum(v.Nsig))
+	#v.totxsec_systerr = sqrt((v.Nsig./v.tot_eff) * v.cov * ((v.Nsig./v.tot_eff)'));
+	#v.totxsec_toterr = sqrt(v.totxsec_staterr^2.totxsec_staterr + v.totxsec_systerr.*v.totxsec_systerr)
+
+endfunction
+
+function v = asymm(v1, v2)
+	  v.var = v1.var
+	  v.xsecs = [v1.xsec , v2.xsec]
+          v.tot_eff_errs = [
+		    v1.muonrec_eff_errs, v2.muonrec_eff_errs;
+		    v1.jet_eff_errs, v2.jet_eff_errs;
+		    v1.sel_eff_errs, v2.sel_eff_errs;
+		    v1.gec_eff_errs, v2.gec_eff_errs;
+                    0.1 * ones(size(v.xsecs));
+                    0.1 * ones(size(v.xsecs));
+          ]
+          #v.tot_eff_errs = [
+          #                  0.10 * diag(ones(size(v.xsecs)));
+          #]
+	  v.xsecs_cov = cov_errs(v.tot_eff_errs)*diag(v.xsecs.^2);
+	  v.xsecs_corr = corr_errs(v.tot_eff_errs);
+          v.atot = (v1.totxsec - v2.totxsec) / (v1.totxsec + v2.totxsec)
+	  v.rtot = v1.totxsec / v2.totxsec
+	  v.a = (v1.xsec - v2.xsec) ./ (v1.xsec + v2.xsec)
+	  v.r = v1.xsec ./ v2.xsec
+	  v.aerr = zeros(size(v.a));
+          v.rerr = zeros(size(v.a));
+          v.jac_a = zeros(columns(v.a), columns(v.xsecs_cov));
+          v.jac_r = zeros(columns(v.a), columns(v.xsecs_cov));
+          for i = 1:rows(v.jac_a)
+		    v.jac_a(i,i) = 2*v.xsecs(i)/(v.xsecs(i)^2 + v.xsecs(i+rows(v.jac_a))^2);
+		    v.jac_a(i,i+rows(v.jac_a)) =  -2*v.xsecs(i+rows(v.jac_a))/(v.xsecs(i)^2 + v.xsecs(i+rows(v.jac_a))^2);
+		    v.jac_r(i,i) =  1/v.xsecs(i+rows(v.jac_r));
+		    v.jac_r(i,i+rows(v.jac_r)) = -v.xsecs(i)/(v.xsecs(i+rows(v.jac_r))^2);
+	  endfor
+	  v.cov_a = (v.jac_a*v.xsecs_cov*(v.jac_a'))
+          v.cov_r = (v.jac_r*v.xsecs_cov*(v.jac_r'))
+	  v.aerr = sqrt(abs(diag(v.cov_a)))
+	  v.rerr = sqrt(abs(diag(v.cov_r)))
+endfunction
+
+function savexsec(v)
+	 for i = v
+	 a = [i.xsec' , (i.syst_err.*i.xsec)'];
+	 s = [i.type "_" i.var "_systerr.oct"]
+	 save("-text", s, "a");
+	 b = [i.xsec' , (i.stat_err.*i.xsec)'];
+	 s2 = [i.type "_" i.var "_staterr.oct"];
+	 save("-text", s2, "b");
+	 c = [i.xsec' , (i.tot_err.*i.xsec)'];
+	 s3 = [i.type "_" i.var "_toterr.oct"];
+	 save("-text", s3, "c");
+	 endfor
+endfunction
+
+function saveasymm(v)
+	 for i = v
+	 a = [i.a' , (i.aerr)];
+	 s = ["a_" i.var "_systerr.oct"]
+	 save("-text", s, "a");
+	 endfor
+endfunction
+
+
+
+
+
+#######################################################
+# Luminosity
+#######################################################
+L = 1.90 * 1000;
+Lerr = L * 0.016
+
+wp_etaj = variable('wp', 'etaj', L, Lerr);
+wp_eta  = variable('wp', 'eta' , L, Lerr );
+wp_ptj  = variable('wp', 'ptj' , L, Lerr );
+wm_etaj = variable('wm', 'etaj', L, Lerr );
+wm_eta  = variable('wm', 'eta' , L, Lerr );
+wm_ptj  = variable('wm', 'ptj' , L, Lerr );
+w_a = asymm(wp_eta, wm_eta);
+
+z_etaj = variable('zmumu', 'etaj' , L, Lerr );
+z_y    = variable('zmumu', 'y'    , L, Lerr );
+z_ptj  = variable('zmumu', 'ptj'  , L, Lerr );
+z_dphi = variable('zmumu', 'dphi' , L, Lerr );
+
+
+a = [wp_etaj.muonrec_eff' , wp_etaj.muonrec_eff_err']
+save wp_etaj_muoneff.oct a
+a = [wp_eta.muonrec_eff' , wp_eta.muonrec_eff_err']
+save wp_eta_muoneff.oct a
+a = [wp_ptj.muonrec_eff' , wp_ptj.muonrec_eff_err']
+save wp_ptj_muoneff.oct a
+
+b = [wm_etaj.muonrec_eff' , wm_etaj.muonrec_eff_err']
+save wm_etaj_muoneff.oct b
+b = [wm_eta.muonrec_eff' , wm_eta.muonrec_eff_err']
+save wm_eta_muoneff.oct b
+b = [wm_ptj.muonrec_eff' , wm_ptj.muonrec_eff_err']
+save wm_ptj_muoneff.oct b
+
+c = [z_etaj.muonrec_eff' , z_etaj.muonrec_eff_err']
+save z_etaj_muoneff.oct c
+c = [z_y.muonrec_eff' , z_y.muonrec_eff_err']
+save z_y_muoneff.oct c
+c = [z_ptj.muonrec_eff' , z_ptj.muonrec_eff_err']
+save z_ptj_muoneff.oct c
+
+savexsec([z_y, z_etaj, z_ptj, z_dphi, wp_eta, wp_etaj, wp_ptj, wm_eta, wm_etaj, wm_ptj])
+saveasymm([w_a])
+
+
+printTGraph(wp_etaj.muonrec_eff, wp_etaj.muonrec_eff_err)
+printTGraph(wp_eta.muonrec_eff , wp_eta.muonrec_eff_err)
+printTGraph(wp_ptj.muonrec_eff , wp_ptj.muonrec_eff_err)
+
+printTGraph(wm_etaj.muonrec_eff, wm_etaj.muonrec_eff_err)
+printTGraph(wm_eta.muonrec_eff , wm_eta.muonrec_eff_err)
+printTGraph(wm_ptj.muonrec_eff , wm_ptj.muonrec_eff_err)
+
+
+errorbar([2.25, 2.75, 3.25, 4.0],w_a.a, w_a.aerr,fmt='dr')
