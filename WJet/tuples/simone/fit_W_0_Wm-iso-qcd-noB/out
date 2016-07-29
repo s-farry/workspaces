@@ -1,0 +1,261 @@
+
+Configuring BLUE from /afs/cern.ch/user/s/simone/w0/blue/2.1.0
+
+
+Configuring ROOUNFOLD from /afs/cern.ch/user/s/simone/w0/roounfold/svn
+
+
+Configuring SIMPLETOOLS from /afs/cern.ch/user/s/simone/w0/simpletools/2.0d
+Configuring LD_LIBRARY_PATH to /afs/cern.ch/user/s/simone/w0/simpletools/2.0d/lib:.:/afs/cern.ch/sw/lcg/releases/Python/2.7.6-31787/x86_64-slc6-gcc48-opt/lib:/afs/cern.ch/sw/lcg/contrib/gcc/4.8.4/x86_64-slc6-gcc48-opt/lib64
+Configuring LD_INCLUDE_PATH to /afs/cern.ch/user/s/simone/w0/simpletools/2.0d/include:/afs/cern.ch/sw/lcg/releases/Python/2.7.6-31787/x86_64-slc6-gcc48-opt/include:
+
+
+Configuring ROOT from /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.30/x86_64-slc6-gcc48-opt/root
+Configuring LD_LIBRARY_PATH to /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.30/x86_64-slc6-gcc48-opt/root/lib:/afs/cern.ch/user/s/simone/w0/simpletools/2.0d/lib:.:/afs/cern.ch/sw/lcg/releases/Python/2.7.6-31787/x86_64-slc6-gcc48-opt/lib:/afs/cern.ch/sw/lcg/contrib/gcc/4.8.4/x86_64-slc6-gcc48-opt/lib64
+Configuring LD_INCLUDE_PATH to /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.30/x86_64-slc6-gcc48-opt/root/include/:/afs/cern.ch/user/s/simone/w0/simpletools/2.0d/include:/afs/cern.ch/sw/lcg/releases/Python/2.7.6-31787/x86_64-slc6-gcc48-opt/include:
+
+Configuring ROOTMACROS from /afs/cern.ch/work/s/simone/EW/Analysis/Macros
+Configuring ROOTHISTORY from /afs/cern.ch/user/s/simone/.root_history
+Configuring TMVAMACROS from /afs/cern.ch/user/s/simone/w0/tmva
+
+
+[1mRooFit v3.60 -- Developed by Wouter Verkerke and David Kirkby[0m 
+                Copyright (C) 2000-2013 NIKHEF, University of California & Stanford University
+                All rights reserved, please read http://roofit.sourceforge.net/license.txt
+
+
+Fit W (doUnbinned = 1, useHist = 1) wISO
+muminus_ISO: 0 - 1.02 , 51
+
+
+
+getTreeReader: /afs/cern.ch/work/s/simone/EW/Analysis/WJ/jobs/jobs/createTuple_W_0 W candidates DecayTuple SEW 
+
+Number of trees in chain: 1
+
+Set up 352 / 352 branches
+
+List of files
+/afs/cern.ch/work/s/simone/EW/Analysis/WJ/jobs/jobs/createTuple_W_0/W_candidates.root
+
+Read in 189296 events
+
+
+getTreeReader: /afs/cern.ch/work/s/simone/EW/Analysis/WJ/jobs/jobs/createTuple_W_0 W candidates DecayTuple W2MuNu 
+
+Number of trees in chain: 1
+
+Set up 619 / 619 branches
+
+List of files
+/afs/cern.ch/work/s/simone/EW/Analysis/WJ/jobs/jobs/createTuple_W_0/W_candidates.root
+
+Read in 83839 events
+
+
+getTreeReader: /afs/cern.ch/work/s/simone/EW/Analysis/WJ/jobs/jobs/createTuple_W_0 W candidates DecayTuple QCD 
+
+Number of trees in chain: 1
+
+Set up 352 / 352 branches
+
+List of files
+/afs/cern.ch/work/s/simone/EW/Analysis/WJ/jobs/jobs/createTuple_W_0/W_candidates.root
+
+Read in 187972 events
+
+
+Signal
+
+CopyTree
+N Tot = 83839
+TCut 
+OBJ: TCut	CUT	(isSingle)&&((muminus_ID > 0)&&((muminus_L0MuonDecision_TOS && muminus_Hlt1SingleMuonHighPTDecision_TOS && muminus_Hlt2SingleMuonHighPTDecision_TOS)&&(((TMath::Sqrt(TMath::Power(muminus_PX + muminus_jet_PX, 2) + TMath::Power(muminus_PY + muminus_jet_PY, 2)) > 20000)&&((((((muminus_PT > 20000)&&(muminus_ETA > 2.0 && muminus_ETA < 4.5))&&((muminus_jet_PT > 20000)&&(muminus_jet_ETA > 2.2 && muminus_jet_ETA < 4.2)))&&(TMath::Sqrt(muminus_PERR2) / muminus_P < 0.10 && muminus_TRACK_PCHI2 > 0.01))&&(muminus_TRACK_nTTHits > 0))&&(TMath::Abs(muminus_OWNPV_Z) < 300 && (runNumber < 126125) || (runNumber > 126160))))&&((((muminus_nMuonsG20GeV == 0)&&(TMath::Log10(muminus_ipubs_chi2) < 1))&&(muminus_InAccHcal && (muminus_CaloEcalE + muminus_CaloHcalE) / muminus_P < 0.04))&&(TMath::Sqrt(TMath::Power(muminus_sigjet_PX + muminus_jet_PX, 2) + TMath::Power(muminus_sigjet_PY + muminus_jet_PY, 2)) > 20000)))))
+N Pas = 30426 (36.291%)
+Frac  = -1
+Copied 30426 entries
+
+
+muminus_ISO >> hHisto
+sCut: (wISO) * ((isSingle)&&((muminus_ID > 0)&&((muminus_L0MuonDecision_TOS && muminus_Hlt1SingleMuonHighPTDecision_TOS && muminus_Hlt2SingleMuonHighPTDecision_TOS)&&(((TMath::Sqrt(TMath::Power(muminus_PX + muminus_jet_PX, 2) + TMath::Power(muminus_PY + muminus_jet_PY, 2)) > 20000)&&((((((muminus_PT > 20000)&&(muminus_ETA > 2.0 && muminus_ETA < 4.5))&&((muminus_jet_PT > 20000)&&(muminus_jet_ETA > 2.2 && muminus_jet_ETA < 4.2)))&&(TMath::Sqrt(muminus_PERR2) / muminus_P < 0.10 && muminus_TRACK_PCHI2 > 0.01))&&(muminus_TRACK_nTTHits > 0))&&(TMath::Abs(muminus_OWNPV_Z) < 300 && (runNumber < 126125) || (runNumber > 126160))))&&((((muminus_nMuonsG20GeV == 0)&&(TMath::Log10(muminus_ipubs_chi2) < 1))&&(muminus_InAccHcal && (muminus_CaloEcalE + muminus_CaloHcalE) / muminus_P < 0.04))&&(TMath::Sqrt(TMath::Power(muminus_sigjet_PX + muminus_jet_PX, 2) + TMath::Power(muminus_sigjet_PY + muminus_jet_PY, 2)) > 20000))))))
+Info in <TCanvas::MakeDefCanvas>:  created default TCanvas with name c1
+
+Entries  = 30426
+Integral = 30584.9
+
+[#1] INFO:DataHandling -- RooDataHist::adjustBinning(rHisto): fit range of variable muminus_ISO expanded to nearest bin boundaries: [0,1.02] --> [0,1.02]
+
+Background QCD
+
+CopyTree
+N Tot = 187972
+Frac  = -1
+
+muminus_ISO >> hBkg
+sCut: (wQCD) * (1)
+
+Entries  = 187972
+Integral = 187972
+
+
+getTreeReader: /afs/cern.ch/work/s/simone/EW/Analysis/WJ/jobs/jobs/createTuple_W_0 W candidates DecayTuple W2MuNu_qcd 
+
+Number of trees in chain: 1
+
+Set up 619 / 619 branches
+
+List of files
+/afs/cern.ch/work/s/simone/EW/Analysis/WJ/jobs/jobs/createTuple_W_0/W_candidates.root
+
+Read in 12671 events
+
+
+CopyTree
+N Tot = 12671
+Frac  = -1
+[#1] INFO:DataHandling -- RooDataHist::adjustBinning(histBkg): fit range of variable muminus_ISO expanded to nearest bin boundaries: [0,1.02] --> [0,1.02]
+
+Initialize
+fitW: Initialize -docuts
+
+fitW: CreateReducedTree -docuts
+
+CopyTree
+N Tot = 189296
+TCut 
+OBJ: TCut	CUT	(isSingle)&&((muminus_ID > 0)&&((muminus_L0MuonDecision_TOS && muminus_Hlt1SingleMuonHighPTDecision_TOS && muminus_Hlt2SingleMuonHighPTDecision_TOS)&&(((TMath::Sqrt(TMath::Power(muminus_PX + muminus_jet_PX, 2) + TMath::Power(muminus_PY + muminus_jet_PY, 2)) > 20000)&&((((((muminus_PT > 20000)&&(muminus_ETA > 2.0 && muminus_ETA < 4.5))&&((muminus_jet_PT > 20000)&&(muminus_jet_ETA > 2.2 && muminus_jet_ETA < 4.2)))&&(TMath::Sqrt(muminus_PERR2) / muminus_P < 0.10 && muminus_TRACK_PCHI2 > 0.01))&&(muminus_TRACK_nTTHits > 0))&&(TMath::Abs(muminus_OWNPV_Z) < 300 && (runNumber < 126125) || (runNumber > 126160))))&&((((muminus_nMuonsG20GeV == 0)&&(TMath::Log10(muminus_ipubs_chi2) < 1))&&(muminus_InAccHcal && (muminus_CaloEcalE + muminus_CaloHcalE) / muminus_P < 0.04))&&(TMath::Sqrt(TMath::Power(muminus_sigjet_PX + muminus_jet_PX, 2) + TMath::Power(muminus_sigjet_PY + muminus_jet_PY, 2)) > 20000)))))
+N Pas = 79348 (41.9174%)
+Frac  = -1
+Copied 79348 entries
+
+
+fitW: CreateDataSet 
+Candidates: 79348
+[#1] INFO:Eval -- RooAbsReal::attachToTree(muminus_ISO) TTree Float_t branch muminus_ISO will be converted to double precision
+RooDataSet::datafitW[muminus_ISO] = 79348 entries
+
+fitW: Initialized Correctly! The model is:
+RooAddPdf::model_fitW[ nsig_fitW * totsig_fitW + nbkg_QCD_fitW * bkg_QCD_fitW ] = 33604.5
+
+fitW: Fit muminus_ISO (51,0,1.02) -linlog-ANDpulls-noCost-leg[0.1,0.8,0.4,1]-legf-layout[0.4,0.8,0.7,1]-font0.03
+[#1] INFO:Eval -- RooRealVar::setRange(muminus_ISO) new range named 'FitRange' created with bounds [0,1.02]
+ **********
+ **    9 **SET NOWARNINGS           0
+ **********
+ **********
+ **   10 **SET PRINT           2
+ **********
+[#1] INFO:Minization -- RooMinuit::optimizeConst: activating const optimization
+[#1] INFO:Minization --  The following expressions have been identified as constant and will be precalculated and cached: (totsig_fitW,bkg_QCD_fitW)
+ **********
+ **   13 **MIGRAD        1000           1
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-03
+ FCN=-857900 FROM MIGRAD    STATUS=INITIATE        8 CALLS           9 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  nbkg_QCD_fitW   7.93480e+03   3.96740e+03   1.45868e-02  -5.48085e+05
+   2  nsig_fitW    7.14132e+04   3.57066e+04   4.38938e-02   1.82053e+05
+                               ERR DEF= 0.5
+NO ERROR MATRIX       
+ FCN=-873977 FROM MIGRAD    STATUS=PROGRESS       17 CALLS          18 TOTAL
+                     EDM=95.3276    STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  nbkg_QCD_fitW   2.89291e+04   3.96740e+03   5.12785e-02  -1.83431e+04
+   2  nsig_fitW    4.84375e+04   3.57066e+04  -2.99078e-02  -1.42389e+04
+                               ERR DEF= 0.5
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+   START COVARIANCE MATRIX CALCULATION.
+ EIGENVALUES OF SECOND-DERIVATIVE MATRIX:
+         8.9079e-01  1.1092e+00
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=-874004 FROM MIGRAD    STATUS=CONVERGED      47 CALLS          48 TOTAL
+                     EDM=7.75325e-08    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  nbkg_QCD_fitW   2.99802e+04   1.86334e+02   2.18710e-04   6.17874e-01
+   2  nsig_fitW    4.93679e+04   2.32610e+02   2.12972e-04   6.22557e-01
+                               ERR DEF= 0.5
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=0.5
+  3.472e+04 -4.733e+03 
+ -4.733e+03  5.411e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.10921   1.000 -0.109
+        2  0.10921  -0.109  1.000
+ **********
+ **   16 **HESSE        1000
+ **********
+   START COVARIANCE MATRIX CALCULATION.
+ EIGENVALUES OF SECOND-DERIVATIVE MATRIX:
+         8.9061e-01  1.1094e+00
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=-874004 FROM HESSE     STATUS=OK             10 CALLS          58 TOTAL
+                     EDM=7.76868e-08    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                INTERNAL      INTERNAL  
+  NO.   NAME      VALUE            ERROR       STEP SIZE       VALUE   
+   1  nbkg_QCD_fitW   2.99802e+04   1.86338e+02   8.74838e-06  -1.46123e+00
+   2  nsig_fitW    4.93679e+04   2.32615e+02   8.51886e-06  -1.43016e+00
+                               ERR DEF= 0.5
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=0.5
+  3.472e+04 -4.741e+03 
+ -4.741e+03  5.411e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.10939   1.000 -0.109
+        2  0.10939  -0.109  1.000
+[#1] INFO:Fitting -- RooAbsPdf::fitTo(model_fitW) Calculating sum-of-weights-squared correction matrix for covariance matrix
+ **********
+ **   19 **HESSE        1000
+ **********
+   START COVARIANCE MATRIX CALCULATION.
+ EIGENVALUES OF SECOND-DERIVATIVE MATRIX:
+         8.9061e-01  1.1094e+00
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=-874004 FROM HESSE     STATUS=OK             10 CALLS          68 TOTAL
+                     EDM=7.77215e-08    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                INTERNAL      INTERNAL  
+  NO.   NAME      VALUE            ERROR       STEP SIZE       VALUE   
+   1  nbkg_QCD_fitW   2.99802e+04   1.86339e+02   1.74968e-06  -1.46123e+00
+   2  nsig_fitW    4.93679e+04   2.32616e+02   1.70377e-06  -1.43016e+00
+                               ERR DEF= 0.5
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=0.5
+  3.472e+04 -4.742e+03 
+ -4.742e+03  5.411e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.10939   1.000 -0.109
+        2  0.10939  -0.109  1.000
+[#1] INFO:Minization -- RooMinuit::optimizeConst: deactivating const optimization
+[#1] INFO:Eval -- RooRealVar::setRange(muminus_ISO) new range named 'PlotRange' created with bounds [0,1.02]
+[#1] INFO:Plotting -- RooAbsPdf::plotOn(model_fitW) p.d.f. curve is normalized using explicit choice of ranges 'PlotRange'
+[#1] INFO:Plotting -- RooAbsPdf::plotOn(model_fitW) directly selected PDF components: (totsig_fitW)
+[#1] INFO:Plotting -- RooAbsPdf::plotOn(model_fitW) indirectly selected PDF components: ()
+[#1] INFO:Plotting -- RooAbsPdf::plotOn(model_fitW) directly selected PDF components: (bkg_QCD_fitW)
+[#1] INFO:Plotting -- RooAbsPdf::plotOn(model_fitW) indirectly selected PDF components: ()
+Info in <TCanvas::Print>: pdf file fitW.pdf has been created
+[#1] INFO:Plotting -- RooAbsPdf::plotOn(model_fitW) p.d.f. curve is normalized using explicit choice of ranges 'PlotRange'
+[#1] INFO:Plotting -- RooAbsPdf::plotOn(model_fitW) directly selected PDF components: (totsig_fitW)
+[#1] INFO:Plotting -- RooAbsPdf::plotOn(model_fitW) indirectly selected PDF components: ()
+[#1] INFO:Plotting -- RooAbsPdf::plotOn(model_fitW) directly selected PDF components: (bkg_QCD_fitW)
+[#1] INFO:Plotting -- RooAbsPdf::plotOn(model_fitW) indirectly selected PDF components: ()
+Info in <TCanvas::Print>: pdf file fitW_log.pdf has been created
+[#1] INFO:Plotting -- RooAbsPdf::plotOn(model_fitW) p.d.f. curve is normalized using explicit choice of ranges 'PlotRange'
+[#1] INFO:Plotting -- RooAbsPdf::plotOn(model_fitW) directly selected PDF components: (totsig_fitW)
+[#1] INFO:Plotting -- RooAbsPdf::plotOn(model_fitW) indirectly selected PDF components: ()
+[#1] INFO:Plotting -- RooAbsPdf::plotOn(model_fitW) directly selected PDF components: (bkg_QCD_fitW)
+[#1] INFO:Plotting -- RooAbsPdf::plotOn(model_fitW) indirectly selected PDF components: ()
+Info in <TCanvas::Print>: pdf file fitW_fitAndRes.pdf has been created
+[#1] INFO:Plotting -- RooAbsPdf::plotOn(model_fitW) p.d.f. curve is normalized using explicit choice of ranges 'PlotRange'
+[#1] INFO:Plotting -- RooAbsPdf::plotOn(model_fitW) directly selected PDF components: (totsig_fitW)
+[#1] INFO:Plotting -- RooAbsPdf::plotOn(model_fitW) indirectly selected PDF components: ()
+[#1] INFO:Plotting -- RooAbsPdf::plotOn(model_fitW) directly selected PDF components: (bkg_QCD_fitW)
+[#1] INFO:Plotting -- RooAbsPdf::plotOn(model_fitW) indirectly selected PDF components: ()
+Info in <TCanvas::Print>: pdf file fitW_log_fitAndRes.pdf has been created
+
+fitW: Chi2/NDF = 26.4 NDF = 45.0 - with probability 0.000
+

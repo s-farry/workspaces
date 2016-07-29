@@ -1,0 +1,8 @@
+#!/bin/tcsh
+set PWD = `pwd`
+cd /afs/cern.ch/work/s/simone/EW/Analysis/WJ/jobs/jobs/fit_W_0_Wp-iso-qcd-ptj
+if ( -f tmp.root ) rm -rf tmp.root
+$HOME/private/scripts/tmp.csh $PWD /afs/cern.ch/work/s/simone/EW/Analysis/WJ/jobs/jobs/fit_W_0_Wp-iso-qcd-ptj
+source /afs/cern.ch/user/s/simone/private/scripts/Setup.csh wj
+./fitW.out -Wp-iso-qcd-ptj
+rm -rf tmp.root

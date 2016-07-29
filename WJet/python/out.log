@@ -1,0 +1,60 @@
+[?1034h05-11-2015 10:17:49 INFO    : Template        : wmupj_jmu         : Entry 0 of 28545
+05-11-2015 10:17:53 INFO    : Template        : wmupj_jmu         : Entry 10000 of 28545
+05-11-2015 10:17:57 INFO    : Template        : wmupj_jmu         : Entry 20000 of 28545
+05-11-2015 10:17:59 INFO    : Template        : wmupj_jmu         : Entry 0 of 28102
+05-11-2015 10:18:06 INFO    : Template        : wmupj_jmu         : Entry 10000 of 28102
+05-11-2015 10:18:10 INFO    : Template        : wmupj_jmu         : Entry 20000 of 28102
+05-11-2015 10:19:00 INFO    : Template        : wmumj_jmu         : Entry 0 of 15969
+05-11-2015 10:19:05 INFO    : Template        : wmumj_jmu         : Entry 10000 of 15969
+05-11-2015 10:19:07 INFO    : Template        : wmumj_jmu         : Entry 0 of 16374
+05-11-2015 10:19:13 INFO    : Template        : wmumj_jmu         : Entry 10000 of 16374
+05-11-2015 10:19:55 INFO    : Template        : wmupj_mu          : Entry 0 of 27672
+05-11-2015 10:19:57 INFO    : Template        : wmupj_mu          : Entry 10000 of 27672
+05-11-2015 10:20:00 INFO    : Template        : wmupj_mu          : Entry 20000 of 27672
+05-11-2015 10:20:02 INFO    : Template        : wmupj_mu          : Entry 0 of 27218
+05-11-2015 10:20:05 INFO    : Template        : wmupj_mu          : Entry 10000 of 27218
+05-11-2015 10:20:08 INFO    : Template        : wmupj_mu          : Entry 20000 of 27218
+05-11-2015 10:20:50 INFO    : Template        : wmumj_mu          : Entry 0 of 15459
+05-11-2015 10:20:55 INFO    : Template        : wmumj_mu          : Entry 10000 of 15459
+05-11-2015 10:20:57 INFO    : Template        : wmumj_mu          : Entry 0 of 15835
+05-11-2015 10:21:02 INFO    : Template        : wmumj_mu          : Entry 10000 of 15835
+05-11-2015 10:21:51 INFO    : Template        : wmupj_full        : Entry 0 of 27612
+05-11-2015 10:21:54 INFO    : Template        : wmupj_full        : Entry 10000 of 27612
+05-11-2015 10:21:57 INFO    : Template        : wmupj_full        : Entry 20000 of 27612
+05-11-2015 10:21:59 INFO    : Template        : wmupj_full        : Entry 0 of 27159
+05-11-2015 10:22:02 INFO    : Template        : wmupj_full        : Entry 10000 of 27159
+05-11-2015 10:22:05 INFO    : Template        : wmupj_full        : Entry 20000 of 27159
+05-11-2015 10:22:54 INFO    : Template        : wmumj_full        : Entry 0 of 15419
+05-11-2015 10:22:59 INFO    : Template        : wmumj_full        : Entry 10000 of 15419
+05-11-2015 10:23:01 INFO    : Template        : wmumj_full        : Entry 0 of 15800
+05-11-2015 10:23:06 INFO    : Template        : wmumj_full        : Entry 10000 of 15800
+17521.0 50.0 788.0
+19115.0 43.0 713.0
+12205.0 19.0 279.0
+5930.0 7.0 96.0
+8264.0 25.0 342.0
+9709.0 25.0 356.0
+7926.0 13.0 252.0
+5320.0 12.0 174.0
+17660.0 0.0 729.0
+11000.0 1.0 408.0
+12239.0 11.0 448.0
+6108.0 34.0 168.0
+7085.0 70.0 122.0
+10831.0 0.0 425.0
+6275.0 0.0 252.0
+6893.0 7.0 255.0
+3250.0 18.0 98.0
+3656.0 47.0 91.0
+22828.0 60.0 735.0
+16422.0 34.0 513.0
+10232.0 19.0 413.0
+5289.0 6.0 215.0
+14199.0 44.0 527.0
+9218.0 22.0 329.0
+5324.0 7.0 189.0
+2478.0 2.0 79.0
+Traceback (most recent call last):
+  File "get_wj_acc.py", line 108, in <module>
+    p_hists[0].Write('wp_acc_eta')
+AttributeError: 'PyROOT_NoneType' object has no attribute 'Write'

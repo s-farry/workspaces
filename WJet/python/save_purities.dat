@@ -1,0 +1,18 @@
+from ROOT import *
+
+wm_etaj_f = TFile("/afs/cern.ch/work/s/simone/EW/Analysis/WJ/jobs/jobs/purity_W_0_Wm-etaj/purity_Wm_etaj.root")
+wm_etam_f = TFile("/afs/cern.ch/work/s/simone/EW/Analysis/WJ/jobs/jobs/purity_W_0_Wm-etam/purity_Wm_etam.root")
+wm_ptj_f  = TFile("/afs/cern.ch/work/s/simone/EW/Analysis/WJ/jobs/jobs/purity_W_0_Wm-ptj/purity_Wm_ptj.root")
+
+wp_etaj_f = TFile("/afs/cern.ch/work/s/simone/EW/Analysis/WJ/jobs/jobs/purity_W_0_Wp-etaj/purity_Wp_etaj.root")
+wp_etam_f = TFile("/afs/cern.ch/work/s/simone/EW/Analysis/WJ/jobs/jobs/purity_W_0_Wp-etam/purity_Wp_etam.root")
+wp_ptj_f  = TFile("/afs/cern.ch/work/s/simone/EW/Analysis/WJ/jobs/jobs/purity_W_0_Wp-ptj/purity_Wp_ptj.root")
+
+wm_etaj_out = open('/user2/sfarry/WJet/dat/wm_purity_etaj.dat', 'w')
+wm_etam_out = open('/user2/sfarry/WJet/dat/wm_purity_eta.dat', 'w')
+wm_ptj_out  = open('/user2/sfarry/WJet/dat/wm_purity_ptj.dat', 'w')
+
+wp_etaj_out = open('/user2/sfarry/WJet/dat/wp_purity_etaj.dat', 'w')
+wp_etam_out = open('/user2/sfarry/WJet/dat/wp_purity_eta.dat', 'w')
+wp_ptj_out  = open('/user2/sfarry/WJet/dat/wp_purity_ptj.dat', 'w')
+

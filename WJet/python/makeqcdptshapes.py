@@ -1,0 +1,128 @@
+from os import sys
+from analysis import AnalysisClass, Template
+from ROOT import TFile, TTree, TH1, TCut, kRed, kYellow, kBlue, kOrange, kGreen, TF1, kMagenta, TMath, TH1F, TCanvas
+
+from Wjconfig_new import *
+
+qcdip_pj_data2012 = Template("qcdip_pj_data2012", datat, selcut_hiip + plus )
+qcdip_pj_data2012.AddVars(variables)
+qcdip_pj_data2012.AddVars(jetvars)
+qcdip_pj_data2012.ApplyCut()
+qcdip_pj_data2012.FillVars()
+qcdip_pj_data2012.SaveToFile()
+
+qcdip_mj_data2012 = Template("qcdip_mj_data2012", datat, selcut_hiip + minus )
+qcdip_mj_data2012.AddVars(variables)
+qcdip_mj_data2012.AddVars(jetvars)
+qcdip_mj_data2012.ApplyCut()
+qcdip_mj_data2012.FillVars()
+qcdip_mj_data2012.SaveToFile()
+
+qcdunbal_pj_data2012 = Template("qcdunbal_pj_data2012", datat, selcut_ptunbal + plus)
+qcdunbal_pj_data2012.AddVars(variables)
+qcdunbal_pj_data2012.AddVars(jetvars)
+qcdunbal_pj_data2012.ApplyCut()
+qcdunbal_pj_data2012.FillVars()
+qcdunbal_pj_data2012.SaveToFile()
+
+qcdunbal_mj_data2012 = Template("qcdunbal_mj_data2012", datat, selcut_ptunbal + minus)
+qcdunbal_mj_data2012.AddVars(variables)
+qcdunbal_mj_data2012.AddVars(jetvars)
+qcdunbal_mj_data2012.ApplyCut()
+qcdunbal_mj_data2012.FillVars()
+qcdunbal_mj_data2012.SaveToFile()
+
+qcdantiiso_pj_data2012 = Template("qcdantiiso_pj_data2012", datat, selcut_antiiso + plus)
+qcdantiiso_pj_data2012.AddVars(variables)
+qcdantiiso_pj_data2012.AddVars(jetvars)
+qcdantiiso_pj_data2012.ApplyCut()
+qcdantiiso_pj_data2012.FillVars()
+qcdantiiso_pj_data2012.SaveToFile()
+
+qcdantiiso_mj_data2012 = Template("qcdantiiso_mj_data2012", datat, selcut_antiiso + minus)
+qcdantiiso_mj_data2012.AddVars(variables)
+qcdantiiso_mj_data2012.AddVars(jetvars)
+qcdantiiso_mj_data2012.ApplyCut()
+qcdantiiso_mj_data2012.FillVars()
+qcdantiiso_mj_data2012.SaveToFile()
+
+qcd_mj_rw = GetWeightHist("qcd_mj_rw", qcdantiiso_mj_data2012.GetHist("MuJet_PT"), qcdunbal_mj_data2012.GetHist("MuJet_PT"))
+qcd_pj_rw = GetWeightHist("qcd_pj_rw", qcdantiiso_pj_data2012.GetHist("MuJet_PT"), qcdunbal_pj_data2012.GetHist("MuJet_PT"))
+
+qcd_pj20_data2012 = Template("qcd_pj20_data2012", datat, selcut_ptunbal + plus + ptj20)
+qcd_pj20_data2012.AddVars(variables)
+qcd_pj20_data2012.AddVars(jetvars)
+qcd_pj20_data2012.ApplyCut()
+qcd_pj20_data2012.Reweight("muminus_sigjet_PT", qcd_pj_rw)
+qcd_pj20_data2012.FillVars()
+qcd_pj20_data2012.SaveToFile()
+
+qcd_mj20_data2012 = Template("qcd_mj20_data2012", datat, selcut_ptunbal + minus + ptj20)
+qcd_mj20_data2012.AddVars(variables)
+qcd_mj20_data2012.AddVars(jetvars)
+qcd_mj20_data2012.ApplyCut()
+qcd_mj20_data2012.Reweight("muminus_sigjet_PT", qcd_mj_rw)
+qcd_mj20_data2012.FillVars()
+qcd_mj20_data2012.SaveToFile()
+
+
+qcdip_pj20_data2012 = Template("qcdip_pj20_data2012", datat, selcut_hiip + plus + ptj20 )
+qcdip_pj20_data2012.AddVars(variables)
+qcdip_pj20_data2012.AddVars(jetvars)
+qcdip_pj20_data2012.ApplyCut()
+qcdip_pj20_data2012.FillVars()
+qcdip_pj20_data2012.SaveToFile()
+
+qcdip_mj20_data2012 = Template("qcdip_mj20_data2012", datat, selcut_hiip + minus + ptj20 )
+qcdip_mj20_data2012.AddVars(variables)
+qcdip_mj20_data2012.AddVars(jetvars)
+qcdip_mj20_data2012.ApplyCut()
+qcdip_mj20_data2012.FillVars()
+qcdip_mj20_data2012.SaveToFile()
+
+qcdunbal_pj20_data2012 = Template("qcdunbal_pj20_data2012", datat, selcut_ptunbal + plus +ptj20)
+qcdunbal_pj20_data2012.AddVars(variables)
+qcdunbal_pj20_data2012.AddVars(jetvars)
+qcdunbal_pj20_data2012.ApplyCut()
+qcdunbal_pj20_data2012.FillVars()
+qcdunbal_pj20_data2012.SaveToFile()
+
+qcdunbal_mj20_data2012 = Template("qcdunbal_mj20_data2012", datat, selcut_ptunbal + minus + ptj20)
+qcdunbal_mj20_data2012.AddVars(variables)
+qcdunbal_mj20_data2012.AddVars(jetvars)
+qcdunbal_mj20_data2012.ApplyCut()
+qcdunbal_mj20_data2012.FillVars()
+qcdunbal_mj20_data2012.SaveToFile()
+
+qcdantiiso_pj20_data2012 = Template("qcdantiiso_pj20_data2012", datat, selcut_antiiso + plus + ptj20)
+qcdantiiso_pj20_data2012.AddVars(variables)
+qcdantiiso_pj20_data2012.AddVars(jetvars)
+qcdantiiso_pj20_data2012.ApplyCut()
+qcdantiiso_pj20_data2012.FillVars()
+qcdantiiso_pj20_data2012.SaveToFile()
+
+qcdantiiso_mj20_data2012 = Template("qcdantiiso_mj20_data2012", datat, selcut_antiiso + minus + ptj20)
+qcdantiiso_mj20_data2012.AddVars(variables)
+qcdantiiso_mj20_data2012.AddVars(jetvars)
+qcdantiiso_mj20_data2012.ApplyCut()
+qcdantiiso_mj20_data2012.FillVars()
+qcdantiiso_mj20_data2012.SaveToFile()
+
+qcd_mj20_rw = GetWeightHist("qcd_mj20_rw", qcdantiiso_mj20_data2012.GetHist("MuCone_PT"), qcdunbal_mj20_data2012.GetHist("MuCone_PT"))
+qcd_pj20_rw = GetWeightHist("qcd_pj20_rw", qcdantiiso_pj20_data2012.GetHist("MuCone_PT"), qcdunbal_pj20_data2012.GetHist("MuCone_PT"))
+
+qcd_pj20_data2012 = Template("qcd_pj20_data2012", datat, selcut_ptunbal + plus + ptj20)
+qcd_pj20_data2012.AddVars(variables)
+qcd_pj20_data2012.AddVars(jetvars)
+qcd_pj20_data2012.ApplyCut()
+qcd_pj20_data2012.Reweight("sqrt((muminus_PX + muminus_cpx_0.50 + muminus_npx_0.50)^2 + (muminus_PY + muminus_cpy_0.50 + muminus_npy_0.50)^2)", qcd_pj20_rw)
+qcd_pj20_data2012.FillVars()
+qcd_pj20_data2012.SaveToFile()
+
+qcd_mj20_data2012 = Template("qcd_mj20_data2012", datat, selcut_ptunbal + minus + ptj20)
+qcd_mj20_data2012.AddVars(variables)
+qcd_mj20_data2012.AddVars(jetvars)
+qcd_mj20_data2012.ApplyCut()
+qcd_mj20_data2012.Reweight("sqrt((muminus_PX + muminus_cpx_0.50 + muminus_npx_0.50)^2 + (muminus_PY + muminus_cpy_0.50 + muminus_npy_0.50)^2)", qcd_mj20_rw)
+qcd_mj20_data2012.FillVars()
+qcd_mj20_data2012.SaveToFile()
