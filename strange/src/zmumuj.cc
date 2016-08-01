@@ -25,10 +25,16 @@ public:
   bool charged() const {return _charged_;};
 };
 
-double get_dR(Vec4 mom, PseudoJet& jet){
+double get_dPhi(Vec4 mom, PseudoJet & jet){
   double p_phi = mom.phi();
   double j_phi = jet.phi_std();
   double dPhi  = abs(p_phi - j_phi) < TMath::Pi() ? abs(p_phi - j_phi) : 2*TMath::Pi() - abs(p_phi - j_phi);
+  return dPhi;
+
+}
+
+double get_dR(Vec4 mom, PseudoJet& jet){
+  double dPhi  = get_dPhi(mom, jet);
   double dEta  = mom.eta() - jet.eta();
   double dR    = sqrt(dPhi * dPhi + dEta * dEta);
   return dR;
@@ -45,6 +51,108 @@ vector<Particle> get_hard_partons(Event& e){
   return hard_partons;
 }
 
+vector<Particle> get_mesons(Event& e){
+  vector<Particle> hard_partons;
+  for (int i = 0 ; i < e.size(); ++i){
+    int id = abs(e[i].id());
+    double pt = e[i].pT();
+    if (pt > 1 && (id == 111 || id == 311 || id == 113 || id==213 || id == 221 || id == 331   //light
+		   || id == 130 || id ==  310 || id == 311 || id == 311                       //strange
+		   || id == 411 || id == 421 || id==10411 || id==10421 || i==433 || id==431   //charm
+		   || id == 511 || id == 521 || id == 513 || id == 523 || id==521))           //beauty*/
+      {
+      hard_partons.push_back(e[i]);
+      }
+  }
+  return hard_partons;
+}
+
+
+/*
+
+//to be calculated...
+double get_jet_planar_flow(PseudoJet& jet){
+  
+  TMatrixD I(2, 2);
+  double I00 = 0.0, I10 = 0.0, I11 = 0.0;
+  std::vector<PseudoJet> children = jet.constituents();
+  std::vector<PseudoJet>::iterator ic;
+  double M = jet.M();
+  for (ic = children.begin(); ic != children.end(); ++ic){
+    Vec4 v((*ic).px(), (*ic).py(), (*ic).pz(), (*ic).e());
+    double E = v.e();
+    I00 += p
+  } 
+  double width = num/denom;
+  return width;
+}
+*/
+
+double get_jet_width(PseudoJet& jet){
+  std::vector<PseudoJet> children = jet.constituents();
+  std::vector<PseudoJet>::iterator ic;
+  double num = 0.0;
+  double denom = 0.0;
+  for (ic = children.begin(); ic != children.end(); ++ic){
+    Vec4 v((*ic).px(), (*ic).py(), (*ic).pz(), (*ic).e());
+    num += get_dR(v, jet)*v.pT();
+    denom += v.pT();
+  } 
+  double width = num/denom;
+  return width;
+}
+
+double get_jet_eccentricity(PseudoJet& jet){
+
+  std::vector<PseudoJet> children = jet.constituents();
+  std::vector<PseudoJet>::iterator ic;
+  //double phi_mean_num = 0.0;
+  //double eta_mean_num = 0.0;
+  //double denom = 0.0;
+  double tan2t_num = 0.0, tan2t_denom = 0.0;
+
+  for (ic = children.begin(); ic != children.end(); ++ic){
+    Vec4 mom((*ic).px(), (*ic).py(), (*ic).pz(), (*ic).e());
+    double dPhi = jet.phi_std() -  mom.phi();
+    double dEta = jet.eta() - mom.eta();
+    double E = mom.e();
+    //phi_mean_num += dPhi*v.e();
+    //eta_mean_num += dEta*v.e();
+    //denom += E;
+    tan2t_num += 2*E*dPhi*dEta;
+    tan2t_denom += E*(dPhi*dPhi - dEta*dEta);
+
+  } 
+  //double phi_mean = phi_mean_num/denom;
+  //double eta_mean = eta_mean_num/denom;
+  double tan2t = tan2t_num/tan2t_denom;
+
+  double minv = -999, maxv = -999;
+
+  double N = children.size();
+
+  for (ic = children.begin(); ic != children.end(); ++ic){
+    Vec4 mom((*ic).px(), (*ic).py(), (*ic).pz(), (*ic).e());
+    double dPhi = jet.phi_std() -  mom.phi();
+    double dEta = jet.eta() - mom.eta();
+    double E = mom.e();
+    double theta = atan(tan2t)/2;
+    double v1 = (1/N)*E*pow(cos(theta)*dEta - sin(theta)*dPhi,2);
+    double v2 = (1/N)*E*pow(cos(theta)*dEta - sin(theta)*dPhi,2);
+    
+    if (min(v1, v2) < minv || minv == -999) minv = min(v1, v2);
+    if (max(v1, v2) > maxv || maxv == -999) maxv = max(v1, v2);
+
+  } 
+
+  double ecc = 1 - (minv/maxv);
+  return ecc;
+
+
+}
+
+
+
 map<string, double> get_strange_vars(PseudoJet& jet){
   std::vector<PseudoJet> children = jet.constituents();
   std::vector<PseudoJet>::iterator ic;
@@ -53,12 +161,12 @@ map<string, double> get_strange_vars(PseudoJet& jet){
   double kaoncE = 0, pioncE = 0, kaoncpt = 0, pioncpt = 0.0;
   double minkaonpt = 0.0, maxkaonpt = 0.0, minpionpt = 0.0, maxpionpt = 0.0;
   double dR_maxkaon = -1.0, dR_maxpion = -1.0;
-  double neutralPt = 0.0, chargedPt = 0.0;
+  double neutralE = 0.0, chargedE = 0.0;
   for (ic = children.begin(); ic != children.end(); ++ic){
     int pdg_id = (*ic).user_info<MyInfo>().pdg_id();
     bool charged = (*ic).user_info<MyInfo>().charged();
-    if (charged) chargedPt+= (*ic).E();
-    else neutralPt += (*ic).E();
+    if (charged) chargedE+= (*ic).E();
+    else neutralE += (*ic).E();
 
     if (pdg_id == 130 || pdg_id == 310 || pdg_id == 311 || abs(pdg_id) == 321){
       nkaons++;
@@ -91,6 +199,10 @@ map<string, double> get_strange_vars(PseudoJet& jet){
       }
     }
   }
+
+  double width = get_jet_width(jet);
+  double eccentricity = get_jet_eccentricity(jet);
+
   map<string, double> a;
   a["nkaons"]      = nkaons;
   a["kaonE"]       = kaonE;
@@ -108,8 +220,10 @@ map<string, double> get_strange_vars(PseudoJet& jet){
   a["pioncpt"]     = pioncpt;
   a["dR_maxkaon"]  = dR_maxkaon;
   a["dR_maxpion"]  = dR_maxpion;
-  a["neutralPt"]   = neutralPt;
-  a["chargedPt"]   = chargedPt;
+  a["neutralE"]   = neutralE;
+  a["chargedE"]   = chargedE;
+  a["width"]      = width;
+  a["eccentricity"] = eccentricity;
   return a;
 }
 
@@ -127,6 +241,20 @@ int get_flavour(PseudoJet& jet, vector<Particle>& partons){
 
 }
 
+int get_flavour_by_meson(PseudoJet& jet, vector<Particle>& mesons){
+  int flav = -999;
+  double pt = -1;
+  for (int i = 0 ; i < (int)mesons.size(); ++i){
+    double dr = get_dR(mesons.at(i).p(), jet);
+    double pt_tmp = mesons.at(i).pT();
+    if ( (dr < 0.3) && (pt == -1 || pt_tmp > pt)){
+      pt = pt_tmp;
+      flav = mesons.at(i).id();
+    }
+  }
+  return flav;
+}
+
 void getVals(Vec4 mom, std::map<string, double>& vals){
   //vector<double> vals(7, 0.0);
   vals["px"] = mom.px();
@@ -140,7 +268,7 @@ void getVals(Vec4 mom, std::map<string, double>& vals){
   vals["m"] = mom.mCalc();
   //return vals;
 }
-void getVals(PseudoJet& jet, map<string, double>& vals, vector<Particle> hard_partons){
+void getVals(PseudoJet& jet, map<string, double>& vals, vector<Particle> hard_partons, vector<Particle> mesons){
   //vector<double> vals(9, 0.0);
   vals["px"]   = jet.px();
   vals["py"]   = jet.py();
@@ -158,6 +286,7 @@ void getVals(PseudoJet& jet, map<string, double>& vals, vector<Particle> hard_pa
   map<string, double>::iterator im;
   for (im = strange_vars.begin(); im != strange_vars.end(); ++im) vals[(*im).first] = (*im).second;
   vals["flav"] = get_flavour(jet, hard_partons);
+  vals["flav_meson"] = get_flavour_by_meson(jet, mesons);
 
   //return vals;
 }
@@ -834,8 +963,9 @@ int main(int argc, char* argv[]) {
   std::vector<string> jet_vars      = {"px", "py", "pz", "E", "pt", "phi", "eta", "y", "m", "mult"};
   std::vector<string> jetflav_vars  = {"nkaons", "npions", "kaonE", "pionE",
 				       "maxkaonpt", "minkaonpt", "maxpionpt", "minpionpt",
-				       "kaonpt", "pionpt", "flav", "dR_maxkaon", "kaoncpt", "kaoncE",
-				       "pioncE", "pioncpt", "dR_maxpion", "neutralPt", "chargedPt"};
+				       "kaonpt", "pionpt", "flav", "flav_meson", "dR_maxkaon", "kaoncpt", "kaoncE",
+				       "pioncE", "pioncpt", "dR_maxpion", "neutralE", "chargedE",
+                                       "width", "eccentricity"};
 
   std::map<string, map<string, double> >::iterator im;
   for (im = outParts.begin() ; im != outParts.end(); ++im){
@@ -1125,7 +1255,7 @@ int main(int argc, char* argv[]) {
     }
     
     std::vector<Particle> hard_partons = get_hard_partons(pythia.event);
-
+    std::vector<Particle> mesons       = get_mesons(pythia.event);
     /*
      * Process dependent checks and analysis may be inserted here
      */
@@ -1278,19 +1408,19 @@ int main(int argc, char* argv[]) {
       getVals(dimu_p, outParts["dimu"]);
     }
     if (jets.size() > 0) {
-      getVals(jets[0], outJets["jet"], hard_partons);
+      getVals(jets[0], outJets["jet"], hard_partons, mesons);
       //getFlavVals(jets[0], hard_partons, jet_flav);
       if (mups.size() > 0) jet_mudr = get_dR( mups.at(0).p(), jets[0]);
       if (mums.size() > 0) jet_mudr = min(jet_mudr, get_dR( mums.at(0).p(), jets[0]));
     }
-    if (jets.size() > 1) getVals(jets[1], outJets["jet2"], hard_partons);
+    if (jets.size() > 1) getVals(jets[1], outJets["jet2"], hard_partons, mesons);
     if (fwdjets.size() > 0) {
-      getVals(fwdjets[0], outJets["fwdjet"], hard_partons);
+      getVals(fwdjets[0], outJets["fwdjet"], hard_partons, mesons);
       if (mups.size() > 0) fwdjet_mudr = get_dR( mups.at(0).p(), fwdjets[0]);
       if (mums.size() > 0) fwdjet_mudr = min(fwdjet_mudr, get_dR( mums.at(0).p(), fwdjets[0]));
     }
     if (bwdjets.size() > 0) {
-      getVals(bwdjets[0], outJets["bwdjet"], hard_partons);
+      getVals(bwdjets[0], outJets["bwdjet"], hard_partons, mesons);
       if (mups.size() > 0) bwdjet_mudr = get_dR( mups.at(0).p(), bwdjets[0]);
       if (mums.size() > 0) bwdjet_mudr = min(bwdjet_mudr, get_dR( mums.at(0).p(), bwdjets[0]));
     }

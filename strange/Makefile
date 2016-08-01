@@ -6,12 +6,12 @@ PYTHON_LIB = $(PYTHONHOME)/lib/
 PYTHIA8 = /cvmfs/sft.cern.ch/lcg/external/MCGenerators_lcgcmt67b/pythia8/205/x86_64-slc6-gcc48-opt
 FASTJET = /cvmfs/sft.cern.ch/lcg/external/fastjet/3.0.3/x86_64-slc6-gcc48-opt
 
-ROOTLIBS = -lCore -lRIO -lNet -lHist  -lTree -lMatrix -lMathCore -lThread -lPhysics -lTMVA
+ROOTLIBS = -lCore -lRIO -lNet -lHist  -lTree -lMatrix -lMathCore -lThread -lPhysics -lTMVA -lRooFit
 FASTJETLIBS = -lfastjet -lfastjettools
 # Define make targets.
-all           : zmumuj
+all           : zmumuj fit_roofit apply_bdt
 clean         : rm zmumuj
 
-zmumuj	: src/zmumuj.cc
+%	: src/%.cc
 	g++ $(CXXFLAGS) -I./ -I/user2/sfarry/Generators/include -I/user2/sfarry/Generators/fastjet-3.0.3/install_dir/include \
 	-I$(ROOTSYS)/include $< -o $@  -L$(PYTHIA8)/lib -lpythia8 -L$(FASTJET)/lib $(FASTJETLIBS) -L$(ROOTSYS)/lib $(ROOTLIBS)
