@@ -1,0 +1,1 @@
+This repository includes a series of workspaces used for analysis and other studies. Typically they contain python and C++ files with appropriate makefiles. Many of them make use of the Jawa repository.
