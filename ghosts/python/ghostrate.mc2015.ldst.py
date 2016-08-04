@@ -123,56 +123,10 @@ chi2ndof.process()
 ghostprob.process()
 history.process()
 
-'''
-from PlotTools import *
 
-from Style import *
+#save everything in an output file
 
-SetLHCbStyle()
-
-for i in [pt, eta, chi2ndof, ghostprob, history]:
-	o = Plot([i.rec, i.loose, i.fake])
-	ymax = -1
-	for p in o.plots:
-		p.UseCurrentStyle()
-		if ymax == -1 or p.GetBinContent(p.GetMaximumBin())*1.1/p.Integral() > ymax:
-			ymax = p.GetBinContent(p.GetMaximumBin())*1.1/p.Integral()
-	o.setProp('colors', ['blue', 'red', 'green'])
-	o.setProp('leglims', [0.2, 0.7, 0.4, 0.85])
-	o.setProp('markerstyles', 20)
-	o.setProp('filename', 'ghostdist_'+i.name)
-	o.setProp('normalised', True)
-	o.setProp('ylabel', '[A.U.]')
-	o.setProp('xlabel', i.tex)
-	o.setProp('drawOpts', 'hist')
-	o.setProp('fillstyles', 0)
-	o.setProp('ynormlims', [0, ymax])
-	o.setProp('location', '/user2/sfarry/EnergyFlow/eflow/figures/ghostrate/method')
-	o.setProp('labels', ['All Tracks', 'Ghosts', 'Fakes'])
-	o.drawROOT()
-
-	ymax = -1
-	m = Plot([i.ghost_rate, i.fake_rate])
-	for p in m.plots:
-		p.UseCurrentStyle()
-		if ymax == -1 or p.GetBinContent(p.GetMaximumBin())*1.1 > ymax:
-			ymax = p.GetBinContent(p.GetMaximumBin())*1.1
-	m.setProp('colors', ['red', 'green'])
-	m.setProp('leglims', [0.2, 0.7, 0.4, 0.85])
-	m.setProp('markerstyles', 20)
-	m.setProp('filename', 'ghostrate_'+i.name)
-	m.setProp('ylabel', 'Ghost Rate')
-	m.setProp('xlabel', i.tex)
-	m.setProp('drawOpts', 'hist')
-	m.setProp('fillstyles', 0)
-        m.setProp('location', '/user2/sfarry/EnergyFlow/eflow/figures/ghostrate/method')
-	m.setProp('ylims', [0, ymax])
-	m.setProp('labels', ['Ghosts', 'Fakes'])
-	m.drawROOT()
-
-'''
-
-outputFile = TFile("/user2/sfarry/EnergyFlow/eflow/tuples/ghostrate_mc2015_ldst.noghostprob.root", "RECREATE")
+outputFile = TFile("/user2/sfarry/workspaces/ghosts/tuples/ghostrate_mc2015_ldst.root", "RECREATE")
 pt.save()
 eta.save()
 chi2ndof.save()

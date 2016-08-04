@@ -64,13 +64,13 @@ class ghostvar:
 		self.fake_rate.Write()
 		#outputFile.Close()
 
-pt        = ghostvar('pt_mc2015'        , 50, 0, 1000, 'p_{T} [GeV]')
-eta       = ghostvar('eta_mc2015'       , 50, 2.0, 5.0, '#eta')
-chi2ndof  = ghostvar('chi2ndof_mc2015'  , 50, 0, 5, '#chi^{2}/ndof.')
-ghostprob = ghostvar('ghostprob_mc2015', 50, 0, 0.4, 'Ghost Probability')
-history2  = ghostvar('history_mc2015'  , 21, -0.5, 20.5, 'Track History')
-nveloclus = ghostvar('nveloclusters_mc2015', 50, 0, 3000, 'Velo Clusters')
-npvs2     = ghostvar('npvs_mc2015',  6, -0.5, 5.5, 'PVs')
+pt        = ghostvar('pt'        , 50, 0, 1000, 'p_{T} [GeV]')
+eta       = ghostvar('eta'       , 50, 2.0, 5.0, '#eta')
+chi2ndof  = ghostvar('chi2ndof'  , 50, 0, 5, '#chi^{2}/ndof.')
+ghostprob = ghostvar('ghostprob', 50, 0, 0.4, 'Ghost Probability')
+history2  = ghostvar('history'  , 21, -0.5, 20.5, 'Track History')
+nveloclus = ghostvar('nveloclusters', 50, 0, 3000, 'Velo Clusters')
+npvs2     = ghostvar('npvs',  6, -0.5, 5.5, 'PVs')
 
 npvs_hist      = TH1F("npvs_hist", "npvs_hist", 6, -0.5, 5.5)
 nveloclus_hist = TH1F("nveloclus_hist", "nveloclus_hist", 100, 0, 3000)
@@ -149,7 +149,6 @@ npvs2.process()
 from PlotTools import *
 
 from Style import *
-print history2
 SetLHCbStyle()
 
 for i in [pt, eta, chi2ndof, ghostprob, history2, nveloclus, npvs2]:
@@ -163,14 +162,14 @@ for i in [pt, eta, chi2ndof, ghostprob, history2, nveloclus, npvs2]:
 	o.setProp('colors', ['blue', 'red', 'green'])
 	o.setProp('leglims', [0.2, 0.6, 0.4, 0.85])
 	o.setProp('markerstyles', 20)
-	o.setProp('filename', 'ghostdist_'+i.name)
+	o.setProp('filename', i.name+'_mc2015')
 	o.setProp('normalised', True)
 	o.setProp('ylabel', '[A.U.]')
 	o.setProp('xlabel', i.tex)
 	o.setProp('drawOpts', 'hist')
 	o.setProp('fillstyles', 0)
 	o.setProp('ynormlims', [0, ymax])
-	o.setProp('location', '/user2/sfarry/EnergyFlow/eflow/figures/ghostrate/mc')
+	o.setProp('location', '/user2/sfarry/workspaces/ghosts/figures')
 	o.setProp('labels', ['All Tracks', 'Ghosts', 'Fakes'])
 	o.drawROOT()
 
@@ -183,7 +182,7 @@ for i in [pt, eta, chi2ndof, ghostprob, history2, nveloclus, npvs2]:
 	m.setProp('colors', ['red', 'green'])
 	m.setProp('leglims', [0.2, 0.7, 0.4, 0.85])
 	m.setProp('markerstyles', 20)
-	m.setProp('filename', 'ghostrate_'+i.name)
+	m.setProp('filename', i.name+'_rate_mc2015')
 	m.setProp('ylabel', 'Ghost Rate')
 	m.setProp('xlabel', i.tex)
 	m.setProp('drawOpts', 'hist')
@@ -191,10 +190,10 @@ for i in [pt, eta, chi2ndof, ghostprob, history2, nveloclus, npvs2]:
 	m.setProp('location', '.')
 	m.setProp('ynormlims', [0, ymax])
 	m.setProp('labels', ['Ghosts', 'Fakes'])
-	m.setProp('location', '/user2/sfarry/EnergyFlow/eflow/figures/ghostrate/mc')
+	m.setProp('location', '/user2/sfarry/workspaces/ghosts/figures')
 	m.drawROOT()
 
-outputFile = TFile("../tuples/ghostrate_mc2015.root", "RECREATE")
+outputFile = TFile("/user2/sfarry/workspaces/ghosts/tuples/ghostrate_mc2015.root", "RECREATE")
 npvs_hist.Write()
 nveloclus_hist.Write()
 pt.save()
