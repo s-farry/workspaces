@@ -20,6 +20,7 @@
 #include "RooArgSet.h"
 #include "RooAddPdf.h"
 #include "RooDataSet.h"
+#include "RooDataHist.h"
 #include "RooFitResult.h"
 
 
@@ -30,17 +31,29 @@ namespace std {
   template<class T> T sqr(const T& t) { return t*t ; }
 }
 
-
 typedef std::map<string, std::pair<double, double> > results;
 
 class calibration {
  public:
   calibration();
-  results fit_z0_mass(RooDataSet* ds);
-  results fit_jpsi_mass(RooDataSet* ds);
+  calibration(string name);
+  results fit_z0_mass(int idx1, int idx2, bool refit = false);
+  results fit_jpsi_mass(TH1F* h);
+  void fill_hists(TTree* t);
+  void save(const char* output);
+  void update_hists();
+  void get_fitted_means(bool refit=false);
+  void minimise();
+
+  //the parameters we want to determine
+  TH2F* m_a1_params;
+  TH2F* m_a2_params;
+  double m_b1;
+  double m_b2;
 
  private:
   //range for tests
+  string m_name;
   int m_nphibins;
   int m_philo;
   int m_phihi;
@@ -65,21 +78,21 @@ class calibration {
   double getchi2();
 
   //for fitting
-  TH2F* get_fitted_means();
+  //void get_fitted_means(bool refit=false);
 
   //initialise dataset
-  void fill_hists(TTree* t);
+  //void fill_hists(TTree* t);
   //update dataset with current paramaterisation
-  void update_hists();
+  //void update_hists();
 
   vector<vector<TH1F*> > m_hists;
   vector<vector<TH1F*> > m_current_hists;
 
   //the parameters we want to determine
-  TH2F* m_a1_params;
-  TH2F* m_a2_params;
-  double m_b1;
-  double m_b2;
+  //TH2F* m_a1_params;
+  //TH2F* m_a2_params;
+  //double m_b1;
+  //double m_b2;
 
   //What we should compare the mass to
   TH2F* m_expectation;
@@ -87,6 +100,7 @@ class calibration {
   //keep fit parameters
   //only mean allowed to vary after first fit
   std::map<string, TH2F*> m_z0_params;
+  TH2F* m_z0_init_mean;
 
   TTree* m_tree;
 
