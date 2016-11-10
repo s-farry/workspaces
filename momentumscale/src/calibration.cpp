@@ -24,6 +24,9 @@
 #include "Minuit2/Minuit2Minimizer.h"
 #include "Math/Functor.h"
 #include <ctime>
+#include <TFitResult.h>
+#include <TLine.h>
+#include "Math/RootFinder.h"
 
 
 template<class T>
@@ -93,14 +96,14 @@ public:
   double M() const { return m_m() ; }
   //double Merr() const { return m_merr(); }
 
-  TLorentzVector p4corrected(TH2F* a_params, double b_param) const {
+  TLorentzVector p4corrected(TH2D* a_params, double b_param) const {
     TLorentzVector mom = p4() ;
     double m = mom.M() ;
     double tx = mom.X() / mom.Z() ;
     double ty = mom.Y() / mom.Z() ;
-    //double q = charge() ; 
+    double q = charge() ; 
     //think q should be constant as same factors will be used for opposite charge/polarity
-    double q = 1.0;
+    //double q = 1.0;
     //double nx = std::sqrt( (1 + tx*tx )/(1 + tx*tx + ty*ty) ) ;
     //double pxz = nx * mom.P() ;
     double p = mom.P();
@@ -108,7 +111,7 @@ public:
     double eta = mom.Eta();
     double a = a_params->GetBinContent(a_params->FindBin(phi, eta));
     double b = b_param;
-    double newp   = p * b /(1+ (p*a/q)) ;
+    double newp   = p * b /(1+ (p*a*m_polarity()/q)) ;
     mom.SetX( newp * tx / std::sqrt((1 + tx*tx + ty*ty) ) );
     mom.SetY( newp * ty / std::sqrt((1 + tx*tx + ty*ty) ) );
     mom.SetZ( newp * 1 / std::sqrt((1 + tx*tx + ty*ty) ) ) ;
@@ -159,23 +162,23 @@ private:
 
 
 
-calibration::calibration(string name){
+calibration::calibration(string name, TH2F* expectation){
   m_name = name;
   m_a_init       =  0.00  ;
-  m_a_step       =  0.00001;
-  m_a_lolimit    = -0.001   ;
-  m_a_uplimit    =  0.001   ;
+  m_a_step       =  0.000005;
+  m_a_lolimit    = -0.000001   ;
+  m_a_uplimit    =  0.000001   ;
 
   m_b_init      =  1.00  ;
-  m_b_step      =  0.001;
-  m_b_lolimit   =  0.9   ;
-  m_b_uplimit   =  1.1   ;
+  m_b_step      =  0.03 ;
+  m_b_lolimit   =  0.9  ;
+  m_b_uplimit   =  1.1  ;
 
-  m_precision = 0.01;
-  m_tolerance = 0.01;
+  m_precision = 0.001;
+  m_tolerance = 0.1;
 
-  m_nphibins = 6;
-  m_netabins = 2;
+  m_nphibins = 12;
+  m_netabins = 1;
   m_philo = -TMath::Pi();
   m_phihi = TMath::Pi();
   m_etalo = 2.0;
@@ -188,53 +191,126 @@ calibration::calibration(string name){
   //			 m_nphibins, m_philo, m_phihi,
   //			 m_netabins, m_etalo, m_etahi);
 
-  m_a1_params = new TH2F("a1_params", "a1_params",
-			 6, -TMath::Pi(), TMath::Pi(),
-			 2, 2.0, 4.5);
-  m_a2_params = new TH2F("a2_params", "a2_params",
-			 6, -TMath::Pi(), TMath::Pi(),
-			 2, 2.0, 4.5);
+  m_a1_params = new TH2D("a1_params", "a1_params",
+			 m_nphibins, -TMath::Pi(), TMath::Pi(),
+			 m_netabins, 2.0, 4.5);
+  m_a2_params = new TH2D("a2_params", "a2_params",
+			 m_nphibins, -TMath::Pi(), TMath::Pi(),
+			 m_netabins, 2.0, 4.5);
   m_b1 = 1.0;
   m_b2 = 1.0;
 
-  
-  m_z0_params["width"] = new TH2F("width", "width",
-				  6, -TMath::Pi(), TMath::Pi(),
-				  2, 2.0, 4.5);
-  m_z0_params["sigma"] = new TH2F("sigma", "sigma",
-				  6, -TMath::Pi(), TMath::Pi(),
-				  2, 2.0, 4.5);
-  m_z0_params["alpha"] = new TH2F("alpha", "alpha",
-				  6, -TMath::Pi(), TMath::Pi(),
-				  2, 2.0, 4.5);
-  m_z0_params["n"]     = new TH2F("n", "n",
-				  6, -TMath::Pi(), TMath::Pi(),
-				  2, 2.0, 4.5);
-  m_z0_params["lambda"] = new TH2F("lambda", "lambda",
-				  6, -TMath::Pi(), TMath::Pi(),
-				  2, 2.0, 4.5);
-  m_z0_params["s"]     = new TH2F("s", "s",
-				  6, -TMath::Pi(), TMath::Pi(),
-				  2, 2.0, 4.5);
-  m_z0_params["mean"]     = new TH2F("mean", "mean",
-				  6, -TMath::Pi(), TMath::Pi(),
-				  2, 2.0, 4.5);
+  m_a1_init_vals = new TH2D("a1_init_vals", "a1_init_val",
+			    m_nphibins, m_philo, m_phihi,
+			    m_netabins, m_etalo, m_etahi);
+  m_a2_init_vals = new TH2D("a2_init_vals", "a2_init_val",
+			    m_nphibins, m_philo, m_phihi,
+			    m_netabins, m_etalo, m_etahi);
 
-  m_expectation   = new TH2F("expectation", "expectation",
-			     6, -TMath::Pi(), TMath::Pi(),
-			     2, 2.0, 4.5);
+  m_pprof = new TProfile2D("p", "p",
+			   m_nphibins, m_philo, m_phihi,
+			   m_netabins, m_etalo, m_etahi);
+  m_txprof = new TProfile2D("tx", "tx",
+			    m_nphibins, m_philo, m_phihi,
+			    m_netabins, m_etalo, m_etahi);
+  m_typrof = new TProfile2D("ty", "ty",
+			    m_nphibins, m_philo, m_phihi,
+			    m_netabins, m_etalo, m_etahi);
+  m_pxprof = new TProfile2D("px", "px",
+			    m_nphibins, m_philo, m_phihi,
+			    m_netabins, m_etalo, m_etahi);
+  m_pyprof = new TProfile2D("py", "py",
+			    m_nphibins, m_philo, m_phihi,
+			    m_netabins, m_etalo, m_etahi);
+  m_pzprof = new TProfile2D("pz", "pz",
+			    m_nphibins, m_philo, m_phihi,
+			    m_netabins, m_etalo, m_etahi);
+  m_pxOpprof = new TProfile2D("pxOp", "pxOp",
+			      m_nphibins, m_philo, m_phihi,
+			      m_netabins, m_etalo, m_etahi);
+  m_pyOpprof = new TProfile2D("pyOp", "pyOp",
+			      m_nphibins, m_philo, m_phihi,
+			      m_netabins, m_etalo, m_etahi);
+  m_pzOpprof = new TProfile2D("pzOp", "pzOp",
+			      m_nphibins, m_philo, m_phihi,
+			      m_netabins, m_etalo, m_etahi);
+  m_ptprof = new TProfile2D("pt", "pt",
+			     m_nphibins, m_philo, m_phihi,
+			     m_netabins, m_etalo, m_etahi);
+
+  
+  
+  m_curv_const_1 = vector<double>(m_netabins, -1);
+  m_curv_const_2 = vector<double>(m_netabins, -1);
+  
+  m_z0_params_magup["width"] = new TH2F("width_magup", "width",
+					m_nphibins, -TMath::Pi(), TMath::Pi(),
+					m_netabins, 2.0, 4.5);
+  m_z0_params_magup["sigma"] = new TH2F("sigma_magup", "sigma",
+					m_nphibins, -TMath::Pi(), TMath::Pi(),
+					m_netabins, 2.0, 4.5);
+  m_z0_params_magup["alpha"] = new TH2F("alpha_magup", "alpha",
+					m_nphibins, -TMath::Pi(), TMath::Pi(),
+					m_netabins, 2.0, 4.5);
+  m_z0_params_magup["n"]     = new TH2F("n_magup", "n",
+					m_nphibins, -TMath::Pi(), TMath::Pi(),
+					m_netabins, 2.0, 4.5);
+  m_z0_params_magup["lambda"] = new TH2F("lambda_magup", "lambda",
+					 m_nphibins, -TMath::Pi(), TMath::Pi(),
+					 m_netabins, 2.0, 4.5);
+  m_z0_params_magup["s"]     = new TH2F("s_magup", "s",
+					m_nphibins, -TMath::Pi(), TMath::Pi(),
+					m_netabins, 2.0, 4.5);
+  m_z0_params_magup["mean"]  = new TH2F("mean_magup", "mean",
+					m_nphibins, -TMath::Pi(), TMath::Pi(),
+					m_netabins, 2.0, 4.5);
+
+  
+  m_z0_params_magdown["width"] = new TH2F("width_magdown", "width",
+				  m_nphibins, -TMath::Pi(), TMath::Pi(),
+				  m_netabins, 2.0, 4.5);
+  m_z0_params_magdown["sigma"] = new TH2F("sigma_magdown", "sigma",
+				  m_nphibins, -TMath::Pi(), TMath::Pi(),
+				  m_netabins, 2.0, 4.5);
+  m_z0_params_magdown["alpha"] = new TH2F("alpha_magdown", "alpha",
+				  m_nphibins, -TMath::Pi(), TMath::Pi(),
+				  m_netabins, 2.0, 4.5);
+  m_z0_params_magdown["n"]     = new TH2F("n_magdown", "n",
+				  m_nphibins, -TMath::Pi(), TMath::Pi(),
+				  m_netabins, 2.0, 4.5);
+  m_z0_params_magdown["lambda"] = new TH2F("lambda_magdown", "lambda",
+				  m_nphibins, -TMath::Pi(), TMath::Pi(),
+				  m_netabins, 2.0, 4.5);
+  m_z0_params_magdown["s"]     = new TH2F("s_magdown", "s",
+				  m_nphibins, -TMath::Pi(), TMath::Pi(),
+				  m_netabins, 2.0, 4.5);
+  m_z0_params_magdown["mean"]     = new TH2F("mean_magdown", "mean",
+				  m_nphibins, -TMath::Pi(), TMath::Pi(),
+				  m_netabins, 2.0, 4.5);
+
+
+  m_expectation = 0;
 
   double z0_m_pdg = 91.1876;
 
-  for (int i = 0 ; i < m_nphibins; ++i){
-    for (int j = 0 ; j < m_netabins; ++j){
-      m_expectation->SetBinContent(i+1,j+1, z0_m_pdg);
+  //m_expectation = expectation;
+
+  if (m_expectation == 0){
+    m_expectation   = new TH2F("expectation", "expectation",
+			       m_nphibins, -TMath::Pi(), TMath::Pi(),
+			       m_netabins, 2.0, 4.5);
+    
+    for (int i = 0 ; i < m_nphibins; ++i){
+      for (int j = 0 ; j < m_netabins; ++j){
+	m_expectation->SetBinContent(i+1,j+1, z0_m_pdg);
+	m_expectation->SetBinError(i+1,j+1, z0_m_pdg*0.001);
+      }
     }
   }
 
 }
 
-results calibration::fit_z0_mass(int idx1, int idx2, bool refit){
+results calibration::fit_z0_mass(int idx1, int idx2, int polarity, bool refit){
   RooRealVar m( "Z0_M", "Z0 Mass", 60, 120 );
 
   // Breit Wigner - Z Lineshape
@@ -243,7 +319,7 @@ results calibration::fit_z0_mass(int idx1, int idx2, bool refit){
   RooBreitWigner bw( "gauss", "gauss", m, m0, width );
 
   // Crystal-Ball - Detector response + FSR
-  RooRealVar mean( "mean", "mean", 90.3, 70, 110 );
+  RooRealVar mean( "mean", "mean", 90.3, 70.0, 110.0 );
   RooRealVar sigma( "sigma", "sigma", 1.5, 0, 5);
   RooRealVar alpha( "alpha", "alpha", 2.2, 0.01, 5 );
   RooRealVar n( "n", "n", 0.48, 0.01, 80 );
@@ -264,50 +340,78 @@ results calibration::fit_z0_mass(int idx1, int idx2, bool refit){
   //Background fraction
   RooRealVar s("s", "signal", 0.8, 0, 1);
 
+
+  // choose which parameter file to use
+  std::map<string, TH2F*> params = m_z0_params_magup;
+  if(polarity != 1) params = m_z0_params_magdown;
+
   if (refit){
-    //fix all parameters except mass
-    width.setVal(m_z0_params["width"]->GetBinContent(idx1+1, idx2+1));
+    //fix all parameters except mass when refitting
+    width.setVal(params["width"]->GetBinContent(idx1+1, idx2+1));
     width.setConstant();
-    sigma.setVal(m_z0_params["sigma"]->GetBinContent(idx1+1, idx2+1));
+    sigma.setVal(params["sigma"]->GetBinContent(idx1+1, idx2+1));
     sigma.setConstant();
-    alpha.setVal(m_z0_params["alpha"]->GetBinContent(idx1+1, idx2+1));
+    alpha.setVal(params["alpha"]->GetBinContent(idx1+1, idx2+1));
     alpha.setConstant();
-    n.setVal(m_z0_params["n"]->GetBinContent(idx1+1, idx2+1));
+    n.setVal(params["n"]->GetBinContent(idx1+1, idx2+1));
     n.setConstant();
-    lambda.setVal(m_z0_params["lambda"]->GetBinContent(idx1+1, idx2+1));
+    lambda.setVal(params["lambda"]->GetBinContent(idx1+1, idx2+1));
     lambda.setConstant();
-    s.setVal(m_z0_params["s"]->GetBinContent(idx1+1, idx2+1));
+    s.setVal(params["s"]->GetBinContent(idx1+1, idx2+1));
     s.setConstant();
-    mean.setVal(m_z0_params["mean"]->GetBinContent(idx1+1, idx2+1));
+    mean.setVal(params["mean"]->GetBinContent(idx1+1, idx2+1));
   }
   RooAddPdf sum("sum", "crystal ball + gaussian + expo", RooArgList(pdf, expo), RooArgList(s));
-  RooDataHist dh("dh", "dh", m, Import(*(m_current_hists.at(idx1).at(idx2))));
+  TH1F* hist = 0;
+  if (polarity == 1) hist = m_current_hists_magup.at(idx1).at(idx2);
+  else hist = m_current_hists_magdown.at(idx1).at(idx2);
+
+
+  RooDataHist dh("dh", "dh", m, Import(*hist));
   
-  sum.fitTo(dh);
+  sum.fitTo(dh, PrintEvalErrors(-1));
 
   TCanvas c1;
   RooPlot* frame = m.frame();
   dh.plotOn(frame);
   sum.plotOn(frame);
+  sum.paramOn(frame);
   frame->Draw();
   ostringstream ss;
-  ss<<"test_"<<idx1<<"_"<<idx2<<".pdf";
+  ss<<"/user2/sfarry/workspaces/momentumscale/figures/minimisation_"<<polarity<<"_"<<idx1<<"_"<<idx2<<".pdf";
   c1.Print(ss.str().c_str());
 
   if (!refit){
-    //if this is the first fit, set the parameters for use from now on
-    m_z0_params["width"]->SetBinContent(idx1+1, idx2+1, width.getVal());
-    m_z0_params["width"]->SetBinError(idx1+1, idx2+1, width.getError());
-    m_z0_params["sigma"]->SetBinContent(idx1+1, idx2+1, sigma.getVal());
-    m_z0_params["sigma"]->SetBinError(idx1+1, idx2+1, sigma.getError());
-    m_z0_params["alpha"]->SetBinContent(idx1+1, idx2+1, alpha.getVal());
-    m_z0_params["alpha"]->SetBinError(idx1+1, idx2+1, alpha.getError());
-    m_z0_params["n"]->SetBinContent(idx1+1, idx2+1, n.getVal());
-    m_z0_params["n"]->SetBinError(idx1+1, idx2+1, n.getError());
-    m_z0_params["lambda"]->SetBinContent(idx1+1, idx2+1, lambda.getVal());
-    m_z0_params["lambda"]->SetBinError(idx1+1, idx2+1, lambda.getError());
-    m_z0_params["s"]->SetBinContent(idx1+1, idx2+1, s.getVal());
-    m_z0_params["s"]->SetBinError(idx1+1, idx2+1, s.getError());
+    if (polarity == 1){
+      //if this is the first fit, set the parameters for use from now on
+      m_z0_params_magup["width"]->SetBinContent(idx1+1, idx2+1, width.getVal());
+      m_z0_params_magup["width"]->SetBinError(idx1+1, idx2+1, width.getError());
+      m_z0_params_magup["sigma"]->SetBinContent(idx1+1, idx2+1, sigma.getVal());
+      m_z0_params_magup["sigma"]->SetBinError(idx1+1, idx2+1, sigma.getError());
+      m_z0_params_magup["alpha"]->SetBinContent(idx1+1, idx2+1, alpha.getVal());
+      m_z0_params_magup["alpha"]->SetBinError(idx1+1, idx2+1, alpha.getError());
+      m_z0_params_magup["n"]->SetBinContent(idx1+1, idx2+1, n.getVal());
+      m_z0_params_magup["n"]->SetBinError(idx1+1, idx2+1, n.getError());
+      m_z0_params_magup["lambda"]->SetBinContent(idx1+1, idx2+1, lambda.getVal());
+      m_z0_params_magup["lambda"]->SetBinError(idx1+1, idx2+1, lambda.getError());
+      m_z0_params_magup["s"]->SetBinContent(idx1+1, idx2+1, s.getVal());
+      m_z0_params_magup["s"]->SetBinError(idx1+1, idx2+1, s.getError());
+    }
+    else{
+      m_z0_params_magdown["width"]->SetBinContent(idx1+1, idx2+1, width.getVal());
+      m_z0_params_magdown["width"]->SetBinError(idx1+1, idx2+1, width.getError());
+      m_z0_params_magdown["sigma"]->SetBinContent(idx1+1, idx2+1, sigma.getVal());
+      m_z0_params_magdown["sigma"]->SetBinError(idx1+1, idx2+1, sigma.getError());
+      m_z0_params_magdown["alpha"]->SetBinContent(idx1+1, idx2+1, alpha.getVal());
+      m_z0_params_magdown["alpha"]->SetBinError(idx1+1, idx2+1, alpha.getError());
+      m_z0_params_magdown["n"]->SetBinContent(idx1+1, idx2+1, n.getVal());
+      m_z0_params_magdown["n"]->SetBinError(idx1+1, idx2+1, n.getError());
+      m_z0_params_magdown["lambda"]->SetBinContent(idx1+1, idx2+1, lambda.getVal());
+      m_z0_params_magdown["lambda"]->SetBinError(idx1+1, idx2+1, lambda.getError());
+      m_z0_params_magdown["s"]->SetBinContent(idx1+1, idx2+1, s.getVal());
+      m_z0_params_magdown["s"]->SetBinError(idx1+1, idx2+1, s.getError());
+
+    }
   }
 
 
@@ -369,28 +473,59 @@ void calibration::minimise(){
 
   get_fitted_means();
 
+  m_z0_init_mean_magup = ((TH2F*)m_z0_params_magup["mean"]->Clone("z0_init_mean_magup"));
+  m_z0_init_mean_magdown = ((TH2F*)m_z0_params_magdown["mean"]->Clone("z0_init_mean_magdown"));
+
   ROOT::Minuit2::Minuit2Minimizer fitter;
-  ROOT::Math::Functor function(this, &calibration::metric,2*m_nphibins*m_netabins+2);
-  
+  ROOT::Math::Functor function(this, &calibration::curvature_metric,m_nphibins*m_netabins);
+
+  fitter.SetPrintLevel(3);
+  fitter.SetMaxFunctionCalls(20000); //increase number of function calls
+  fitter.SetStrategy(1); //0 - fast as possible as there are many variables, 1 - default
+
+
   int totbins = m_nphibins*m_netabins;
 
-  for (int i = 0 ; i < totbins; ++i){
-    ostringstream s;
-    s<<"a1_"<<i;
-    fitter.SetLimitedVariable(i,s.str().c_str(), m_a_init, m_a_step, m_a_lolimit, m_a_uplimit);
+  for (int i = 0 ; i < m_nphibins; ++i){
+    for (int j = 0 ; j < m_netabins; ++j){
+      int bin = i * m_netabins + j;
+      ostringstream s;
+      s<<"a1_"<<bin;
+      fitter.SetLimitedVariable(bin,s.str().c_str(), m_a1_init_vals->GetBinContent(i+1,j+1), m_a_step, m_a_lolimit, m_a_uplimit);
+    }
   }
-  for (int i = 0 ; i < totbins; ++i){
-    ostringstream s;
-    s<<"a2_"<<i;
-    fitter.SetLimitedVariable(i+totbins,s.str().c_str(), m_a_init, m_a_step, m_a_lolimit, m_a_uplimit);
-  }
+  /*
+  for (int i = 0 ; i < m_nphibins; ++i){
+    for (int j = 0 ; j < m_netabins; ++j){
+      int bin = i * m_netabins + j;
+      ostringstream s;
+      s<<"a2_"<<bin;
+      fitter.SetLimitedVariable(totbins + bin,s.str().c_str(), m_a2_init_vals->GetBinContent(i+1,j+1), m_a_step, m_a_lolimit, m_a_uplimit);
+    }
+    }*/
 
-  fitter.SetLimitedVariable(2*totbins,"b1",m_b_init, m_b_step, m_b_lolimit, m_b_uplimit); 
-  fitter.SetLimitedVariable(2*totbins+1,"b2",m_b_init, m_b_step, m_b_lolimit, m_b_uplimit); 
+  //fitter.SetLimitedVariable(2*totbins,"b1",m_b_init, m_b_step, m_b_lolimit, m_b_uplimit); 
+  //fitter.SetLimitedVariable(2*totbins+1,"b2",m_b_init, m_b_step, m_b_lolimit, m_b_uplimit); 
   fitter.SetFunction(function);
-  fitter.SetPrecision(m_precision);
+  //fitter.SetPrecision(m_precision);
   fitter.SetTolerance(m_tolerance);
   fitter.Minimize();
+
+
+  cout<<"First Minimisation (curvature bias) complete"<<endl;
+
+  ROOT::Minuit2::Minuit2Minimizer fitter2;
+  ROOT::Math::Functor function2(this, &calibration::momentumscale_metric,2);
+  
+  fitter2.SetLimitedVariable(0,"b1",m_b_init, m_b_step, m_b_lolimit, m_b_uplimit); 
+  fitter2.SetLimitedVariable(1,"b2",m_b_init, m_b_step, m_b_lolimit, m_b_uplimit); 
+  fitter2.SetFunction(function2);
+  //fitter.SetPrecision(m_precision);
+  fitter2.SetTolerance(m_tolerance);
+  fitter2.Minimize();
+
+  cout<<"Second Minimisation (momentum scale)"<<endl;
+  
   int stop_s = clock();
   cout<<"time taken to minimise: "<<(stop_s - start_s)/double(CLOCKS_PER_SEC)<<" seconds"<<endl;
 }
@@ -400,31 +535,140 @@ double calibration::metric(const double* params){
   //transfer to parameters to member variables in order to calculate chi2
   for (int i = 0 ; i < m_nphibins ; ++i){
     for (int j = 0 ; j < m_netabins ; ++j){
+      //cout<<"Setting bin parameters to "<<params[i*m_netabins+j]<<" "<<params[m_nphibins*m_netabins + i*m_netabins+j]<<endl;
       m_a1_params->SetBinContent(i+1, j+1, params[i*m_netabins + j ]);
-      m_a2_params->SetBinContent(i+1, j+1, params[m_nphibins*m_netabins + i*m_netabins + j ]);
+      //m_a2_params->SetBinContent(i+1, j+1, params[m_nphibins*m_netabins + i*m_netabins + j ]);
+      //cout<<"Getting bin parameters "<<m_a1_params->GetBinContent(i+1, j+1)<<endl;
+
     }
   }
   m_b1 = params[2*m_nphibins*m_netabins];
   m_b2 = params[2*m_nphibins*m_netabins+1];
-  return getchi2();
-}
-
-double calibration::getchi2(){
   //update all histograms with new parameters
   update_hists();
   //refit histograms to get new mean
   get_fitted_means(true);
-  m_z0_init_mean = ((TH2F*)m_z0_params["mean"]->Clone("z0_init_mean"));
+  
+  return getchi2();
+}
+
+double calibration::curvature_metric(const double* params){
+  //transfer to parameters to member variables in order to calculate chi2
+  for (int i = 0 ; i < m_nphibins ; ++i){
+    for (int j = 0 ; j < m_netabins ; ++j){
+      //cout<<"Setting bin parameters to "<<params[i*m_netabins+j]<<" "<<params[m_nphibins*m_netabins + i*m_netabins+j]<<endl;
+      m_a1_params->SetBinContent(i+1, j+1, params[i*m_netabins + j ]);
+      //m_a2_params->SetBinContent(i+1, j+1, params[m_nphibins*m_netabins + i*m_netabins + j ]);
+      //cout<<"Getting bin parameters "<<m_a1_params->GetBinContent(i+1, j+1)<<endl;
+
+    }
+  }
+  //update all histograms with new parameters
+  update_hists();
+  //refit histograms to get new mean
+  get_fitted_means(true);
+  
+  return get_curvature_chi2();
+}
+
+double calibration::momentumscale_metric(const double* params){
+  //transfer to parameters to member variables in order to calculate chi2
+  m_b1 = params[0];
+  m_b2 = params[1];
+  //update all histograms with new parameters
+  update_hists();
+  //refit histograms to get new mean
+  get_fitted_means(true);
+  
+  return getchi2();
+}
+
+double calibration::getchi2(){
   //minimise the chi2 agreement between fitted mean and expectation
-  double chi2ndof = m_z0_params["mean"]->Chi2Test(m_expectation, "CHI2/NDF");
+  //double chi2ndof = m_z0_params_magdown["mean"]->Chi2Test(m_expectation, "CHI2/NDF");
+  //chi2ndof += m_z0_params_magup["mean"]->Chi2Test(m_expectation, "CHI2/NDF");
+  double chi2ndof = get_chi2(m_z0_params_magdown["mean"], m_expectation);
+  chi2ndof += get_chi2(m_z0_params_magup["mean"], m_expectation);
+  cout<<"chi2ndof: "<<chi2ndof<<endl;
+  cout<<m_b1<<" "<<m_b2<<endl;
+  /*m_a1_params->GetBinContent(1,1)<<" "<<m_a1_params->GetBinContent(2,1)<<
+    m_a1_params->GetBinContent(3,1)<<" "<<m_a1_params->GetBinContent(4,1)<<
+    m_a1_params->GetBinContent(5,1)<<" "<<m_a1_params->GetBinContent(6,1)<<
+    m_a1_params->GetBinContent(7,1)<<" "<<m_a1_params->GetBinContent(8,1)<<
+    m_a1_params->GetBinContent(9,1)<<" "<<m_a1_params->GetBinContent(10,1)<<
+    m_a1_params->GetBinContent(11,1)<<" "<<m_a1_params->GetBinContent(12,1)<<
+    " "<<m_b1<<" "<<m_b2<<endl;*/
   return chi2ndof;
+}
+double calibration::get_curvature_chi2(){
+  //minimise the chi2 agreement between fitted mean and straight line in bins of phi
+  double chi2 = 0.0;
+  for (int i = 0 ; i < m_netabins ; ++i){
+    //TF1* magup_f1   = new TF1("magup_f1", "pol0", m_philo, m_phihi);
+    //TF1* magdown_f1 = new TF1("magdown_f1", "pol0", m_philo, m_phihi);
+    
+    TH1D* phi_magdown_hist = (TH1D*)m_z0_params_magdown["mean"]->ProjectionX("phi_magdown_hist",i+1,i+1);
+    TH1D* phi_magup_hist   = (TH1D*)m_z0_params_magup["mean"]->ProjectionX("phi_magup_hist",i+1,i+1);
+
+    //TFitResultPtr r1 = phi_magdown_hist->Fit("magdown_f1", "QS");
+    //TFitResultPtr r2 = phi_magup_hist->Fit("magup_f1"  , "QS");
+
+    TFitResultPtr r1, r2;
+    //TH1D* ref1 = (TH1D*)phi_magdown_hist->Clone("ref1");
+    //TH1D* ref2 = (TH1D*)phi_magup_hist->Clone("ref2");
+    
+    if (m_curv_const_1.at(i) == -1 && m_curv_const_2.at(i) == -1){
+      r1 = phi_magdown_hist->Fit("pol0", "QS");
+      r2 = phi_magup_hist->Fit("pol0"  , "QS");
+      m_curv_const_1.at(i) = r1->Parameter(0);
+      m_curv_const_2.at(i) = r2->Parameter(0);
+    }
+
+    //for (int i = 0 ; i < ref1->GetNbinsX() ; ++ i){
+    //  ref1->SetBinContent(i, m_curv_const_1);
+    //  ref2->SetBinContent(i, m_curv_const_2);
+    //}
+
+    //chi2 += phi_magdown_hist->Chi2Test(ref1, "CHI2/NDF");
+    //chi2 += phi_magup_hist->Chi2Test(ref2, "CHI2/NDF");
+
+    chi2 += get_chi2(phi_magdown_hist, m_curv_const_1.at(i), 0);
+    chi2 += get_chi2(phi_magup_hist, m_curv_const_2.at(i), 0);
+
+    //r1->Chi2()/r1->Ndf();
+    //chi2 += r2->Chi2()/r2->Ndf();
+
+    phi_magdown_hist->Delete();
+    phi_magup_hist->Delete();
+    //ref1->Delete();
+    //ref2->Delete();
+    
+  }
+  cout<<"chi2: "<<chi2<<endl;
+  cout<<m_a1_params->GetBinContent(1,1)<<" "<<m_a1_params->GetBinContent(2,1)<<" "<<
+    m_a1_params->GetBinContent(3,1)<<" "<<m_a1_params->GetBinContent(4,1)<<" "<<
+    m_a1_params->GetBinContent(5,1)<<" "<<m_a1_params->GetBinContent(6,1)<<endl;
+  cout<<m_a2_params->GetBinContent(1,1)<<" "<<m_a1_params->GetBinContent(2,1)<<" "<<
+    m_a2_params->GetBinContent(3,1)<<" "<<m_a2_params->GetBinContent(4,1)<<" "<<
+    m_a2_params->GetBinContent(5,1)<<" "<<m_a2_params->GetBinContent(6,1)<<endl;
+  
+  /*m_a1_params->GetBinContent(7,1)<<" "<<m_a1_params->GetBinContent(8,1)<<
+    m_a1_params->GetBinContent(9,1)<<" "<<m_a1_params->GetBinContent(10,1)<<
+    m_a1_params->GetBinContent(11,1)<<" "<<m_a1_params->GetBinContent(12,1)<<*/
+  
+  return chi2;
 }
 
 void calibration::update_hists(){
   //clear hists
-  for(unsigned int i = 0 ; i < m_current_hists.size() ; ++i){
-    for (unsigned int j = 0 ; j < m_current_hists.at(i).size() ; ++j){
-      m_current_hists.at(i).at(j)->Reset();
+  for(unsigned int i = 0 ; i < m_current_hists_magup.size() ; ++i){
+    for (unsigned int j = 0 ; j < m_current_hists_magup.at(i).size() ; ++j){
+      m_current_hists_magup.at(i).at(j)->Reset();
+    }
+  }
+  for(unsigned int i = 0 ; i < m_current_hists_magdown.size() ; ++i){
+    for (unsigned int j = 0 ; j < m_current_hists_magdown.at(i).size() ; ++j){
+      m_current_hists_magdown.at(i).at(j)->Reset();
     }
   }
 
@@ -463,26 +707,34 @@ void calibration::update_hists(){
 	double etabin = m_a1_params->GetYaxis()->FindBin(p4p_corr.Eta());
 	double corrmass = p4sum_corr.M() ;
 	double corrmassGeV = corrmass/1000 ;
-	m_current_hists.at(phibin-1).at(etabin-1)->Fill(corrmassGeV);
+	if (Z0.polarity() == 1)	m_current_hists_magup.at(phibin-1).at(etabin-1)->Fill(corrmassGeV);
+	else	m_current_hists_magdown.at(phibin-1).at(etabin-1)->Fill(corrmassGeV);
       }
   }
+  std::cout << "|\n" << std::flush;
 }
 
 void calibration::fill_hists(TTree* t){
   m_tree = t;
   m_tree->SetBranchStatus("*",0);
   for (int i = 0 ; i < m_nphibins ; ++i){
-    std::vector<TH1F*> etahists;
-    std::vector<TH1F*> etahists_current;
+    std::vector<TH1F*> etahists_magup, etahists_magdown;
+    std::vector<TH1F*> etahists_magup_current, etahists_magdown_current;
     for (int j = 0 ; j < m_netabins ; ++j){
-      ostringstream a, b;
-      a<<"masshist_"<<i<<"_"<<j;
-      b<<"masshist_"<<i<<"_"<<j<<"_current";
-      etahists.push_back(new TH1F(a.str().c_str(), "mass hist", 100, 60, 120));
-      etahists_current.push_back(new TH1F(b.str().c_str(), "mass hist", 100, 60, 120));
+      ostringstream a, b,c,d;
+      a<<"mass_magup_"<<i<<"_"<<j;
+      b<<"mass_magup_"<<i<<"_"<<j<<"_current";
+      c<<"mass_magdown_"<<i<<"_"<<j;
+      d<<"mass_magdown_"<<i<<"_"<<j<<"_current";
+      etahists_magup.push_back(new TH1F(a.str().c_str(), "mass hist", 100, 60, 120));
+      etahists_magup_current.push_back(new TH1F(b.str().c_str(), "mass hist", 100, 60, 120));
+      etahists_magdown.push_back(new TH1F(c.str().c_str(), "mass hist", 100, 60, 120));
+      etahists_magdown_current.push_back(new TH1F(d.str().c_str(), "mass hist", 100, 60, 120));
     }
-    m_hists.push_back(etahists);
-    m_current_hists.push_back(etahists_current);
+    m_hists_magup.push_back(etahists_magup);
+    m_current_hists_magup.push_back(etahists_magup_current);
+    m_hists_magdown.push_back(etahists_magdown);
+    m_current_hists_magdown.push_back(etahists_magdown_current);
   }
 
 
@@ -509,26 +761,70 @@ void calibration::fill_hists(TTree* t){
 	double massGeV = mass/1000 ;
 	double phibin = m_a1_params->GetXaxis()->FindBin(p4p.Phi());
 	double etabin = m_a1_params->GetYaxis()->FindBin(p4p.Eta());
-	m_hists.at(phibin-1).at(etabin-1)->Fill(massGeV);
-	m_current_hists.at(phibin-1).at(etabin-1)->Fill(massGeV);
+	if (Z0.polarity() == 1){
+	  m_hists_magup.at(phibin-1).at(etabin-1)->Fill(massGeV);
+	  m_current_hists_magup.at(phibin-1).at(etabin-1)->Fill(massGeV);
+	}
+	else{
+	  m_hists_magdown.at(phibin-1).at(etabin-1)->Fill(massGeV);
+	  m_current_hists_magdown.at(phibin-1).at(etabin-1)->Fill(massGeV);
+	}
+	m_pprof->Fill(p4p.Phi(), p4p.Eta(), p4p.P());
+	m_txprof->Fill(p4p.Phi(), p4p.Eta(), p4p.Px()/p4p.Pz());
+	m_typrof->Fill(p4p.Phi(), p4p.Eta(), p4p.Py()/p4p.Pz());
+	m_pxprof->Fill(p4p.Phi(), p4p.Eta(), abs(p4p.Px()));
+	m_pyprof->Fill(p4p.Phi(), p4p.Eta(), abs(p4p.Py()));
+	m_pzprof->Fill(p4p.Phi(), p4p.Eta(), p4p.Pz());
+
+	m_pxOpprof->Fill(p4p.Phi(), p4p.Eta(), p4p.Px()/p4p.P());
+	m_pyOpprof->Fill(p4p.Phi(), p4p.Eta(), p4p.Py()/p4p.P());
+	m_pzOpprof->Fill(p4p.Phi(), p4p.Eta(), p4p.Pz()/p4p.P());
+	m_ptprof->Fill(p4p.Phi(), p4p.Eta(), p4p.Pt());
+
+	/*
+	m_pprof->Fill(p4p.Phi(), p4p.Eta(), p4m.P());
+	m_txprof->Fill(p4p.Phi(), p4p.Eta(), p4m.Px()/p4m.Pz());
+	m_typrof->Fill(p4p.Phi(), p4p.Eta(), p4m.Py()/p4m.Pz());
+	m_pxprof->Fill(p4p.Phi(), p4p.Eta(), p4m.Px());
+	m_pyprof->Fill(p4p.Phi(), p4p.Eta(), p4m.Py());
+	m_pzprof->Fill(p4p.Phi(), p4p.Eta(), p4m.Py());
+	*/
+	
       }
   }
+  std::cout << "|\n" << std::flush;
 }
 
 void calibration::save(const char* output){
   TFile* f = new TFile(output, "RECREATE");
 
+  TObjArray* magup_hists = new TObjArray();
+  TObjArray* magdown_hists = new TObjArray();
+  TObjArray* magup_hists_final = new TObjArray();
+  TObjArray* magdown_hists_final = new TObjArray();
+
   for (int i = 0 ; i < m_nphibins ; ++i){
     for (int j = 0 ; j < m_netabins ; ++j){
-      m_hists.at(i).at(j)->Write();
-      m_current_hists.at(i).at(j)->Write();
+      magup_hists->Add(m_hists_magup.at(i).at(j));
+      magdown_hists->Add(m_hists_magdown.at(i).at(j));
+      magup_hists_final->Add(m_current_hists_magup.at(i).at(j));
+      magdown_hists_final->Add(m_current_hists_magup.at(i).at(j));
     }
   }
 
-  m_z0_init_mean->Write(); // mean mass before calibration
-  m_z0_params["mean"]->Write(); // mass after calibration
-  m_a1_params->Write(); //parameter set a1 (curvature bias)
-  m_a2_params->Write(); //parameter set a2 (curvature bias)
+  magup_hists->Write("MagUpHists",1);
+  magdown_hists->Write("MagDownHists",1);
+  magup_hists_final->Write("MagUpHists_final",1);
+  magdown_hists_final->Write("MagDownHists_final",1);
+
+  m_z0_init_mean_magup->Write(); // mean mass before calibration
+  m_z0_params_magup["mean"]->Write(); // mass after calibration
+  m_z0_init_mean_magdown->Write(); // mean mass before calibration
+  m_z0_params_magdown["mean"]->Write(); // mass after calibration
+  if (m_a1_params && m_a2_params){
+    m_a1_params->Write(); //parameter set a1 (curvature bias)
+    m_a2_params->Write(); //parameter set a2 (curvature bias)
+  }
   TParameter<double>("b1", m_b1).Write(); //b1 (momentum scale)
   TParameter<double>("b2", m_b2).Write(); //b2 (momentum scale)
   f->Close();
@@ -538,18 +834,140 @@ void calibration::save(const char* output){
 void calibration::get_fitted_means(bool refit){
   for (int i = 0 ; i < m_nphibins ; ++i){
     for ( int j = 0 ; j < m_netabins ; ++j){
-      results fit = fit_z0_mass(i,j, refit);
-      m_z0_params["mean"]->SetBinContent(i+1, j+1, fit["mean"].first);
-      m_z0_params["mean"]->SetBinError(i+1, j+1, fit["mean"].second);
+      results magup_fit = fit_z0_mass(i,j, 1, refit);
+      m_z0_params_magup["mean"]->SetBinContent(i+1, j+1, magup_fit["mean"].first);
+      m_z0_params_magup["mean"]->SetBinError(i+1, j+1, magup_fit["mean"].second);
+      results magdown_fit = fit_z0_mass(i,j, 0, refit);
+      m_z0_params_magdown["mean"]->SetBinContent(i+1, j+1, magdown_fit["mean"].first);
+      m_z0_params_magdown["mean"]->SetBinError(i+1, j+1, magdown_fit["mean"].second);
+    }
+  }
+
+  TCanvas* c1 = new TCanvas();
+  for (int i = 0 ; i < m_netabins ; ++i){
+    TH1D* magup   = (TH1D*)m_z0_params_magup["mean"]->ProjectionX("magup", i+1, i+1);
+    TH1D* magdown = (TH1D*)m_z0_params_magdown["mean"]->ProjectionX("magdown", i+1, i+1);
+    magup->SetLineColor(2);
+    magdown->SetLineColor(4);
+    magup->GetYaxis()->SetRangeUser(85,95);
+    magup->Draw();
+    magdown->Draw("same");
+    if (m_curv_const_1.at(i) != -1 && m_curv_const_2.at(i) != -1){
+      TLine* l1 = new TLine(-TMath::Pi(), m_curv_const_1.at(i), TMath::Pi(), m_curv_const_1.at(i));
+      l1->SetLineColor(4);
+      TLine* l2 = new TLine(-TMath::Pi(), m_curv_const_2.at(i), TMath::Pi(), m_curv_const_2.at(i));
+      l2->SetLineColor(2);
+      l1->Draw("same");
+      l2->Draw("same");
+    }
+    ostringstream s;
+    s<<"/user2/sfarry/workspaces/momentumscale/figures/mass_v_phi_"<<i;
+    if (!refit) s<<"_original";
+    s<<".pdf";
+
+    c1->Print(s.str().c_str());
+    magup->Delete();
+    magdown->Delete();
+  }
+
+}
+
+double calibration::get_chi2(TH2F* a, TH2F* b){
+  double chi2 = 0;
+  for (int i = 0 ; i < a->GetXaxis()->GetNbins(); ++i){
+    for (int j = 0 ; j < a->GetYaxis()->GetNbins(); ++j){
+      chi2 += pow(a->GetBinContent(i+1, j+1) - b->GetBinContent(i+1,j+1),2)/
+	(pow(a->GetBinError(i+1,j+1),2)+pow(b->GetBinError(i+1,j+1),2));
+    }
+  }
+  return chi2;
+}
+double calibration::get_chi2(TH1D* a, double val, double valerr){
+  double chi2 = 0;
+  for (int i = 0 ; i < a->GetXaxis()->GetNbins(); ++i){
+    chi2 += pow(a->GetBinContent(i+1) - val,2)/
+      (pow(a->GetBinError(i+1),2)+valerr*valerr);
+  }
+  return chi2;
+}
+
+
+void calibration::get_curvature_init_vals(){
+  for (int i = 0 ; i < m_a1_params->GetXaxis()->GetNbins() ; ++i){
+    for (int j = 0 ; j < m_a1_params->GetYaxis()->GetNbins() ; ++j){
+      m_Mrec = m_z0_params_magup["mean"]->GetBinContent(i+1, j+1)*1000.0;
+      m_Mtrue = m_curv_const_2.at(j)*1000.0;
+
+      m_p = m_pprof->GetBinContent(i+1,j+1);
+      m_tx = m_txprof->GetBinContent(i+1,j+1);
+      m_ty = m_typrof->GetBinContent(i+1,j+1);
+
+      m_px = m_pxprof->GetBinContent(i+1,j+1);
+      m_py = m_pyprof->GetBinContent(i+1,j+1);
+      m_pz = m_pzprof->GetBinContent(i+1,j+1);
+
+      m_pxOp = m_pxOpprof->GetBinContent(i+1,j+1);
+      m_pyOp = m_pyOpprof->GetBinContent(i+1,j+1);
+      m_pzOp = m_pzOpprof->GetBinContent(i+1,j+1);
+
+      m_pt   = m_ptprof->GetBinContent(i+1,j+1);
+      
+      // RootFinder with Base Functions
+      ROOT::Math::Functor1D f1D(this, &calibration::fcalc);
+      
+      // Create the Integrator
+      ROOT::Math::RootFinder rfb(ROOT::Math::RootFinder::kBRENT);
+      rfb.SetFunction(f1D, -5e-7, 5e-7); 
+      bool solved = rfb.Solve(1000, 1e-11, 1e-11);
+      //cout << "i: "<<i<<" j: "<<j<<" solved: "<<solved<<" "<<m_M<<" "<<m_m<<" "<<fcalc(0.0)<<" "<<fcalc(rfb.Root())<<" "<<rfb.Root() << endl;
+      
+      m_a1_init_vals->SetBinContent(i+1,j+1, rfb.Root());
+      m_a1_params->SetBinContent(i+1,j+1, rfb.Root());
+
     }
   }
 }
 
+double calibration::f(double Mrec, double Mtrue, double c, double px, double py, double pz, double p) {
+  
+  // Mtrue - Mrec = dm
+  //therefore find root of Mrec - Mtrue + dm
+
+   double f_result;
+   //f_result = Mrec - Mtrue -sqrt(4*pow(fabs(px), 2) + 4*pow(fabs(py), 2)) + sqrt(pow(sqrt(pow(fabs(px/(c*p - 1)), 2) + pow(fabs(py/(c*p - 1)), 2) + pow(fabs(pz/(c*p - 1)), 2)) + sqrt(pow(fabs(px/(c*p + 1)), 2) + pow(fabs(py/(c*p + 1)), 2) + pow(fabs(pz/(c*p + 1)), 2)), 2) - pow(fabs(px/(c*p + 1) + px/(c*p - 1)), 2) - pow(fabs(py/(c*p + 1) + py/(c*p - 1)), 2) - pow(fabs(pz/(c*p + 1) - pz/(c*p - 1)), 2));
+   f_result = Mrec - Mtrue -sqrt(4*pow(fabs(px), 2) + 4*pow(fabs(py), 2)) + sqrt(pow(sqrt(pow(fabs(px/(c*p - 1)), 2) + pow(fabs(py/(c*p - 1)), 2) + pow(fabs(pz/(c*p - 1)), 2)) + sqrt(pow(fabs(px/(c*p + 1)), 2) + pow(fabs(py/(c*p + 1)), 2) + pow(fabs(pz/(c*p + 1)), 2)), 2) - pow(fabs(px/(c*p + 1) + px/(c*p - 1)), 2) - pow(fabs(py/(c*p + 1) + py/(c*p - 1)), 2) - pow(fabs(pz/(c*p + 1) - pz/(c*p - 1)), 2));
+   return f_result;
+
+}
+
+
+double calibration::fcalc(double c) {
+  //cout<<"masses: "<<m_M<<" "<<m_m<<endl;
+  //cout<<m_M<<" "<<m_m<<" "<<c<<" "<<m_p<<" "<<m_tx<<" "<<m_ty<<" and c: "<<c<<endl;
+  //cout<<c<<" to return: "<<f(m_M, m_m, c, m_p, m_tx, m_ty)<<endl;
+  return f(m_Mrec, m_Mtrue, c, m_px, m_px, m_py, m_p);
+}
+
+
+
 int main(){
+
+  //formula for initial values
+  // a = (M/m' - 1)*(1/(p1-p2-p1*p2)) = (1-M/m')/(p1*p2) where m' is expected mass and M is measured
+
+  RooMsgService::instance().setSilentMode(true);
+  RooMsgService::instance().setGlobalKillBelow(RooFit::WARNING);
+
   TFile* f = TFile::Open("root://hepgrid11.ph.liv.ac.uk///dpm/ph.liv.ac.uk/home/lhcb/refit/ZMuMu.Refit.2015.root");
   TTree* t = (TTree*)f->Get("ZMuMu/DecayTree");
-  calibration a("momentumscale");
+  TFile* g = new TFile("/user2/sfarry/workspaces/momentumscale/tuples/zmumu_mc2015_calibration.root");
+  calibration a("momentumscale", (TH2F*)g->Get("Means"));
   a.fill_hists(t);
+  a.get_fitted_means(false);
+  a.get_curvature_chi2();
+  //a.get_curvature_init_vals();
+  //a.update_hists();
+  //a.get_fitted_means(true);
   a.minimise();
-  a.save("output.root");
+  a.save("/user2/sfarry/workspaces/momentumscale/tuples/zmumu_2015_calibration.root");
 }

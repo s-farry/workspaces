@@ -97,8 +97,8 @@ int main(int argc, char* argv[]){
   TObjArray *hists = 0;
   TObjArray *refit_hists = 0;
   if ( dsUp && dsDown && dsUp_Refit && dsDown_Refit ) {
-    hists = jpsi_2015.get_mass_v_vars(dsUp, dsDown);
-    refit_hists = jpsi_2015_refit.get_mass_v_vars(dsUp_Refit, dsDown_Refit);
+    hists = jpsi_2015.get_mass_v_vars(dsUp);
+    refit_hists = jpsi_2015_refit.get_mass_v_vars(dsUp_Refit);
   }
   if (hists){
     TFile* g = TFile::Open(output.c_str(), "RECREATE");
