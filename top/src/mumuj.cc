@@ -1162,15 +1162,15 @@ int main(int argc, char* argv[]) {
       nISRveto += powhegHooks->getNISRveto();
       nFSRveto += powhegHooks->getNFSRveto();
     }
-    id1 = pythia.info.id1();
-    id2 = pythia.info.id2();
-    id1lhe = pythia.info.id1pdf();
-    id2lhe = pythia.info.id2pdf();
+    id1     = pythia.info.id1();
+    id2     = pythia.info.id2();
+    id1lhe  = pythia.info.id1pdf();
+    id2lhe  = pythia.info.id2pdf();
 
-    x1 = pythia.info.x1();
-    x2 = pythia.info.x2();
-    x1lhe = pythia.info.x1pdf();
-    x2lhe = pythia.info.x2pdf();
+    x1      = pythia.info.x1();
+    x2      = pythia.info.x2();
+    x1lhe   = pythia.info.x1pdf();
+    x2lhe   = pythia.info.x2pdf();
     ws["w"] = pythia.info.weight();
 
     map<string, double>* weights = pythia.info.weights_detailed;
@@ -1272,8 +1272,11 @@ int main(int argc, char* argv[]) {
     vector<PseudoJet> bwdjets;
     for (int j = 0 ; j < (int)jets.size() ; ++j){
       double dR = -1.0;
-      if (mups.size() > 0) dR = get_dR( mups.at(0).p(), jets.at(j));
-      if (mums.size()  > 0) dR = min(dR, get_dR( mums.at(0).p(), jets.at(j)));
+      if (mups.size() > 0 && mums.size() > 0){
+	dR = min(get_dR( mups.at(0).p(), jets.at(j)), get_dR( mums.at(0).p(), jets.at(j)));
+      }
+      else if (mups.size() > 0) dR = get_dR( mups.at(0).p(), jets.at(j));
+      else if (mums.size() > 0) dR = get_dR( mums.at(0).p(), jets.at(j));
 
       if (jets.at(j).eta() >2.2 && jets.at(j).eta() < 4.2 && dR > 0.5) {
 	fwdjets.push_back(jets.at(j));

@@ -31,7 +31,14 @@ mc_inctag = TCut("abs(jet_truejet_flavour) != 3 && abs(jet_truejet_flavour) != 9
 
 zj_hftag = TCut('(abs(boson_mcjet_flavour) == 4 || abs(boson_mcjet_flavour) == 5)')
 
+mujpt     = TCut("sqrt( (muminus_jet_PX + muminus_sigjet_PX)^2 + (muminus_jet_PY + muminus_sigjet_PY)^2) > 20000")
+kin_wb = TCut("muminus_PT > 25000 && muminus_jet_PT > 50000 && muminus_ETA > 2.0 && muminus_ETA < 4.5")
+ip_wb  = TCut("muminus_IP_OWNPV < 0.04")
+Ep       = TCut("((muminus_CaloHcalE + muminus_CaloEcalE)/muminus_P)<0.04 && muminus_InAccHcal ==1 && muminus_InAccEcal == 1")
 
+trigger_plus   = TCut("muplus_Hlt2EWSingleMuonVHighPtDecision_TOS==1 && muplus_Hlt1SingleMuonHighPTDecision_TOS == 1 && muplus_L0MuonEWDecision_TOS ==1")
+trigger_minus = TCut("muminus_Hlt2EWSingleMuonVHighPtDecision_TOS==1 && muminus_Hlt1SingleMuonHighPTDecision_TOS == 1 && muminus_L0MuonEWDecision_TOS ==1")
+trigger = TCut("mu_Hlt2EWSingleMuonVHighPtDecision_TOS==1 && mu_Hlt1SingleMuonHighPTDecision_TOS == 1 && mu_L0MuonEWDecision_TOS ==1")
 
 fwdcut = 'fwdjet_pt > 20 && mup_pt > 20 && mum_pt > 20 && min(mup_eta, mum_eta) > 2 && max(mum_eta, mup_eta) < 4.5 && Z_m > 60 && Z_m < 120'
 bwdcut = 'fwdjet_pt > 20 && mup_pt > 20 && mum_pt > 20 && min(mup_eta, mum_eta) > -4.5 && max(mum_eta, mup_eta) < -2 && Z_m > 60 && Z_m < 120'
@@ -47,16 +54,21 @@ class DataObj:
         self.MD = TFile.Open(dpm+name.replace("<P>","MD")+".root")
         self.MUt = self.MU.Get(folder+"/DecayTree")
         self.MDt = self.MD.Get(folder+"/DecayTree")
+        if self.MU.Get('MCGenTrackEff/MCTrackEffTuple'):
+            self.MU_true_t = self.MU.Get("MCGenTrackEff/MCTrackEffTuple")
+        if self.MD.Get('MCGenTrackEff/MCTrackEffTuple'):
+            self.MD_true_t = self.MD.Get("MCGenTrackEff/MCTrackEffTuple")
         self.MDt_ss = self.MD.Get(folder+'_ss/DecayTree')
         self.MUt_ss = self.MU.Get(folder+'_ss/DecayTree')
-        #self.MU_bdt = TFile.Open(local+name.replace("<P>","MU")+'.MVA.root')
-        #self.MUt_bdt = self.MU_bdt.Get('tree')
-        #self.MDt.AddFriend(self.MDt_bdt)
-        #self.MUt.AddFriend(self.MUt_bdt)
     def trees(self):
         return [self.MDt, self.MUt]
     def trees_ss(self):
         return [self.MDt_ss, self.MUt_ss]
+    def true_trees(self):
+        if hasattr(self, 'MU_true_t') and hasattr(self, 'MD_true_t'):
+            return [self.MD_true_t, self.MU_true_t]
+        else:
+            return []
     def get_tot_evts(self, a):
         if isinstance(a, TCut):
             return self.MUt.GetEntries(a.GetTitle()) + self.MDt.GetEntries(a.GetTitle())
@@ -69,9 +81,11 @@ gg2ttbar_mc2016 = DataObj('ttbar.ttbar_gg.<P>.MC2016', folder='ttbar')
 qq2ttbar_mc2016 = DataObj('ttbar.ttbar_qqbar.<P>.MC2016', folder='ttbar')
 ww_mc2016       = DataObj('ttbar.WW_ll.<P>.MC2016', folder='ttbar')
 ztautau_mc2016  = DataObj('ttbar.Z_tautau.<P>.MC2016', folder='ttbar')
-ttbar_2016      = DataObj('ttbar.<P>.2016', folder='ttbar')
+#ttbar_2016      = DataObj('ttbar.<P>.2016', folder='ttbar')
 ttbar_2015      = DataObj('ttbar.<P>.2015', folder='ttbar')
-
+zmumuj_mc2015   = DataObj('Zmumujet.Z_mumujet17.<P>.MC2015', folder='ZMuMu')
+zmumu_mc2015    = DataObj('Zmumujet.Zg_mumu.<P>.MC2015', folder='ZMuMu')
+ztautau_mc2016  = DataObj('ttbar.Z_tautau.<P>.MC2016', folder='ttbar')
 
 mcjetvars = [
     ['ptj', 'jet_truejet_PT/1000', 15, 20, 80],

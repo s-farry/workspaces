@@ -16,6 +16,10 @@ mumep_bwdasy = TCut("mu_ID == 13 && mu_ETA > e_ETA")
 jet = TCut("ttbar_jet_PT > 20000 && ttbar_jet_BDTTag == 1")
 
 
+mvis = "sqrt((mu_E + e_E + ttbar_jet_E)^2 - (mu_PX + e_PX + ttbar_jet_PX)^2 - (mu_PY + e_PY + ttbar_jet_PY)^2 - (mu_PZ + e_PZ + ttbar_jet_PZ)^2)"
+
+mvis_true = "sqrt((lp_E + lm_E + ttbar_jet_E)^2 - (lp_PX + lm_PX + ttbar_jet_PX)^2 - (lp_PY + lm_PY + ttbar_jet_PY)^2 - (lp_PZ + lm_PZ + ttbar_jet_PZ)^2)"
+
 fid = TCut("lp_ETA > 2 && lp_ETA < 4.5 && lm_ETA > 2 && lm_ETA < 4.5 && lp_PT > 20000 && lm_PT > 20000 && ttbar_jet_PT > 20000 && abs(ttbar_jet_flavour) == 5")
 fid_notag = TCut("lp_ETA > 2 && lp_ETA < 4.5 && lm_ETA > 2 && lm_ETA < 4.5 && lp_PT > 20000 && lm_PT > 20000 && ttbar_jet_PT > 20000")
 fid_nojet = TCut("lp_ETA > 2 && lp_ETA < 4.5 && lm_ETA > 2 && lm_ETA < 4.5 && lp_PT > 20000 && lm_PT > 20000")
@@ -30,7 +34,8 @@ mupemvars = [
     ["mu_eta"       , "abs(lp_ETA)"     , [2.0, 2.5, 3.0, 3.5, 4.5 ]], 
     ["e_eta"        , "abs(lm_ETA)"      , [2.0, 2.5, 3.0, 3.5, 4.5 ]], 
     ["ptj"          , "ttbar_jet_PT/1000.0"       , 5, 20, 220],
-    ["etaj"         , "ttbar_jet_ETA"   , [2.2, 2.7, 3.2, 3.7, 4.2] ]
+    ["etaj"         , "ttbar_jet_ETA"   , [2.2, 2.7, 3.2, 3.7, 4.2] ],
+#    ["mvis"         , mvis_true              , 20, 0, 100]
     ]
 
 mumepvars = [
@@ -39,7 +44,8 @@ mumepvars = [
     ["mu_eta"       , "abs(lm_ETA)"     , [2.0, 2.5, 3.0, 3.5, 4.5 ]], 
     ["e_eta"        , "abs(lp_ETA)"      , [2.0, 2.5, 3.0, 3.5, 4.5 ]], 
     ["ptj"          , "ttbar_jet_PT/1000.0"       , 5, 20, 220],
-    ["etaj"         , "ttbar_jet_ETA"   , [2.2, 2.7, 3.2, 3.7, 4.2] ]
+    ["etaj"         , "ttbar_jet_ETA"   , [2.2, 2.7, 3.2, 3.7, 4.2] ],
+#    ["mvis"         , mvis_true              , 20, 0, 100]
     ]
 
 
@@ -50,7 +56,8 @@ vars = [
     ["e_eta"        , "e_ETA"      , [2.0, 2.5, 3.0, 3.5, 4.5 ]], 
     ["ptj"          , "ttbar_jet_PT/1000"       , 15, 20, 170],
     ["etaj"         , "ttbar_jet_ETA"   , [2.2, 2.7, 3.2, 3.7, 4.2] ],
-    ["iso"          , "max(mu_cpt_0.50, e_cpt_0.50)", 25, 0, 50000]
+    ["iso"          , "max(mu_cpt_0.50, e_cpt_0.50)", 25, 0, 50000],
+#    ["mvis"         , mvis              , 20, 0, 100]
     ]
 
 ttbar_mupem_fwd = Template("ttbar_mupem_fwd")
@@ -91,15 +98,7 @@ ttbar_bwd = Template("ttbar_bwd", ttbar_mupem_bwd, ttbar_mumep_bwd)
 ttbar_bwd.SaveToFile()
 
 ttbar = Template("ttbar", ttbar_fwd, ttbar_bwd)
-ttbar.SaveToFile()
-
-ttbar_ss = Template("ttbar_ss")
-ttbar_ss.SetSelCut(selection + jet)
-ttbar_ss.AddTrees(qq2ttbar_mc2016.trees())
-ttbar_ss.AddTrees(gg2ttbar_mc2016.trees())
-ttbar_ss.AddVars(vars)
-ttbar_ss.Run()
-ttbar_ss.SaveToFile()
+ttbar.SaveToFile("/user2/sfarry/workspaces/top/tuples/ttbar_mc2016.root")
 
 fwd_etaj = ttbar_fwd.GetVar('etaj').GetHist()
 bwd_etaj = ttbar_bwd.GetVar('etaj').GetHist()
@@ -152,7 +151,7 @@ ww_nlo_errlo = nlo_xsecs.Get("etaj_WW_toterr_lo")
 # WW
 ww = Template("ww_mc2016")
 ww.SetSelCut(selection + jet)
-ww.AddTrees(ww_mc2016.trees())
+ww.AddTree(ww_mc2016.trees())
 ww.AddVars(vars)
 ww.Run()
 ww.Scale(ww_scale)
@@ -173,7 +172,6 @@ ww.SaveToFile()
 #wz.SaveToFile()
 
 # Wt
-
 wt_xsec = nlo_xsecs.Get("Wt_dr_xsec").GetVal()
-ttbar_xsec = nlo_xsecs.Get("etaj_tot")
+ttbar_xsec = nlo_xsecs.Get("etaj_tot").GetVal()
 wtOttbar = wt_xsec/ttbar_xsec

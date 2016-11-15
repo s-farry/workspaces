@@ -62,8 +62,8 @@ ttbar_fwd.SaveToFile()
 ttbar_bwd = Template("ttbar_bwd", ttbar_mupem_bwd, ttbar_mumep_bwd)
 ttbar_bwd.SaveToFile()
 
-ttbar = Template("ttbar", ttbar_fwd, ttbar_bwd)
-ttbar.SaveToFile()
+ttbar = Template("ttbar_data13tev", ttbar_fwd, ttbar_bwd)
+ttbar.SaveToFile("/user2/sfarry/workspaces/top/tuples/ttbar_data13tev.root")
 
 ttbar_ss = Template("ttbar_ss")
 ttbar_ss.SetSelCut(selection + jet)
