@@ -61,6 +61,8 @@ eta      = ghostvar('eta'       , 100, 2.0, 5.0, '#eta')
 chi2ndof = ghostvar('chi2ndof'  , 100, 0, 5, '#chi^{2}/ndof.')
 ghostprob = ghostvar('ghostprob', 100, 0, 0.4, 'Ghost Probability')
 history   = ghostvar('history'  , 21, -0.5, 20.5, 'Track History')
+nveloclus = ghostvar('nveloclusters', 50, 0, 3000, 'Velo Clusters')
+npvs2     = ghostvar('npvs',  6, -0.5, 5.5, 'PVs')
 
 nentries = 0
 nvelofwdtracks = 0
@@ -85,12 +87,14 @@ for tree in [t,u]:
 				chi2ndof_val  = v.var("chi2",j)/v.var("nDoF",j)
 				ghostprob_val = v.var("ghostprob",j)
 				history_val   = v.var("history", j)
+				nveloclus_val = v.var("nveloclus_val", j)
 				if v.var('faketrack',j) == 0:
 					pt.rec.Fill(pt_val)
 					eta.rec.Fill(eta_val)
 					chi2ndof.rec.Fill(chi2ndof_val)
 					ghostprob.rec.Fill(ghostprob_val)
 					history.rec.Fill(history_val)
+					nveloclus.Fill(nveloclus_val)
 					nvelotracks = v.var('nVeloTracks',0)
 					if v.var('rec2gen_e',j) == 0:
 						pt.ghost.Fill(pt_val)
@@ -98,30 +102,35 @@ for tree in [t,u]:
 						chi2ndof.ghost.Fill(chi2ndof_val)
 						ghostprob.ghost.Fill(ghostprob_val)
 						history.ghost.Fill(history_val)
+						nveloclus.ghost.Fill(nveloclus_val)
 					if v.var('rec2gen_e_loose',j) == 0:
 						pt.loose.Fill(pt_val)
 						eta.loose.Fill(eta_val)
 						chi2ndof.loose.Fill(chi2ndof_val)
 						ghostprob.loose.Fill(ghostprob_val)
 						history.loose.Fill(history_val)
+						nveloclus.ghost.Fill(nveloclus_val)
 				else:
 					pt.fake.Fill(pt_val, nvelofwd)
 					eta.fake.Fill(eta_val, nvelofwd)
 					chi2ndof.fake.Fill(chi2ndof_val, nvelofwd)
 					ghostprob.fake.Fill(ghostprob_val, nvelofwd)
 					history.fake.Fill(history_val, nvelofwd)
+					nveloclus.fake.Fill(nveloclus_val, nvelofwd)
 
 					pt.fake_nowgt.Fill(pt_val)
 					eta.fake_nowgt.Fill(eta_val)
 					chi2ndof.fake_nowgt.Fill(chi2ndof_val)
 					ghostprob.fake_nowgt.Fill(ghostprob_val)
 					history.fake_nowgt.Fill(history_val)
+					nveloclus.fake_nowgt.Fill(nveloclus_val)
 
 pt.process()
 eta.process()
 chi2ndof.process()
 ghostprob.process()
 history.process()
+nveloclus.process()
 
 
 #save everything in an output file
@@ -132,4 +141,5 @@ eta.save()
 chi2ndof.save()
 ghostprob.save()
 history.save()
+nveloclus.save()
 outputFile.Close()

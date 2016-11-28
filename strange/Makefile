@@ -9,7 +9,7 @@ FASTJET = /cvmfs/sft.cern.ch/lcg/external/fastjet/3.0.3/x86_64-slc6-gcc48-opt
 ROOTLIBS = -lCore -lRIO -lNet -lHist  -lTree -lMatrix -lMathCore -lThread -lPhysics -lTMVA -lRooFit
 FASTJETLIBS = -lfastjet -lfastjettools
 # Define make targets.
-all           : zmumuj fit_roofit apply_bdt
+all           : zmumuj fit_roofit apply_bdt jj Zjet_LHC13_NNPDF30_NLOPS
 clean         : rm zmumuj
 
 %	: src/%.cc

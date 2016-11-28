@@ -5,9 +5,10 @@ from Style import *
 SetLHCbStyle()
 
 class ghostvar:
-	def __init__(self, name, data, mc, tex=''):
+	def __init__(self, name, data, mc, tex='', **kwargs):
 		self.tex   = tex
 		self.name  = name
+		self.draw  = {}
 		loc = '/user2/sfarry/workspaces/ghosts/tuples/'
 		self.data  = data
                 self.mc    = mc
@@ -17,11 +18,14 @@ class ghostvar:
                 self.mc_rec    = self.mc.Get('rec_'+name+'_mc2015')
                 self.data_fake_rate = self.data.Get('fake_rate_'+name+'_data2015')
                 self.mc_fake_rate   = self.mc.Get('fake_rate_'+name+'_mc2015')
+		for name, val in kwargs.items():
+			self.draw[name] = val
 
 class ghostmethodvar:
-	def __init__(self, name, mc, tex=''):
+	def __init__(self, name, mc, tex='', **kwargs):
 		self.tex   = tex
 		self.name  = name
+		self.draw  = {}
 		loc = '/user2/sfarry/workspaces/ghosts/tuples/'
                 self.mc         = mc
                 self.fake       = self.mc.Get('fake_'+name)
@@ -29,6 +33,8 @@ class ghostmethodvar:
                 self.rec        = self.mc.Get('rec_'+name)
                 self.fake_rate  = self.mc.Get('fake_rate_'+name)
                 self.ghost_rate = self.mc.Get('ghost_rate_'+name)
+		for name, val in kwargs.items():
+			self.draw[name] = val
 
 data   = TFile("/user2/sfarry/workspaces/ghosts/tuples/ghostrate_data2015.root")
 mc     = TFile("/user2/sfarry/workspaces/ghosts/tuples/ghostrate_mc2015.root")
@@ -40,7 +46,7 @@ files += [ghostvar('pt', data, mc, 'p_{T} [MeV]')]
 files += [ghostvar('eta', data, mc, '#eta')]
 files += [ghostvar('ghostprob', data, mc, 'Ghost Prob.')]
 files += [ghostvar('chi2ndof' , data, mc , '#chi^{2}/ndof')]
-files += [ghostvar('nveloclusters', data, mc, 'Velo Clusters')]
+files += [ghostvar('nveloclusters', data, mc, 'Velo Clusters', ShiftLegX=0.35, ShiftLegY=0.1)]
 files += [ghostvar('npvs', data, mc, 'PVs')]
 
 files2 = []
@@ -73,6 +79,8 @@ mc.SetFillStyle(0)
 mc.AddText('MC2015')
 
 for v in files:
+	
+	#compare data and mc shapes
     o = Plot([v.data_fake, v.mc_fake])
     ymax = -1
     for p in o.plots:
@@ -92,7 +100,15 @@ for v in files:
     o.setProp('fillstyles', 0)
     o.setProp('ynormlims', [0, ymax])
     o.setProp('labels', ['MC2015 (Sim08-em)', '2015 EM Data'])
+    for name, value in v.draw.items():
+	    if name=='ShiftLegX':
+		    o.ShiftLegX(value)
+	    elif name=='ShiftLegY':
+		    o.ShiftLegY(value)
+	    else:
+		    o.setProp(name, value)
     o.drawROOT()
+
 
     n = Plot([v.data_rec, v.mc_rec])
     ymax = -1
@@ -113,6 +129,13 @@ for v in files:
     n.setProp('fillstyles', 0)
     n.setProp('ynormlims', [0, ymax])
     n.setProp('labels', ['MC2015 (Sim08-em)', '2015 EM Data'])
+    for name, value in v.draw.items():
+	    if name=='ShiftLegX':
+		    n.ShiftLegX(value)
+	    elif name=='ShiftLegY':
+		    n.ShiftLegY(value)
+	    else:
+		    n.setProp(name, value)
     n.drawROOT()
 
     ymax = -1.0
@@ -139,6 +162,13 @@ for v in files:
     m.setProp('labels', ['MC2015 (Sim08-em)', '2015 EM Data'])
     m.setProp('toCompare', {1 : [0]})
     m.setProp('ycomplims', [0.5, 1.49])
+    for name, value in v.draw.items():
+	    if name=='ShiftLegX':
+		    m.ShiftLegX(value)
+	    elif name=='ShiftLegY':
+		    m.ShiftLegY(value)
+	    else:
+		    m.setProp(name, value)
     m.drawROOT()
 
     ymax  = -1
@@ -166,6 +196,13 @@ for v in files:
     n.setProp('labels', ['All Tracks', 'Fake Tracks'])
     n.setProp('normalised', True)
     n.setProp('extraObjs', [data])
+    for name, value in v.draw.items():
+	    if name=='ShiftLegX':
+		    n.ShiftLegX(value)
+	    elif name=='ShiftLegY':
+		    n.ShiftLegY(value)
+	    else:
+		    n.setProp(name, value)
     n.drawROOT()
 
     l = Plot([v.mc_rec, v.mc_fake ])
@@ -191,6 +228,13 @@ for v in files:
     l.setProp('labels', ['All Tracks', 'Fake Tracks', 'Ghost Tracks'])
     l.setProp('normalised', True)
     l.setProp('extraObjs', [mc])
+    for name, value in v.draw.items():
+	    if name=='ShiftLegX':
+		    l.ShiftLegX(value)
+	    elif name=='ShiftLegY':
+		    l.ShiftLegY(value)
+	    else:
+		    l.setProp(name, value)
     l.drawROOT()
 
 #######################
@@ -219,6 +263,13 @@ for i in files2 :
 	#if i.name == 'ghostprob': o.setProp('logscale', True)
 	o.setProp('location', '/user2/sfarry/workspaces/ghosts/figures')
 	o.setProp('labels', ['MC2015 - All Tracks', 'MC2015 - Ghosts', 'MC2015 - Fakes'])
+	for name, value in i.draw.items():
+		if name=='ShiftLegX':
+			o.ShiftLegX(value)
+		elif name=='ShiftLegY':
+			o.ShiftLegY(value)
+		else:
+			o.setProp(name, value)
 	o.drawROOT()
 
 	ymax = -1
@@ -238,6 +289,13 @@ for i in files2 :
         m.setProp('location', '/user2/sfarry/workspaces/ghosts/figures')
 	m.setProp('ylims', [0, ymax])
 	m.setProp('labels', ['MC2015 - Ghosts', 'MC2015 - Fakes'])
+	for name, value in i.draw.items():
+	    if name=='ShiftLegX':
+		    m.ShiftLegX(value)
+	    elif name=='ShiftLegY':
+		    m.ShiftLegY(value)
+	    else:
+		    m.setProp(name, value)
 	m.drawROOT()
 
 	l = Plot([i.rec, i.fake, i.ghost ])
@@ -264,6 +322,13 @@ for i in files2 :
 	l.setProp('labels', ['All Tracks', 'Fake Tracks', 'Ghost Tracks'])
 	l.setProp('normalised', True)
 	l.setProp('extraObjs', [mc])
+	for name, value in i.draw.items():
+		if name=='ShiftLegX':
+			l.ShiftLegX(value)
+		elif name=='ShiftLegY':
+			l.ShiftLegY(value)
+		else:
+			l.setProp(name, value)
 	l.drawROOT()
 
 #######################
@@ -292,6 +357,13 @@ for i in files3 :
 	#if i.name == 'ghostprob': o.setProp('logscale', True)
 	o.setProp('location', '/user2/sfarry/workspaces/ghosts/figures')
 	o.setProp('labels', ['MC2015 - All Tracks', 'MC2015 - Ghosts', 'MC2015 - Fakes'])
+	for name, value in i.draw.items():
+		if name=='ShiftLegX':
+			o.ShiftLegX(value)
+		elif name=='ShiftLegY':
+			o.ShiftLegY(value)
+		else:
+			o.setProp(name, value)
 	o.drawROOT()
 
 	ymax = -1
@@ -311,4 +383,11 @@ for i in files3 :
         m.setProp('location', '/user2/sfarry/workspaces/ghosts/figures')
 	m.setProp('ylims', [0, ymax])
 	m.setProp('labels', ['MC2015 - Ghosts', 'MC2015 - Fakes'])
+	for name, value in i.draw.items():
+		if name=='ShiftLegX':
+			m.ShiftLegX(value)
+		elif name=='ShiftLegY':
+			m.ShiftLegY(value)
+		else:
+			m.setProp(name, value)
 	m.drawROOT()

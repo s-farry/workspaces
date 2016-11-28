@@ -41,10 +41,29 @@ double get_dR(Vec4 mom, PseudoJet& jet){
 
 }
 
-vector<Particle> get_hard_partons(Event& e){
+vector<Particle> get_hard_partons(Event& e, double pt = 5.0){
   vector<Particle> hard_partons;
   for (int i = 0 ; i < e.size(); ++i){
-    if (e[i].status() == -23 && (abs(e[i].id()) < 6 || e[i].id() == 21)){
+    if (abs(e[i].id()) < 6 || e[i].id() == 21){
+      int status = e[i].status();
+      if (status == -23 || status == -24){ // keep all from hard process
+	hard_partons.push_back(e[i]);
+      }
+      else if (status > -80 && status < -30 &&
+	       status != -31 && status != -32 &&
+	       status != -41 && status != -42 &&
+	       e[i].pT() > pt
+	       ){ // keep all from subprocesses, isr and fsr above threshold for outgoing particles but not incoming partons
+	hard_partons.push_back(e[i]);
+      } 
+    }
+  }
+  return hard_partons;
+}
+vector<Particle> get_highpt_partons(Event& e, double pt = 5){
+  vector<Particle> hard_partons;
+  for (int i = 0 ; i < e.size(); ++i){
+    if (e[i].pT() > pt && (abs(e[i].id()) < 6 || e[i].id() == 21)){
       hard_partons.push_back(e[i]);
     }
   }
@@ -126,25 +145,24 @@ double get_jet_eccentricity(PseudoJet& jet){
   //double phi_mean = phi_mean_num/denom;
   //double eta_mean = eta_mean_num/denom;
   double tan2t = tan2t_num/tan2t_denom;
-
-  double minv = -999, maxv = -999;
+  double theta = atan(tan2t)/2;
 
   double N = children.size();
+
+  double v1 = 0.0, v2 = 0.0;
 
   for (ic = children.begin(); ic != children.end(); ++ic){
     Vec4 mom((*ic).px(), (*ic).py(), (*ic).pz(), (*ic).e());
     double dPhi = jet.phi_std() -  mom.phi();
     double dEta = jet.eta() - mom.eta();
     double E = mom.e();
-    double theta = atan(tan2t)/2;
-    double v1 = (1/N)*E*pow(cos(theta)*dEta - sin(theta)*dPhi,2);
-    double v2 = (1/N)*E*pow(cos(theta)*dEta - sin(theta)*dPhi,2);
+    v1 += (1/N)*E*pow(cos(theta)*dEta - sin(theta)*dPhi,2);
+    v2 += (1/N)*E*pow(sin(theta)*dEta + cos(theta)*dPhi,2);
     
-    if (min(v1, v2) < minv || minv == -999) minv = min(v1, v2);
-    if (max(v1, v2) > maxv || maxv == -999) maxv = max(v1, v2);
-
   } 
 
+  double maxv = max(v1, v2);
+  double minv = min(v1, v2);
   double ecc = 1 - (minv/maxv);
   return ecc;
 
@@ -227,18 +245,59 @@ map<string, double> get_strange_vars(PseudoJet& jet){
   return a;
 }
 
-int get_flavour(PseudoJet& jet, vector<Particle>& partons){
-  int flav = -999;
-  double dr = -1;
+map<string, double> get_flavour(PseudoJet& jet, vector<Particle>& partons, Event& event){
+  int id = -999;
+  double dr = -1, pt = -1.0, type = 0;
+  //first of all, remove any partons from the same decay chain which can tag the jet
+  //keep only mother
+  std::vector<int> indices;
+  for (int i = 0 ; i < (int)partons.size(); ++i){ 
+    double dr2 = get_dR(partons.at(i).p(), jet);
+    if (dr2 < 0.5) indices.push_back(partons.at(i).index());
+  }
+
   for (int i = 0 ; i < (int)partons.size(); ++i){
     double dr_tmp = get_dR(partons.at(i).p(), jet);
-    if ( (dr == -1 && dr_tmp < 0.5) || dr_tmp < dr){
-      dr = dr_tmp;
-      flav = partons.at(i).id();
-    }
-  }
-  return flav;
+    double pt_tmp = partons.at(i).pT();
 
+    /*if ( dr != -1 && dr < 0.3 && dr_tmp < 0.3){// if both partons are within 0.3 of the jet, keep the highest pt one
+	if (pt_tmp > pt){
+	  dr = dr_tmp;
+	  id = partons.at(i).id();
+	  pt = pt_tmp;
+	  type = floor(abs(partons.at(i).status())/10.0); // 2 - hard scatter, 3 - subprocess, 4 - ISR, 5 - FSR
+	}
+	}
+    
+    if (dr_tmp < 0.5){
+      int mother_idx = partons.at(i).mother1();
+      if (std::find(indices.begin(), indices.end(), mother_idx) == indices.end()){
+	Particle& mother = event.at(mother_idx);
+	if (partons.at(i).id() != mother.id()){
+	  cout<<dr_tmp<<" "<<pt_tmp<<" "<<partons.at(i).id()<<" "<<partons.at(i).status()<<endl;
+	  cout<<"mother: "<<get_dR(mother.p(), jet)<<" "<<mother.pT()<<" "<<mother.id()<<" "<<mother.status()<<endl;
+	}
+	}*/
+    if ( (dr == -1 && dr_tmp < 0.5) || dr_tmp < dr) // otherwise just pick closest
+      {
+	//don't use if mother is also in the jet
+	int mother_idx = partons.at(i).mother1();
+	if (std::find(indices.begin(), indices.end(), mother_idx) == indices.end()){
+	  dr = dr_tmp;
+	  id = partons.at(i).id();
+	  pt = pt_tmp;
+	  type = floor(abs(partons.at(i).status())/10.0);
+	}
+	else{
+	  cout<<"mother is here"<<endl;
+	}
+      }
+  }
+  std::map<string, double> flav;
+  flav["id"] = abs(id);
+  flav["pt"] = pt;
+  flav["type"] = type;
+  return flav;
 }
 
 int get_flavour_by_meson(PseudoJet& jet, vector<Particle>& mesons){
@@ -268,7 +327,7 @@ void getVals(Vec4 mom, std::map<string, double>& vals){
   vals["m"] = mom.mCalc();
   //return vals;
 }
-void getVals(PseudoJet& jet, map<string, double>& vals, vector<Particle> hard_partons, vector<Particle> mesons){
+void getVals(PseudoJet& jet, map<string, double>& vals, vector<Particle> hard_partons, vector<Particle> mesons, Event& event){
   //vector<double> vals(9, 0.0);
   vals["px"]   = jet.px();
   vals["py"]   = jet.py();
@@ -285,18 +344,22 @@ void getVals(PseudoJet& jet, map<string, double>& vals, vector<Particle> hard_pa
   map<string, double> strange_vars = get_strange_vars(jet);
   map<string, double>::iterator im;
   for (im = strange_vars.begin(); im != strange_vars.end(); ++im) vals[(*im).first] = (*im).second;
-  vals["flav"] = get_flavour(jet, hard_partons);
+  std::map<string, double> flav = get_flavour(jet, hard_partons, event);
+  vals["flav"] = flav["id"];
+  vals["flav_partonpt"] = flav["pt"];
+  vals["flav_type"] = flav["type"];
   vals["flav_meson"] = get_flavour_by_meson(jet, mesons);
 
   //return vals;
 }
+/*
 void getFlavVals(PseudoJet& jet, vector<Particle> hard_partons, map< string, double>& vals){
   //vector<double> vals(9, 0.0);
   map<string, double> strange_vars = get_strange_vars(jet);
   map<string, double>::iterator im;
   for (im = strange_vars.begin(); im != strange_vars.end(); ++im) vals[(*im).first] = (*im).second;
   vals["flav"] = get_flavour(jet, hard_partons);
-}
+  }*/
 void getVals(Particle& part, std::map<string, double>& vals){
   getVals(part.p(), vals);
   vals["id"] = part.id();
@@ -888,9 +951,7 @@ int main(int argc, char* argv[]) {
     mgHooks = new JetMatchingMadgraph();
     pythia.setUserHooksPtr(mgHooks);
   }
-
-  if (loadHooks) {
-
+  else if (loadHooks) {
     // Set ISR and FSR to start at the kinematical limit
     if (vetoMode > 0) {
       pythia.readString("SpaceShower:pTmaxMatch = 0");
@@ -901,7 +962,6 @@ int main(int argc, char* argv[]) {
     if (MPIvetoMode > 0) {
       pythia.readString("MultipartonInteractions:pTmaxMatch = 2");
     }
-
     powhegHooks = new PowhegHooks(nFinal, vetoMode, vetoCount,
         pThardMode, pTemtMode, emittedMode, pTdefMode, MPIvetoMode);
     pythia.setUserHooksPtr((UserHooks *) powhegHooks);
@@ -963,7 +1023,9 @@ int main(int argc, char* argv[]) {
   std::vector<string> jet_vars      = {"px", "py", "pz", "E", "pt", "phi", "eta", "y", "m", "mult"};
   std::vector<string> jetflav_vars  = {"nkaons", "npions", "kaonE", "pionE",
 				       "maxkaonpt", "minkaonpt", "maxpionpt", "minpionpt",
-				       "kaonpt", "pionpt", "flav", "flav_meson", "dR_maxkaon", "kaoncpt", "kaoncE",
+				       "kaonpt", "pionpt", "flav", "flav_meson",
+				       "flav_partonpt", "flav_hardscatter", "flav_type",
+				       "dR_maxkaon", "kaoncpt", "kaoncE",
 				       "pioncE", "pioncpt", "dR_maxpion", "neutralE", "chargedE",
                                        "width", "eccentricity"};
 
@@ -1007,12 +1069,12 @@ int main(int argc, char* argv[]) {
   }
   tree->Branch("x1"    , &x1    , "x1/D");
   tree->Branch("x2"    , &x2    , "x2/D");
-  tree->Branch("id1"   , &id1   , "id1/D");
-  tree->Branch("id2"   , &id2   , "id2/D");
+  tree->Branch("id1"   , &id1   , "id1/I");
+  tree->Branch("id2"   , &id2   , "id2/I");
   tree->Branch("x1lhe" , &x1lhe , "x1lhe/D");
   tree->Branch("x2lhe" , &x2lhe , "x2lhe/D");
-  tree->Branch("id1lhe", &id1lhe, "id1lhe/D");
-  tree->Branch("id2lhe", &id2lhe, "id2lhe/D");
+  tree->Branch("id1lhe", &id1lhe, "id1lhe/I");
+  tree->Branch("id2lhe", &id2lhe, "id2lhe/I");
 
   //set tuple for particle information
 
@@ -1255,6 +1317,7 @@ int main(int argc, char* argv[]) {
     }
     
     std::vector<Particle> hard_partons = get_hard_partons(pythia.event);
+    //std::vector<Particle> highpt_partons = get_highpt_partons(pythia.event);
     std::vector<Particle> mesons       = get_mesons(pythia.event);
     /*
      * Process dependent checks and analysis may be inserted here
@@ -1268,6 +1331,7 @@ int main(int argc, char* argv[]) {
     id2 = pythia.info.id2();
     id1lhe = pythia.info.id1pdf();
     id2lhe = pythia.info.id2pdf();
+
     x1 = pythia.info.x1();
     x2 = pythia.info.x2();
     x1lhe = pythia.info.x1pdf();
@@ -1408,19 +1472,18 @@ int main(int argc, char* argv[]) {
       getVals(dimu_p, outParts["dimu"]);
     }
     if (jets.size() > 0) {
-      getVals(jets[0], outJets["jet"], hard_partons, mesons);
-      //getFlavVals(jets[0], hard_partons, jet_flav);
+      getVals(jets[0], outJets["jet"], hard_partons, mesons, pythia.event);
       if (mups.size() > 0) jet_mudr = get_dR( mups.at(0).p(), jets[0]);
       if (mums.size() > 0) jet_mudr = min(jet_mudr, get_dR( mums.at(0).p(), jets[0]));
     }
-    if (jets.size() > 1) getVals(jets[1], outJets["jet2"], hard_partons, mesons);
+    if (jets.size() > 1) getVals(jets[1], outJets["jet2"], hard_partons, mesons, pythia.event);
     if (fwdjets.size() > 0) {
-      getVals(fwdjets[0], outJets["fwdjet"], hard_partons, mesons);
+      getVals(fwdjets[0], outJets["fwdjet"], hard_partons, mesons, pythia.event);
       if (mups.size() > 0) fwdjet_mudr = get_dR( mups.at(0).p(), fwdjets[0]);
       if (mums.size() > 0) fwdjet_mudr = min(fwdjet_mudr, get_dR( mums.at(0).p(), fwdjets[0]));
     }
     if (bwdjets.size() > 0) {
-      getVals(bwdjets[0], outJets["bwdjet"], hard_partons, mesons);
+      getVals(bwdjets[0], outJets["bwdjet"], hard_partons, mesons, pythia.event);
       if (mups.size() > 0) bwdjet_mudr = get_dR( mups.at(0).p(), bwdjets[0]);
       if (mums.size() > 0) bwdjet_mudr = min(bwdjet_mudr, get_dR( mums.at(0).p(), bwdjets[0]));
     }
@@ -1442,7 +1505,7 @@ int main(int argc, char* argv[]) {
     rdm_15pc = r.Gaus(1.0,0.15);
 
     totEvts++;
-    bool reduce_size = false;
+    bool reduce_size = true;
 
     if (reduce_size){
     if (mups.size() > 0 && mums.size() > 0 &&
@@ -1456,14 +1519,10 @@ int main(int argc, char* argv[]) {
     }
   } // End of event loop.
 
-  cout<<"about to write"<<endl;
-
   TParameter<int> TtotEvts("totEvts", totEvts);
   TtotEvts.Write();
   tree->Write();
   outputF.Close();
-
-  cout<<"written"<<endl;
 
   // Statistics, histograms and veto information
   pythia.stat();

@@ -48,10 +48,10 @@ typedef std::map<string, std::pair<double, double> > results;
 
 class Fitter {
 public:
-
   string fitvar;
   double lo;
   double hi;
+  string location;
 
   int nvars;
   //string vars[];
@@ -59,7 +59,7 @@ public:
   //double his[] ;
   //int binss[]  ;
 
-  enum fit_t{z0, jpsi, bjpsik, bjpsikst};
+  enum fit_t{z0, jpsi, bjpsik, bjpsikst, bjpsik_poly, bjpsik_novosibirsk, bjpsikst_novosibirsk, bjpsikst_polynomial, bjpsik_polynomial};
 
   fit_t fitmodel;
 
@@ -68,6 +68,10 @@ public:
   std::vector<double> his ;
   std::vector<int> bins   ;
 
+  //optional - add bin edges
+  std::map<int, double*> edges;
+  std::map<int, std::pair<double*, double*> > edges2d;
+
   int nvars2d;
   std::vector< std::vector<string> > vars2d;
   std::vector< std::vector<double> > los2d ;
@@ -75,7 +79,7 @@ public:
   std::vector< std::vector<int> >  bins2d ;
 
   TObjArray* get_mass_v_vars(RooDataSet* ds, string label = "");
-  TObjArray* get_mass_v_vars(RooDataSet* dsUp, RooDataSet* dsDown);
+  //TObjArray* get_mass_v_vars(RooDataSet* dsUp, RooDataSet* dsDown);
   TObjArray* get_mass_v_vars(TTree* t);
   TObjArray* get_mass_v_vars(TTree* t, TTree* u);
 
@@ -85,8 +89,11 @@ public:
   results fit_z0_mass(RooDataSet* ds, string oFile,
 		      string cut);
   results fit_bjpsik_mass(RooDataSet* ds, string oFile,
-			string cut);
-  results fit_bjpsikst_mass(RooDataSet* ds, string oFile,
-			string cut);
+			  string cut, bool kstar = false );
+  results fit_bjpsik_mass_polynomial(RooDataSet* ds, string oFile,
+				     string cut, bool kstar = false );
+  results fit_bjpsik_mass_novosibirsk(RooDataSet* ds, string oFile,
+				     string cut, bool kstar = false );
+  
 
 };

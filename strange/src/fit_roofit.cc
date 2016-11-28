@@ -35,9 +35,9 @@ void fit_roofit(){
   TTree* t = (TTree*)f->Get("TestTree");
   TTree* u = (TTree*)f->Get("TrainTree");
 
-  t->Draw("BDT>>data", "jet_kaonmult > 0 && jet_PT > 10000 && jet_maxkaonpt > 5000");
-  t->Draw("BDT>>mc0", "classID == 0 && jet_kaonmult > 0 && jet_PT > 10000 && jet_maxkaonpt > 5000");
-  t->Draw("BDT>>mc1", "classID == 1 && jet_kaonmult > 0 && jet_PT > 10000 && jet_maxkaonpt > 5000");
+  t->Draw("BDT>>data", "jet_kaonmult > 0 && jet_PT > 20000 && jet_maxkaonpt > 5000");
+  t->Draw("BDT>>mc0", "classID == 0 && jet_kaonmult > 0 && jet_PT > 20000 && jet_maxkaonpt > 5000");
+  t->Draw("BDT>>mc1", "classID == 1 && jet_kaonmult > 0 && jet_PT > 20000 && jet_maxkaonpt > 5000");
 
   cout<<t->GetEntries()<<endl;
   cout<<data->GetEntries()<<endl;

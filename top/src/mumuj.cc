@@ -1200,20 +1200,21 @@ int main(int argc, char* argv[]) {
       if ( pythia.event[i].id()  == -6 && pythia.event[i].status() == -22) {
 	antitops.push_back(pythia.event[i]);
       }
-      if ( abs(pythia.event[i].id())  == 13 &&
-	   (abs(pythia.event[pythia.event[i].mother1()].id()) == 24
+      if ( (abs(pythia.event[i].id())  == 13 || abs(pythia.event[i].id()) == 11)
+	   && (abs(pythia.event[pythia.event[i].mother1()].id()) == 24
 	    || abs(pythia.event[pythia.event[i].mother1()].id()) == 15))
 	{
 	  int idx = pythia.event[i].iBotCopy();
 	  while (pythia.event[idx].daughter1() != 0) {
-	    if ( abs(pythia.event[pythia.event[idx].daughter1()].id()) == 13){
+	    if ( abs(pythia.event[pythia.event[idx].daughter1()].id()) == 13
+		 || abs(pythia.event[pythia.event[idx].daughter1()].id()) == 11){
 	      idx = pythia.event[idx].daughter1();
 	    }
 	    else{
 	      idx = pythia.event[idx].daughter2();
 	    }
 	  }
-	  if ( pythia.event[i].id() == -13) {
+	  if ( pythia.event[i].id() == -13 || pythia.event[i].id() == -11 ) {
 	    mups_born.push_back(pythia.event[i]);
 	    mups.push_back(pythia.event[idx]);
 	    idxmup = idx;
@@ -1228,22 +1229,24 @@ int main(int argc, char* argv[]) {
 
     if (mups.size() == 0 && mums.size() == 0){
       for (int i = 0 ; i < pythia.event.size(); ++i ){
-	if ( abs(pythia.event[i].id())  == 13 &&  pythia.event[i].status() == -23){
+	if ( ((abs(pythia.event[i].id())  == 13)
+	     || abs(pythia.event[i].id() == 11))
+	     &&  pythia.event[i].status() == -23){
 	  // status -24 , -44, -62
-	  if ( pythia.event[i].id() == - 13){
+	  if ( pythia.event[i].id() == - 13 || pythia.event[i].id() == -11){
 	    int idx = pythia.event[i].iBotCopy();
 	    while (pythia.event[idx].daughter1() != 0) {
-	      idx = pythia.event[pythia.event[idx].daughter1()].id() == -13 ?
+	      idx = pythia.event[pythia.event[idx].daughter1()].id() == pythia.event[idx].id() ?
 		pythia.event[idx].daughter1() : pythia.event[idx].daughter2();
 	    }
 	    mups_born.push_back(pythia.event[i]);
 	    mups.push_back(pythia.event[idx]);
 	    idxmup = idx;
 	  }
-	  else if ( pythia.event[i].id()  == 13){
+	  else if ( pythia.event[i].id()  == 13 || pythia.event[i].id() == 11){
 	    int idx = pythia.event[i].iBotCopy();
 	    while (pythia.event[idx].daughter1() != 0) {
-	      idx = pythia.event[pythia.event[idx].daughter1()].id() == 13 ?
+	      idx = pythia.event[pythia.event[idx].daughter1()].id() == pythia.event[idx].id() ?
 		pythia.event[idx].daughter1() : pythia.event[idx].daughter2();
 	    }
 	    mums_born.push_back(pythia.event[i]);

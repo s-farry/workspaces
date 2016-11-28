@@ -33,8 +33,6 @@ class ghostvar:
 		self.name  = name
 		self.rec   = TH1F("rec_"+name, "rec_"+name, bins  , lo, hi)
 		self.rec_nowgt   = TH1F("rec_"+name+"_nowgt", "rec_"+name, bins  , lo, hi)
-		#self.ghost = TH1F("ghost_"+name,"ghost_"+name,  bins  , lo, hi)
-		#self.loose = TH1F("loose_"+name, "loose_"+name,bins, lo, hi)
 		self.fake  = TH1F("fake_"+name,"fake_"+name, bins , lo, hi)
 		self.fake_nowgt = TH1F("fake_"+name+"_nowgt", "fake_"+name+"_nowgt", bins, lo, hi)
 		self.rec.Sumw2()
@@ -43,26 +41,15 @@ class ghostvar:
 		self.fake_nowgt.Sumw2()
 
 	def process(self):
-		#self.ghost_rate = self.ghost.Clone("ghost_rate_"+self.name)
-		#self.ghost_rate.Divide(self.rec)
 		self.fake_rate = self.fake.Clone("fake_rate_"+self.name)
 		self.fake_rate.Divide(self.rec)
-		#self.loose_rate = self.loose.Clone("fake_rate_"+self.name)
-		#self.loose_rate.Divide(self.rec)
 
 	def save(self, filename=""):
-		#if filename=="": filename=self.name
-		#outputFile = TFile(filename+".root", "RECREATE")
 		self.rec.Write()
 		self.rec_nowgt.Write()
-		#self.ghost.Write()
-		#self.loose.Write()
 		self.fake.Write()
 		self.fake_nowgt.Write()
-		#self.ghost_rate.Write()
-		#self.loose_rate.Write()
 		self.fake_rate.Write()
-		#outputFile.Close()
 
 pt        = ghostvar('pt'        , 50, 0, 1000, 'p_{T} [GeV]')
 eta       = ghostvar('eta'       , 50, 2.0, 5.0, '#eta')
@@ -83,7 +70,6 @@ for tree in [t, u]:
 	v = IVariables()
 	v.init(tree)
 	for i in range(tree.GetEntries()):
-		#if i > 600000: break
 		if i%10000 == 0 : print "Entry ",i," of ",tree.GetEntries()
 		tree.GetEntry(i)
 		nvelotracks   = v.varI('nVeloTracks')
@@ -92,8 +78,6 @@ for tree in [t, u]:
 		npvs_val      = v.varI('nPVs')
 		nveloclus_val = v.varI('nVeloClusters')
 		w = 1.0
-		#if npvs_val < 7: w = w * pvweights[npvs_val]
-		#if v.varI("e_tot") > 0 and v.var("HLT1MBNoBiasLeadingCrossingDecision", 0) == 1: 
 		if v.varI("e_tot") > 0: 
 			nentries+= 1
 			nvelofwdtracks += nvelofwd

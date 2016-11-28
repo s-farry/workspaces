@@ -1206,6 +1206,7 @@ int main(int argc, char* argv[]) {
       }
       if ( (abs(pythia.event[i].id())  == 13 || abs(pythia.event[i].id()) == 11)
 	   && (abs(pythia.event[pythia.event[i].mother1()].id()) == 24
+	       || abs(pythia.event[pythia.event[i].mother1()].id()) == 23
 	       || abs(pythia.event[pythia.event[i].mother1()].id()) == 15))
 	{
 	  int idx = pythia.event[i].iBotCopy();
@@ -1277,8 +1278,11 @@ int main(int argc, char* argv[]) {
     vector<PseudoJet> bwdjets;
     for (int j = 0 ; j < (int)jets.size() ; ++j){
       double dR = -1.0;
-      if (mus.size() > 0) dR = get_dR( mus.at(0).p(), jets.at(j));
-      if (es.size()  > 0) dR = min(dR, get_dR( es.at(0).p(), jets.at(j)));
+      if (mus.size() > 0 && es.size() > 0){
+	dR = min(get_dR( mus.at(0).p(), jets.at(j)), get_dR( es.at(0).p(), jets.at(j)));
+      }
+      else if (mus.size() > 0) dR = get_dR( mus.at(0).p(), jets.at(j));
+      else if (es.size() > 0) dR = get_dR( es.at(0).p(), jets.at(j));
 
       if (jets.at(j).eta() >2.2 && jets.at(j).eta() < 4.2 && dR > 0.5) {
 	fwdjets.push_back(jets.at(j));
@@ -1300,55 +1304,71 @@ int main(int argc, char* argv[]) {
       getVals(antitops[0], outParts["tbar"]);
       //mup_id = mups[0].id();
     }
-    if (mus.size() > 0) {
-      getVals(mus[0], outParts["mu"]);
-      //mum_id = mums[0].id();
+
+    idxmu = -1.0;
+    idxe  = -1.0;
+
+    if (mus.size() > 0) idxmu = 0;
+    if (es.size() > 0) idxe = 0;
+
+    if (mus.size() > 1 && es.size() == 1 &&
+	(mus.at(0).charge() == es.at(0).charge()) &&
+	(mus.at(1).charge() != es.at(0).charge()))
+      {
+	idxmu = 1;
+      }
+    if (es.size() > 1 && mus.size() == 1 &&
+	(es.at(0).charge() == mus.at(0).charge()) &&
+	(es.at(1).charge() != mus.at(0).charge()))
+      {
+	idxe = 1;
+      }
+    
+    
+    if (idxmu != -1.0) {
+      getVals(mus[idxmu], outParts["mu"]);
+      getVals(mus_born[idxmu], outParts["mu_born"]);
     }
-    if (mus_born.size() > 0) {
-      getVals(mus_born[0], outParts["mu_born"]);
-    }
-    if (es_born.size() > 0) {
+    if (idxe != -1.0) {
       getVals(es_born[0], outParts["e_born"]);
-    }
-    if (es.size() > 0) {
       getVals(es[0], outParts["e"]);
     }
 
-    if (mus.size() > 0 && es.size() > 0){
-      Vec4 diell_p = mus[0].p() + es[0].p();
+    if (idxmu != -1.0 && idxe != -1.0){
+      Vec4 diell_p = mus[idxmu].p() + es[idxe].p();
       getVals(diell_p, outParts["diell"]);
     }
-    if (mus.size() > 0 && es.size() > 0 && jets.size() > 0){
+    if (idxmu != -1.0 && idxe != -1.0 && jets.size() > 0){
       Vec4 j(jets[0].px(), jets[0].py(), jets[0].pz(), jets[0].e());
-      Vec4 muej_p = mus[0].p() + es[0].p() + j;
+      Vec4 muej_p = mus[idxmu].p() + es[idxe].p() + j;
       getVals(muej_p, outParts["muej"]);
     }
     if (jets.size() > 0) {
       getVals(jets[0], outJets["jet"], hard_partons, mesons, pythia.event);
-      if (mus.size() > 0) jet_dr = get_dR( mus.at(0).p(), jets[0]);
-      if (es.size() > 0)  jet_dr  = min(jet_dr, get_dR( es.at(0).p(), jets[0]));
+      if (idxmu != -1.0) jet_dr = get_dR( mus.at(idxmu).p(), jets[0]);
+      if (idxe != -1.0)  jet_dr  = min(jet_dr, get_dR( es.at(idxe).p(), jets[0]));
     }
     if (jets.size() > 1) getVals(jets[1], outJets["jet2"], hard_partons, mesons, pythia.event);
     if (fwdjets.size() > 0) {
       getVals(fwdjets[0], outJets["fwdjet"], hard_partons, mesons, pythia.event);
-      if (mus.size() > 0) fwdjet_dr = get_dR( mus.at(0).p(), fwdjets[0]);
-      if (es.size() > 0) fwdjet_dr = min(fwdjet_dr, get_dR( es.at(0).p(), fwdjets[0]));
+      if (idxmu != -1.0) fwdjet_dr = get_dR( mus.at(idxmu).p(), fwdjets[0]);
+      if (idxe  != -1.0) fwdjet_dr = min(fwdjet_dr, get_dR( es.at(idxe).p(), fwdjets[0]));
     }
     if (bwdjets.size() > 0) {
       getVals(bwdjets[0], outJets["bwdjet"], hard_partons, mesons, pythia.event);
-      if (mus.size() > 0) bwdjet_dr = get_dR( mus.at(0).p(), bwdjets[0]);
-      if (es.size() > 0) bwdjet_dr = min(bwdjet_dr, get_dR( es.at(0).p(), bwdjets[0]));
+      if (idxmu != -1.0) bwdjet_dr = get_dR( mus.at(idxmu).p(), bwdjets[0]);
+      if (idxe  != -1.0) bwdjet_dr = min(bwdjet_dr, get_dR( es.at(idxe).p(), bwdjets[0]));
     }
 
-    if (mus.size() > 0){
+    if (idxmu != -1.0){
       for (int j = 0 ; j < (int)jets.size() ; ++j){
-	double dR = get_dR(mus.at(0).p(), jets[j]);
+	double dR = get_dR(mus.at(idxmu).p(), jets[j]);
 	if (mu_jetdr == -1.0 || dR < mu_jetdr) mu_jetdr = dR;
       }
     }
-    if (es.size() > 0){
+    if (idxe != -1.0){
       for (int j = 0 ; j < (int)jets.size() ; ++j){
-	double dR = get_dR(es.at(0).p(), jets[j]);
+	double dR = get_dR(es.at(idxe).p(), jets[j]);
 	if (e_jetdr == -1.0 || dR < e_jetdr) e_jetdr = dR;
       }
     }
@@ -1357,12 +1377,12 @@ int main(int argc, char* argv[]) {
     bool reduce_size = false;
 
     if (reduce_size){
-    if (mus.size() > 0 && es.size() > 0 &&
-	((mus[0].p().eta() > 2 && mus[0].p().eta() < 4.5 && es[0].p().eta() > 2 && es[0].p().eta() < 4.5 && fwdjets.size() > 0)
-	 || (mus[0].p().eta() < -2 && mus[0].p().eta() > -4.5 && es[0].p().eta() < -2 && es[0].p().eta() > -4.5 && bwdjets.size() > 0))) tree->Fill();
+    if (idxmu != -1 && idxe != -1 &&
+	((mus[idxmu].p().eta() > 2 && mus[idxmu].p().eta() < 4.5 && es[idxe].p().eta() > 2 && es[idxe].p().eta() < 4.5 && fwdjets.size() > 0)
+	 || (mus[idxmu].p().eta() < -2 && mus[idxmu].p().eta() > -4.5 && es[idxe].p().eta() < -2 && es[idxe].p().eta() > -4.5 && bwdjets.size() > 0))) tree->Fill();
     }
     else{
-      if (mus.size() > 0 || es.size() > 0){
+      if (idxmu != -1 || idxe != -1){
 	tree->Fill();
       }
     }

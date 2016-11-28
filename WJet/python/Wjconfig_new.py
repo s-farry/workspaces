@@ -120,6 +120,8 @@ ptmcj20 = TCut("muminus_truejet_PT > 20000")
 ptmcj20_zmumu = TCut("boson_truejet_PT > 20000")
 
 trigger = TCut("muminus_Hlt2SingleMuonHighPTDecision_TOS==1 && muminus_Hlt1SingleMuonHighPTDecision_TOS == 1 && muminus_L0MuonDecision_TOS ==1")
+
+
 tis   = TCut("muminus_L0Global_TIS==1 && muminus_Hlt1Global_TIS==1 && muminus_Hlt2Global_TIS==1")
 dif   = TCut("dif_mu_pt > 20000")
 zmumu   = TCut("muminus_PT > 20000 && muplus_PT > 20000 && muplus_ETA > 2.0 && muplus_ETA < 4.5 && muminus_ETA > 2.0 && muminus_ETA < 4.5 && boson_M > 60000 && boson_M < 120000")

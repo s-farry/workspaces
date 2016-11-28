@@ -122,8 +122,13 @@ results Fitter::fit_bjpsik_mass(RooDataSet* ds, string oFile, string cut, bool k
   p->AddText(sstream2.str().c_str());
   plot->Draw();
   p->Draw();
-  if (!kstar) canv->SaveAs( ("BJpsiK_"+oFile+".pdf").c_str() );
-  else canv->SaveAs( ("BJpsiKst_"+oFile+".pdf").c_str() );
+  string output;
+  if( !kstar) output = "BJpsiK_"+oFile+".pdf";
+  else output = "BJpsiKst_"+oFile+".pdf";
+  if (location != "") output = location+"/"+output;
+
+  if (!kstar) canv->SaveAs( (output).c_str() );
+  else canv->SaveAs( (output).c_str() );
   canv->Delete();
 
 
@@ -224,8 +229,14 @@ results Fitter::fit_bjpsik_mass_novosibirsk(RooDataSet* ds, string oFile, string
   p->AddText(sstream2.str().c_str());
   plot->Draw();
   p->Draw();
-  if (!kstar) canv->SaveAs( ("BJpsiK_"+oFile+".pdf").c_str() );
-  else canv->SaveAs( ("BJpsiKst_"+oFile+".pdf").c_str() );
+  string output;
+  if( !kstar) output = "BJpsiK_"+oFile+".pdf";
+  else output = "BJpsiKst_"+oFile+".pdf";
+  if (location != "") output = location+"/"+output;
+
+  if (!kstar) canv->SaveAs( (output).c_str() );
+  else canv->SaveAs( (output).c_str() );
+
   canv->Delete();
 
 
@@ -329,8 +340,14 @@ results Fitter::fit_bjpsik_mass_polynomial(RooDataSet* ds, string oFile, string 
   //plot signal
   plot->Draw();
   p->Draw();
-  if (!kstar) canv->SaveAs( ("BJpsiK_"+oFile+".pdf").c_str() );
-  else canv->SaveAs( ("BJpsiKst_"+oFile+".pdf").c_str() );
+  string output;
+  if( !kstar) output = "BJpsiK_"+oFile+".pdf";
+  else output = "BJpsiKst_"+oFile+".pdf";
+  if (location != "") output = location+"/"+output;
+
+  if (!kstar) canv->SaveAs( (output).c_str() );
+  else canv->SaveAs( (output).c_str() );
+
   canv->Delete();
 
 
