@@ -47,12 +47,12 @@ print "Cross-section            : ",Nsig / (eff * L)
 
 
 lhcb = ROOT.TPaveText(0.5, 0.82, 0.85, 0.9, "NDC")
-lhcb.AddText("LHCb, #sqrt{s} = 13 TeV")
+lhcb.AddText("LHCb Unofficial, #sqrt{s} = 13 TeV")
 lhcb.SetFillStyle(0)
 lhcb.SetBorderSize(0)
 
 variables = [
-    Bunch(name='ptj'   , xlabel = 'p_{T}(j)', ylims = [0,14]),
+    Bunch(name='ptj'   , xlabel = 'p_{T}(j) [GeV]', ylims = [0,14]),
     Bunch(name='mu_pt' , xlabel = 'p_{T}(#mu)', ylims = [0, 13]),
     Bunch(name='e_pt'  , xlabel = 'p_{T}(e)'),
     Bunch(name='etaj'  , xlabel = '#eta(j)', ylims = [0, 14]),

@@ -75,14 +75,19 @@ recvars = [
     ["iso"          , "max(mu_cpt_0.50,e_cpt_0.50)/1000.0" , 10, 0, 20],
     ]
 
+ratio_file = TFile("Ratio_2015_25ns_Long.root")
+ratio = ratio_file.Get("Ratio")
+
 muplus_trackeff = EfficiencyClass("muplus_trackeff")
 muplus_trackeff.SetSelectionCut(fid + mupem)
 muplus_trackeff.SetPassCut(lp_rec)
 muplus_trackeff.AddTrees(qq2ttbar_mc2016.true_trees())
 muplus_trackeff.AddTrees(gg2ttbar_mc2016.true_trees())
 muplus_trackeff.AddVars(mupemvars)
+muplus_trackeff.ReweightEff("lp_P", "lp_ETA", ratio)
+muplus_trackeff.ScaleErrs = True
 muplus_trackeff.Run()
-#muplus_trackeff.SaveToFile()
+muplus_trackeff.SaveToFile()
 
 muminus_trackeff = EfficiencyClass("muminus_trackeff")
 muminus_trackeff.SetSelectionCut(fid + mumep)
@@ -90,11 +95,14 @@ muminus_trackeff.SetPassCut(lm_rec)
 muminus_trackeff.AddTrees(qq2ttbar_mc2016.true_trees())
 muminus_trackeff.AddTrees(gg2ttbar_mc2016.true_trees())
 muminus_trackeff.AddVars(mumepvars)
+muminus_trackeff.ReweightEff("lm_P", "lm_ETA", ratio)
+muminus_trackeff.ScaleErrs = True
 muminus_trackeff.Run()
-#muminus_trackeff.SaveToFile()
+muminus_trackeff.SaveToFile()
 
 
 mu_trackeff = EfficiencyClass("mu_trackeff", muplus_trackeff, muminus_trackeff)
+mu_trackeff.ScaleErrs = True
 mu_trackeff.MakeEfficiencyGraph()
 mu_trackeff.SaveToFile("/user2/sfarry/workspaces/top/tuples/mu_trackeff.root")
 

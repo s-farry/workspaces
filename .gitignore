@@ -2,4 +2,9 @@
 *.root
 *.png
 *.eps
+*.lhe
+*.o
+*.pyc
+figures
+figs
 *~
