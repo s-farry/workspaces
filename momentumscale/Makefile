@@ -17,11 +17,11 @@ ROOUNFOLDSYS = /user2/kdreimanis/workspace/RooUnfold-master/RooUnfold-master
 all	: Wouter_modified.o curvbias.o fitZ0.o fitJpsi.o fitZ0truth.o fitBjpsiK.o Fitter.so calibration get_mc_expectation My_double_CB.so
 clean	: ${RM} Wouter_modified.o
 
-%.so	: src/%.cpp
+bin/%.so	: src/%.cpp
 	g++ $(CXXFLAGS) -shared -fPIC $^ -DWITHPYTHON  -I$(PYTHON_INCLUDE) -I$(BOOST_INC) -I$(ROOTSYS)/include -L$(ROOTSYS)/lib $(ROOTLIBS) -L$(BOOST_LIB) $(BOOSTLIBS) $(PYTHON_CPP_FLAGS) -o $@
-%.o	: src/%.cpp
+bin/%.o	: src/%.cpp
 	g++ $(CXXFLAGS) -Isrc/ -I/usr/include -I$(ROOTSYS)/include -I$(ROOUNFOLDSYS)/src -L$(ROOTSYS)/lib $(ROOTLIBS) -l:Fitter.so -L. -lDoubleCB $< -o $@
-%	: src/%.cpp
+bin/%	: src/%.cpp
 	g++ $(CXXFLAGS) -Isrc/ -I/usr/include -I$(ROOTSYS)/include -I$(ROOUNFOLDSYS)/src -L$(ROOTSYS)/lib $(ROOTLIBS) $< -o $@
 libDoubleCB.so	: src/DictOutput.cxx src/My_double_CB.cxx
 	g++ $(CXXFLAGS) -shared -fPIC $^ -DWITHPYTHON  -I$(PYTHON_INCLUDE) -I$(BOOST_INC) -I$(ROOTSYS)/include -L$(ROOTSYS)/lib $(ROOTLIBS) -L$(BOOST_LIB) $(BOOSTLIBS) $(PYTHON_CPP_FLAGS) -o $@

@@ -12,6 +12,6 @@ FASTJETLIBS = -lfastjet -lfastjettools
 all           : zmumuj fit_roofit apply_bdt jj Zjet_LHC13_NNPDF30_NLOPS
 clean         : rm zmumuj
 
-%	: src/%.cc
+bin/%	: src/%.cc
 	g++ $(CXXFLAGS) -I./ -I/user2/sfarry/Generators/include -I/user2/sfarry/Generators/fastjet-3.0.3/install_dir/include \
 	-I$(ROOTSYS)/include $< -o $@  -L$(PYTHIA8)/lib -lpythia8 -L$(FASTJET)/lib $(FASTJETLIBS) -L$(ROOTSYS)/lib $(ROOTLIBS)

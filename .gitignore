@@ -1,9 +1,12 @@
+bin
+tuples
 *.pdf
 *.root
 *.png
 *.eps
 *.lhe
 *.o
+*.so
 *.pyc
 figures
 figs
