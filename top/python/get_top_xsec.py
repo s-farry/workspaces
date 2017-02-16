@@ -32,8 +32,8 @@ L = 1665.865
 Nevts = data.Get('TotEvts').GetVal()
 Nqcd  = data_ss.Get('TotEvts').GetVal()
 Nzj   = zmumuj_data.Get('TotEvts').GetVal()*ztautau.Get('NormEvts').GetVal()/zmumu.Get('NormEvts').GetVal()
-Nwt   = (Nevts - (Nqcd + Nzj))*(wtOttbar/(1+wtOttbar))
-
+#Nwt   = (Nevts - (Nqcd + Nzj))*(wtOttbar/(1+wtOttbar))
+Nwt   = powheg_predictions.Get("Wt_dr_xsec").GetVal() * L * eff
 Nsig  = Nevts - Nqcd - Nzj - Nwt
 
 print "Number of selected events: ", Nevts
@@ -41,9 +41,9 @@ print "Same sign background     : ", Nqcd
 print "Z+jets background        : ", Nzj
 print "Wt background            : ", Nwt
 print "Signal Events            : ", Nsig
-print "Lumi                     : ",L
-print "Efficiency               : ",eff
-print "Cross-section            : ",Nsig / (eff * L)
+print "Lumi                     : ", L
+print "Efficiency               : ", eff
+print "Cross-section            : ", Nsig / (eff * L)
 
 
 lhcb = ROOT.TPaveText(0.5, 0.82, 0.85, 0.9, "NDC")

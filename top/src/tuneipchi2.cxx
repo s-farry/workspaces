@@ -26,13 +26,21 @@ int main(){
   Var2D* eta_phi_plus   = new Var2D("PHI_ETA_plus" , eta_plus  , phi_plus);
 
   
-  TFile* dataf = TFile::Open("root://hepgrid11.ph.liv.ac.uk///dpm/ph.liv.ac.uk/home/lhcb/top/ZMuMuJet.MU.2016.root");
-  TFile* mcf   = TFile::Open("root://hepgrid11.ph.liv.ac.uk///dpm/ph.liv.ac.uk/home/lhcb/top/Zmumujet.Zg_mumu.MU.MC2015.root");
-  TTree* datatt = ((TTree*)dataf->Get("ZMuMu/DecayTree"));
-  TTree* mctt   = ((TTree*)mcf->Get("ZMuMu/DecayTree"));
+  //TFile* dataf = TFile::Open("root://hepgrid11.ph.liv.ac.uk///dpm/ph.liv.ac.uk/home/lhcb/top/ZMuMuJet.MU.2016.root");
+  TFile* dataMUf = TFile::Open("/hepstore/sfarry/GridOutput/2669/ZMuMuJet.MU.2016.root");
+  TFile* dataMDf = TFile::Open("/hepstore/sfarry/GridOutput/2668/ZMuMuJet.MD.2016.root");
+  //TFile* mcf   = TFile::Open("root://hepgrid11.ph.liv.ac.uk///dpm/ph.liv.ac.uk/home/lhcb/top/Zmumujet.Zg_mumu.MU.MC2015.root");
+  TFile* mcMUf = TFile::Open("/hepstore/sfarry/GridOutput/2672/Zmumujet.Zg_mumu.MU.MC2015.root");
+  TFile* mcMDf = TFile::Open("/hepstore/sfarry/GridOutput/2673/Zmumujet.Zg_mumu.MD.MC2015.root");
+  TTree* data_mutt = ((TTree*)dataMUf->Get("ZMuMu/DecayTree"));
+  TTree* data_mdtt = ((TTree*)dataMDf->Get("ZMuMu/DecayTree"));
+  TTree* mc_mutt   = ((TTree*)mcMUf->Get("ZMuMu/DecayTree"));
+  TTree* mc_mdtt   = ((TTree*)mcMDf->Get("ZMuMu/DecayTree"));
   
-  Tree* datat = new Tree("data", datatt );
-  Tree* mct   = new Tree("mc"  , mctt   );
+  Tree* data_mut = new Tree("data_mu", data_mutt );
+  Tree* mc_mut   = new Tree("mc_mu"  , mc_mutt   );
+  Tree* data_mdt = new Tree("data_md", data_mdtt );
+  Tree* mc_mdt   = new Tree("mc_md"  , mc_mdtt   );
   
   Expr* zmumu = new Expr("muplus_PT > 20000 && muminus_PT > 20000 && boson_M > 60000 && boson_M < 120000 && muplus_ETA > 2 && muplus_ETA < 4.5 && muminus_ETA > 2 && muminus_ETA < 4.5 && muminus_TRACK_PCHI2 > 0.01 && muplus_TRACK_PCHI2 > 0.01 && sqrt(muminus_PERR2)/muminus_P < 0.1 && sqrt(muplus_PERR2)/muplus_P < 0.1 && nPVs > 0");
 
@@ -50,24 +58,44 @@ int main(){
   //ReweightVar* rwvar_plus  = new ReweightVar("muplus_nTracksInPV" , rwtracks);
   //ReweightVar* rwvar_minus = new ReweightVar("muminus_nTracksInPV", rwtracks);
   
-  Tune2D tuneretaphi_dx_plus("dx_etaphitune_plus", datat, mct, dx_plus, eta_phi_plus, zmumu->GetExpr());
+  Tune2D tuneretaphi_magup_dx_plus("dx_etaphitune_magup_plus", data_mut, mc_mut, dx_plus, eta_phi_plus, zmumu->GetExpr());
   //tuneretaphi_dx_plus.ReweightMC(rwvar_plus);
-  tuneretaphi_dx_plus.tune();
-  tuneretaphi_dx_plus.SaveToFile();
+  tuneretaphi_magup_dx_plus.tune();
+  tuneretaphi_magup_dx_plus.SaveToFile();
   
-  Tune2D tuneretaphi_dx_minus("dx_etaphitune_minus", datat, mct, dx_minus, eta_phi_minus, zmumu->GetExpr());
-  //tuneretaphi_dx_minus.ReweightMC(rwvar_minus);
-  tuneretaphi_dx_minus.tune();
-  tuneretaphi_dx_minus.SaveToFile();
+  Tune2D tuneretaphi_magup_dx_minus("dx_etaphitune_magup_minus", data_mut, mc_mut, dx_minus, eta_phi_minus, zmumu->GetExpr());
+  //tuneretaphi_magup_dx_minus.ReweightMC(rwvar_minus);
+  tuneretaphi_magup_dx_minus.tune();
+  tuneretaphi_magup_dx_minus.SaveToFile();
 
-  Tune2D tuneretaphi_dy_plus("dy_etaphitune_plus", datat, mct, dy_plus, eta_phi_plus, zmumu->GetExpr());
+  Tune2D tuneretaphi_magup_dy_plus("dy_etaphitune_magup_plus", data_mut, mc_mut, dy_plus, eta_phi_plus, zmumu->GetExpr());
   //tuneretaphi_dy_plus.ReweightMC(rwvar_plus);
-  tuneretaphi_dy_plus.tune();
-  tuneretaphi_dy_plus.SaveToFile();
+  tuneretaphi_magup_dy_plus.tune();
+  tuneretaphi_magup_dy_plus.SaveToFile();
   
-  Tune2D tuneretaphi_dy_minus("dy_etaphitune_minus", datat, mct, dy_minus, eta_phi_minus, zmumu->GetExpr());
+  Tune2D tuneretaphi_magup_dy_minus("dy_etaphitune_magup_minus", data_mut, mc_mut, dy_minus, eta_phi_minus, zmumu->GetExpr());
   //tuneretaphi_dy_minus.ReweightMC(rwvar_minus);
-  tuneretaphi_dy_minus.tune();
-  tuneretaphi_dy_minus.SaveToFile();
+  tuneretaphi_magup_dy_minus.tune();
+  tuneretaphi_magup_dy_minus.SaveToFile();
+  
+  Tune2D tuneretaphi_magdown_dx_plus("dx_etaphitune_magdown_plus", data_mdt, mc_mdt, dx_plus, eta_phi_plus, zmumu->GetExpr());
+  //tuneretaphi_dx_plus.ReweightMC(rwvar_plus);
+  tuneretaphi_magdown_dx_plus.tune();
+  tuneretaphi_magdown_dx_plus.SaveToFile();
+  
+  Tune2D tuneretaphi_magdown_dx_minus("dx_etaphitune_magdown_minus", data_mdt, mc_mdt, dx_minus, eta_phi_minus, zmumu->GetExpr());
+  //tuneretaphi_magdown_dx_minus.ReweightMC(rwvar_minus);
+  tuneretaphi_magdown_dx_minus.tune();
+  tuneretaphi_magdown_dx_minus.SaveToFile();
+
+  Tune2D tuneretaphi_magdown_dy_plus("dy_etaphitune_magdown_plus", data_mdt, mc_mdt, dy_plus, eta_phi_plus, zmumu->GetExpr());
+  //tuneretaphi_dy_plus.ReweightMC(rwvar_plus);
+  tuneretaphi_magdown_dy_plus.tune();
+  tuneretaphi_magdown_dy_plus.SaveToFile();
+  
+  Tune2D tuneretaphi_magdown_dy_minus("dy_etaphitune_magdown_minus", data_mdt, mc_mdt, dy_minus, eta_phi_minus, zmumu->GetExpr());
+  //tuneretaphi_dy_minus.ReweightMC(rwvar_minus);
+  tuneretaphi_magdown_dy_minus.tune();
+  tuneretaphi_magdown_dy_minus.SaveToFile();
   
 }

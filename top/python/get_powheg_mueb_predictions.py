@@ -98,7 +98,7 @@ bwdasy_fwdjet = TCut("(mu_id == 13 && mu_eta < e_eta) || (mu_id == -13 && mu_eta
 mupem = TCut("mup_id == -11 && mum_id == 11")
 mumep = TCut("mup_id == 11  && mum_id == -11")
 
-#ttf   = TFile.Open("/hepstore/sfarry/aMC@NLO/ttbar/Events/mue_ttbar_amcatnlo_pdf_as.root")
+#ttf   = TFile.Open("/hepstore/sfarry/aMCatNLO/ttbar/Events/mue_ttbar_amcatnlo_pdf_as.root")
 ttf   = TFile.Open("/user2/sfarry/external/powheg/POWHEG-BOX-V2/hvq/run_1/muej_powheg_13tev.root")
 t     = ttf.Get("ttbar")
 

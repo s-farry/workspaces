@@ -5,7 +5,6 @@ from ROOT import TFile, TCut, TTree, TMath
 phicut= TCut("(abs(tag_PHI-probe_PHI)<TMath::Pi() ? abs(tag_PHI-probe_PHI) : 2*TMath::Pi()-abs(tag_PHI-probe_PHI))>0.1")
 ptcut = TCut("tag_PT > 20000 && probe_PT > 20000")
   
-
 triggercut  = TCut("tag_Hlt2EWSingleMuonVHighPtDecision_TOS==1 && tag_Hlt1SingleMuonHighPTDecision_TOS == 1 && tag_L0MuonEWDecision_TOS ==1")
 
 trkqual    = TCut("(sqrt(tag_PERR2)/tag_P) < 0.1")

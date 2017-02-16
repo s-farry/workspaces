@@ -42,6 +42,10 @@ trigger_minus = TCut("muminus_Hlt2EWSingleMuonVHighPtDecision_TOS==1 && muminus_
 ztrigger   = TCut("(muplus_Hlt2EWSingleMuonVHighPtDecision_TOS==1 && muplus_Hlt1SingleMuonHighPTDecision_TOS == 1 && muplus_L0MuonEWDecision_TOS ==1) || (muminus_Hlt2EWSingleMuonVHighPtDecision_TOS==1 && muminus_Hlt1SingleMuonHighPTDecision_TOS == 1 && muminus_L0MuonEWDecision_TOS ==1)")
 trigger = TCut("mu_Hlt2EWSingleMuonVHighPtDecision_TOS==1 && mu_Hlt1SingleMuonHighPTDecision_TOS == 1 && mu_L0MuonEWDecision_TOS ==1")
 
+etrigger = TCut("e_L0ElectronDecision_TOS == 1 && e_Hlt1SingleElectronNoIP_TOS == 1 && e_Hlt2EWSingleElectronVHighPtDecision_TOS == 1")
+
+dileptrigger = TCut(trigger.GetTitle() + " || ("+etrigger.GetTitle()+")")
+
 fwdcut = 'fwdjet_pt > 20 && mup_pt > 20 && mum_pt > 20 && min(mup_eta, mum_eta) > 2 && max(mum_eta, mup_eta) < 4.5 && Z_m > 60 && Z_m < 120'
 bwdcut = 'fwdjet_pt > 20 && mup_pt > 20 && mum_pt > 20 && min(mup_eta, mum_eta) > -4.5 && max(mum_eta, mup_eta) < -2 && Z_m > 60 && Z_m < 120'
 

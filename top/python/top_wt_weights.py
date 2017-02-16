@@ -175,12 +175,13 @@ wt_mumep.SaveToFile()
 wt = Template("wt_powheg", wt_mupem, wt_mumep)
 wt.SaveToFile()
 
-amcatnlo_f = TFile.Open("/hepstore/sfarry/aMC@NLO/ttbar/Events/ttbar.root")
+amcatnlo_f = TFile.Open("/hepstore/sfarry/aMCatNLO/ttbar/Events/ttbar.root")
 amcatnlo_t = amcatnlo_f.Get("ttbar")
 bf_ww = pow(2*0.1080,2)
 amcatnlo_scale = 0.5*bf_ww/amcatnlo_t.GetEntries()
 
-powheg_f   = TFile.Open("/user2/sfarry/external/powheg/POWHEG-BOX-V2/hvq/run_1/muej_powheg_13tev.root")
+#powheg_f   = TFile.Open("/user2/sfarry/external/powheg/POWHEG-BOX-V2/hvq/run_1/muej_powheg_13tev.root")
+powheg_f   = TFile.Open("/hepstore/sfarry/Powheg/ttbar/muej_powheg_13tev.root")
 powheg_t   = powheg_f.Get("ttbar")
 powheg_scale = 0.5*2/powheg_t.GetEntries()
 
@@ -392,7 +393,7 @@ for b in vars:
     p.drawROOT()
 
 
-f = TFile("top_weights.root", "RECREATE")
+f = TFile("/user2/sfarry/workspaces/top/tuples/top_weights.root", "RECREATE")
 
 for b in vars:
     wth_powheg   = wt.GetVar(b.name).GetHist()
@@ -427,7 +428,7 @@ for b in vars:
 for b in vars2d:
     wth_powheg   = wt.Get2DVar(b.var1,b.var2).GetHist()
     tth_powheg   = ttbar_powheg.Get2DVar(b.var1,b.var2).GetHist()
-    tth_amcatnlo = ttbar_powheg.Get2DVar(b.var1,b.var2).GetHist()
+    tth_amcatnlo = ttbar_amcatnlo.Get2DVar(b.var1,b.var2).GetHist()
     tth_py8      = ttbar_py8.Get2DVar(b.var1,b.var2).GetHist()
 
     '''

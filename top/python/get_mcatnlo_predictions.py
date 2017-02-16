@@ -116,13 +116,13 @@ bwdasy_fwdjet = TCut("(mu_id == 13 && mu_eta < e_eta) || (mu_id == -13 && mu_eta
 mupem = TCut("mu_id == -13 && e_id == 11")
 mumep = TCut("mu_id == 13  && e_id == -11")
 
-#ttf   = TFile.Open("/hepstore/sfarry/aMC@NLO/ttbar/Events/mue_ttbar_amcatnlo_pdf_as.root")
-ttf   = TFile.Open("/hepstore/sfarry/aMC@NLO/ttbar/Events/ttbar.root")
+#ttf   = TFile.Open("/hepstore/sfarry/aMCatNLO/ttbar/Events/mue_ttbar_amcatnlo_pdf_as.root")
+ttf   = TFile.Open("/hepstore/sfarry/aMCatNLO/ttbar/Events/ttbar.root")
 t     = ttf.Get("ttbar")
 
-wwf   = TFile.Open("/hepstore/sfarry/aMC@NLO/WW/Events/mue_WW_amcatnlo.root")
-wwmgf = TFile.Open("/hepstore/sfarry/aMC@NLO/WWb_LO/Events/run_02/mumu_WWb_madgraph.root")
-wzf   = TFile.Open("/hepstore/sfarry/aMC@NLO/WZ/Events/mumu_WZ_amcatnlo.root")
+wwf   = TFile.Open("/hepstore/sfarry/aMCatNLO/WW/Events/mue_WW_amcatnlo.root")
+wwmgf = TFile.Open("/hepstore/sfarry/aMCatNLO/WWb_LO/Events/run_02/mumu_WWb_madgraph.root")
+wzf   = TFile.Open("/hepstore/sfarry/aMCatNLO/WZ/Events/mumu_WZ_amcatnlo.root")
 
 wwt   = wwf.Get("ttbar")
 wwmgt = wwmgf.Get('ttbar')
@@ -268,7 +268,7 @@ def get_templates(name, t, weights = True):
 
 
 def get_asymmetries(name, t, weights = True):
-    fwd_fwdasy = MWTemplate(name+"_fwd_fwdasy", t, fwdjet20 + fwdasy_fwdjet)
+    fwd_fwdasy = MWTemplate(name+"_fwd_fwdasy", t, fwdjet20 + fwdasy)
     fwd_fwdasy.AddVars(fwdvars)
     fwd_fwdasy.ApplyCut()
     if weights:
@@ -290,7 +290,7 @@ def get_asymmetries(name, t, weights = True):
     fwd_fwdasy.ScaleAllWeights(sf)
     fwd_fwdasy.SaveToFile()
 
-    fwd_bwdasy = MWTemplate(name+"_fwd_bwdasy", t, fwdjet20 + bwdasy_fwdjet)
+    fwd_bwdasy = MWTemplate(name+"_fwd_bwdasy", t, fwdjet20 + bwdasy)
     fwd_bwdasy.AddVars(fwdvars)
     fwd_bwdasy.ApplyCut()
     if weights:
@@ -313,7 +313,7 @@ def get_asymmetries(name, t, weights = True):
     fwd_bwdasy.SaveToFile()
 
 
-    bwd_fwdasy = MWTemplate(name+"_bwd_fwdasy", t, bwdjet20 + fwdasy_bwdjet )
+    bwd_fwdasy = MWTemplate(name+"_bwd_fwdasy", t, bwdjet20 + fwdasy )
     bwd_fwdasy.AddVars(fwdvars)
     bwd_fwdasy.ApplyCut()
     if weights:
@@ -336,7 +336,7 @@ def get_asymmetries(name, t, weights = True):
     bwd_fwdasy.SaveToFile()
 
 
-    bwd_bwdasy = MWTemplate(name+"_bwd_bwdasy", t, bwdjet20 + bwdasy_bwdjet)
+    bwd_bwdasy = MWTemplate(name+"_bwd_bwdasy", t, bwdjet20 + bwdasy)
     bwd_bwdasy.AddVars(fwdvars)
     bwd_bwdasy.ApplyCut()
     if weights:

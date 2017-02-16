@@ -27,8 +27,8 @@ selcut = ptcut + phicut + triggercut + trkqual + vtxcut + eta + mass
 #f = TFile("/hepstore/sfarry/GridOutput/2641/MuonTracking_WLine.MD.2016.root")
 #g = TFile("/hepstore/sfarry/GridOutput/2642/MuonTracking_WLine.MU.2016.root")
 
-f = TFile.Open('root://hepgrid11.ph.liv.ac.uk///dpm/ph.liv.ac.uk/home/lhcb/Run2Effs/MuonTracking_WLine.MU.2016.root')
-g = TFile.Open('root://hepgrid11.ph.liv.ac.uk///dpm/ph.liv.ac.uk/home/lhcb/Run2Effs/MuonTracking_WLine.MD.2016.root')
+f = TFile.Open('root://hepgrid11.ph.liv.ac.uk///dpm/ph.liv.ac.uk/home/lhcb/Run2Effs/MuonTracking_WLine.MD.2016.root')
+g = TFile.Open('root://hepgrid11.ph.liv.ac.uk///dpm/ph.liv.ac.uk/home/lhcb/Run2Effs/MuonTracking_WLine.MU.2016.root')
 
 t = f.Get("PlusTag/DecayTree")
 u = f.Get("MinusTag/DecayTree")

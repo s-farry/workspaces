@@ -22,13 +22,21 @@
 
 void TMVATraining( )
 {
-
+  /*
   TFile* inputS1 = TFile::Open("root://hepgrid11.ph.liv.ac.uk///dpm/ph.liv.ac.uk/home/lhcb/top/ttbar.ttbar_gg.MU.MC2016.root");
   TFile* inputS2 = TFile::Open("root://hepgrid11.ph.liv.ac.uk///dpm/ph.liv.ac.uk/home/lhcb/top/ttbar.ttbar_gg.MD.MC2016.root");
   TFile* inputS3 = TFile::Open("root://hepgrid11.ph.liv.ac.uk///dpm/ph.liv.ac.uk/home/lhcb/top/ttbar.ttbar_qqbar.MU.MC2016.root");
   TFile* inputS4 = TFile::Open("root://hepgrid11.ph.liv.ac.uk///dpm/ph.liv.ac.uk/home/lhcb/top/ttbar.ttbar_qqbar.MD.MC2016.root");
   TFile* inputB1 = TFile::Open("root://hepgrid11.ph.liv.ac.uk///dpm/ph.liv.ac.uk/home/lhcb/top/ttbar.Z_tautau.MU.MC2016.root");
   TFile* inputB2 = TFile::Open("root://hepgrid11.ph.liv.ac.uk///dpm/ph.liv.ac.uk/home/lhcb/top/ttbar.Z_tautau.MD.MC2016.root");
+  */
+
+  TFile* inputS1 = TFile::Open("/hepstore/sfarry/GridOutput/2685/ttbar.ttbar_gg.MU.MC2016.root");
+  TFile* inputS2 = TFile::Open("/hepstore/sfarry/GridOutput/2686/ttbar.ttbar_gg.MD.MC2016.root");
+  TFile* inputS3 = TFile::Open("/hepstore/sfarry/GridOutput/2683/ttbar.ttbar_qqbar.MU.MC2016.root");
+  TFile* inputS4 = TFile::Open("/hepstore/sfarry/GridOutput/2684/ttbar.ttbar_qqbar.MD.MC2016.root");
+  TFile* inputB1 = TFile::Open("/hepstore/sfarry/GridOutput/2689/ttbar.Z_tautau.MU.MC2016.root");
+  TFile* inputB2 = TFile::Open("/hepstore/sfarry/GridOutput/2690/ttbar.Z_tautau.MD.MC2016.root");
 
   TTree *treeS1  = (TTree*)inputS1->Get("ttbar/DecayTree");
   TTree *treeS2  = (TTree*)inputS2->Get("ttbar/DecayTree");

@@ -29,8 +29,8 @@ mass = TCut("boson_M > 60000 && boson_M < 120000")
 
 selcut = ptcut + phicut + isocut + triggercut + trkqual + vtxcut + eta + mass + after_bugfix
 
-f = TFile("/hepstore/sfarry/GridOutput/2623/MuonID.MD.2015.root")
-g = TFile("/hepstore/sfarry/GridOutput/2624/MuonID.MU.2015.root")
+f = TFile.Open('root://hepgrid11.ph.liv.ac.uk///dpm/ph.liv.ac.uk/home/lhcb/Run2Effs/MuonID.MD.2015.root')
+g = TFile.Open('root://hepgrid11.ph.liv.ac.uk///dpm/ph.liv.ac.uk/home/lhcb/Run2Effs/MuonID.MU.2015.root')
 
 t = f.Get("PlusTag/DecayTree")
 u = f.Get("MinusTag/DecayTree")
@@ -198,11 +198,11 @@ def makeMuonID2015(name, selcut, passcut):
 
 
 makeMuonID2015("",selcut,passcut)
-makeMuonID2015("M1",selcut,m1passcut)
-makeMuonID2015("M2",selcut,m2passcut)
-makeMuonID2015("M3",selcut,m3passcut)
-makeMuonID2015("M4",selcut,m4passcut)
-makeMuonID2015("M5",selcut,m5passcut)
+#makeMuonID2015("M1",selcut,m1passcut)
+#makeMuonID2015("M2",selcut,m2passcut)
+#makeMuonID2015("M3",selcut,m3passcut)
+#makeMuonID2015("M4",selcut,m4passcut)
+#makeMuonID2015("M5",selcut,m5passcut)
 #makeMuonID2015("W",selcut + wtrkqual,passcut)
 #makeMuonID2015("Ep",selcut,passcut + Ep)
 #makeMuonID2015("PT25",selcut + pt25, passcut)

@@ -84,10 +84,6 @@ pt20  = TCut("lp_pt  > 20 && lm_pt > 20")
 fwdjet_btag = TCut("abs(fwdjet_flav) == 5")
 bwdjet_btag = TCut("abs(bwdjet_flav) == 5")
 
-fwdjet_veto = TCut("fwdjet_pt == 0")
-bwdjet_veto = TCut("bwdjet_pt == 0")
-
-
 fwdjetpt10 = TCut("fwdjet_pt > 10")
 fwdjetpt20 = TCut("fwdjet_pt > 20")
 
@@ -143,19 +139,17 @@ top_fiducial = TCut("abs(t_y) > 2.0 && abs(t_y) < 5.0 && abs(tbar_y) > 2.0 && ab
 top_fiducial_fwd = TCut("t_y > 2.0 && t_y < 5.0 && tbar_y > 2.0 && tbar_y < 5.0 && t_pt > 10.0 && tbar_pt > 10.0")
 
 ttbar_out          = {}
-ttbar_jetveto_out  = {}
 ttbar_fiducial_out = {}
 ttbar_fwdasy_out   = {}
 ttbar_bwdasy_out   = {}
 
 WW_out          = {}
-WW_jetveto_out  = {}
 WZ_out          = {}
 WWb_out         = {}
 WZb_out         = {}
 WWb_madgraph_out          = {}
 
-def get_templates(name, t, weights = True, selections = [fwdlhcb20, bwdlhcb20], sf = top_sf):
+def get_templates(name, t, weights = True, selections = [fwdjet20, bwdjet20], sf = top_sf):
     fwd_fwdasy = MWTemplate(name+"_fwd_fwdasy", t, selections[0] + fwdasy)
     fwd_fwdasy.AddVars(fwdvars)
     #fwd_fwdasy.Add2DVars(vars2d)
@@ -253,7 +247,7 @@ def get_templates(name, t, weights = True, selections = [fwdlhcb20, bwdlhcb20], 
     #mp.SaveToFile("/user2/sfarry/workspaces/top/tuples/"+name+"_mp.root")
 
     tot    = MWTemplate(name, ttbar_fwdasy, ttbar_bwdasy)
-    tot.SaveToFile("/user2/sfarry/workspaces/top/tuples/"+name+"_mue.root")
+    tot.SaveToFile("/user2/sfarry/workspaces/top/tuples/"+name+".root")
     return [tot, ttbar_fwdasy, ttbar_bwdasy]
 
 def get_fiducial(name, t, fidreg = None, weights = True):
@@ -279,11 +273,11 @@ def get_fiducial(name, t, fidreg = None, weights = True):
     fiducial.FillVars()
     fiducial.Scale(1.0/N)
     fiducial.ScaleAllWeights(1.0/N)
-    fiducial.SaveToFile("/user2/sfarry/workspaces/top/tuples/"+name+"_mue_fiducial.root")
+    fiducial.SaveToFile("/user2/sfarry/workspaces/top/tuples/"+name+"_fiducial.root")
     return fiducial
 
 if relaunch:
-    ttbar = get_templates('ttbar_mue_13tev_amcatnlo', t)
+    ttbar = get_templates('ttbar_mueb_13tev_amcatnlo', t)
     for v in ['t_y', 'lp_eta', 'lp_pt', 'lm_eta', 'lm_pt']:
         ttbar_out[v] = ttbar[0].GetWeightHist(v, "Central")
         for w in range(1,7):
@@ -310,27 +304,6 @@ if relaunch:
         ttbar_bwdasy_out[v+"_alphas117"] = ttbar[2].GetWeightHist(v, "alphas_117")
         ttbar_bwdasy_out[v+"_alphas119"] = ttbar[2].GetWeightHist(v, "alphas_119")
 
-    ttbar_jetveto = get_templates('ttbar_jetveto_mue_13tev_amcatnlo', t, selections = [fwdlhcb20 + fwdjet_veto, bwdlhcb20 + bwdjet_veto])
-    for v in ['t_y', 'lp_eta', 'lp_pt', 'lm_eta', 'lm_pt']:
-        ttbar_jetveto_out[v] = ttbar_jetveto[0].GetWeightHist(v, "Central")
-        for w in range(1,7):
-            ttbar_jetveto_out[v+'_Scale'+str(w)] = ttbar_jetveto[0].GetWeightHist(v, "Scale"+str(w))
-        for w in range(1,101):
-            ttbar_jetveto_out[v+'_pdf'+str(w)] = ttbar_jetveto[0].GetWeightHist(v, "pdf"+str(w))
-        ttbar_jetveto_out[v+"_alphas117"] = ttbar_jetveto[0].GetWeightHist(v, "alphas_117")
-        ttbar_jetveto_out[v+"_alphas119"] = ttbar_jetveto[0].GetWeightHist(v, "alphas_119")
-        
-    WW_jetveto = get_templates('WW_jetveto_mue_13tev_amcatnlo', wwt, selections = [fwdlhcb20 + fwdjet_veto, bwdlhcb20 + bwdjet_veto], sf = ww_sf)
-    for v in ['t_y', 'lp_eta', 'lp_pt', 'lm_eta', 'lm_pt']:
-        WW_jetveto_out[v] = WW_jetveto[0].GetWeightHist(v, "Central")
-        for w in range(1,7):
-            WW_jetveto_out[v+'_Scale'+str(w)] = WW_jetveto[0].GetWeightHist(v, "Scale"+str(w))
-        for w in range(1,101):
-            WW_jetveto_out[v+'_pdf'+str(w)] = WW_jetveto[0].GetWeightHist(v, "pdf"+str(w))
-        WW_jetveto_out[v+"_alphas117"] = WW_jetveto[0].GetWeightHist(v, "alphas_117")
-        WW_jetveto_out[v+"_alphas119"] = WW_jetveto[0].GetWeightHist(v, "alphas_119")
-        
-
     ttbar_fiducial = get_fiducial('ttbar', t, top_fiducial)
 
     for v in ['lp_eta', 'lm_eta', 't_y']:
@@ -343,7 +316,7 @@ if relaunch:
         ttbar_fiducial_out[v+"_alphas119"] = ttbar_fiducial.GetWeightHist(v, "alphas_119")
 
 
-WW_fwd = MWTemplate("WW_mue_fwd", wwt, fwdlhcb20)
+WW_fwd = MWTemplate("WW_mueb_fwd", wwt, fwdjet20)
 WW_fwd.AddVars(fwdvars)
 WW_fwd.ApplyCut()
 WW_fwd.AddWeight("Central","w1010")
@@ -364,7 +337,7 @@ WW_fwd.Scale(ww_sf)
 WW_fwd.ScaleAllWeights(ww_sf)
 WW_fwd.SaveToFile()
 
-WW_bwd = MWTemplate("WW_mue_bwd", wwt, bwdlhcb20)
+WW_bwd = MWTemplate("WW_mueb_bwd", wwt, bwdjet20)
 WW_bwd.AddVars(bwdvars)
 WW_bwd.ApplyCut()
 WW_bwd.AddWeight("Central","w1010")
@@ -385,8 +358,7 @@ WW_bwd.Scale(ww_sf)
 WW_bwd.ScaleAllWeights(ww_sf)
 WW_bwd.SaveToFile()
 
-
-WW = MWTemplate("WW_mue", WW_fwd, WW_bwd)
+WW = MWTemplate("WW_mueb", WW_fwd, WW_bwd)
 WW.SaveToFile()
 
 fwdlhcb20_mumu = TCut(fwdlhcb20.GetTitle().replace('lp_','mup_').replace('lm_','mum_'))
@@ -399,19 +371,8 @@ mue = TCut("(lp_id == -11 && lm_id == 13) || (lp_id == -13 && lm_id == 11)")
 #fwdlhcb20_mumu = TCut(fwdlhcb20.GetTitle().replace('mu_','mup_').replace('e_','mum_'))
 #bwdlhcb20_mumu = TCut(bwdlhcb20.GetTitle().replace('mu_','mup_').replace('e_','mum_'))
 
-WZ_fwd = MWTemplate("WZ_mue_fwd", wzt, mue + fwdlhcb20)
+WZ_fwd = MWTemplate("WZ_mueb_fwd", wzt, mue + fwdlhcb20)
 WZ_fwd.AddVars(fwdvars)
-'''
-for v in variables:
-    var = v.var
-    var = var.replace('<jet>', 'fwdjet')
-    var = var.replace('<mu>' , 'lp')
-    var = var.replace('<e>'  , 'lm')
-    if hasattr(v, 'edges'):
-        WZ_fwd.AddVar(v.name, var, v.edges)
-    else:
-        WZ_fwd.AddVar(v.name, var, v.bins, v.lo, v.hi)
-'''
 WZ_fwd.ApplyCut()
 WZ_fwd.AddWeight("Central","w1010")
 WZ_fwd.AddWeight("Scale1" , "w1002")
@@ -431,7 +392,7 @@ WZ_fwd.Scale(wz_sf)
 WZ_fwd.ScaleAllWeights(wz_sf)
 WZ_fwd.SaveToFile()
 
-WZ_bwd = MWTemplate("WZ_mue_bwd", wzt, mue + bwdlhcb20)
+WZ_bwd = MWTemplate("WZ_mueb_bwd", wzt, mue + bwdlhcb20)
 WZ_bwd.AddVars(bwdvars)
 '''
 for v in variables:
@@ -464,7 +425,7 @@ WZ_bwd.ScaleAllWeights(wz_sf)
 WZ_bwd.SaveToFile()
 
 
-WZ = MWTemplate("WZ_mue", WZ_fwd, WZ_bwd)
+WZ = MWTemplate("WZ_mueb", WZ_fwd, WZ_bwd)
 WZ.SaveToFile()
 
 for v in ['lp_eta']:
@@ -486,11 +447,10 @@ for v in ['lp_eta']:
     WZ_out[v+"_alphas119"] = WZ.GetWeightHist(v, "alphas_119")
 
 #Get the various components
-lp_pt  = details('ttbar_mupt', ttbar_out['lp_pt'], [ttbar_out['lp_pt_Scale'+str(i)] for i in range(1,7)], [ttbar_out['lp_pt_pdf'+str(i)] for i in range(1,101)], [ttbar_out['lp_pt_alphas117'], ttbar_out['lp_pt_alphas119']])
-lp_eta  = details('ttbar_mueta', ttbar_out['lp_eta'], [ttbar_out['lp_eta_Scale'+str(i)] for i in range(1,7)], [ttbar_out['lp_eta_pdf'+str(i)] for i in range(1,101)], [ttbar_out['lp_eta_alphas117'], ttbar_out['lp_eta_alphas119']])
-lp_eta_jetveto  = details('ttbar_jetveto_mueta', ttbar_jetveto_out['lp_eta'], [ttbar_jetveto_out['lp_eta_Scale'+str(i)] for i in range(1,7)], [ttbar_jetveto_out['lp_eta_pdf'+str(i)] for i in range(1,101)], [ttbar_jetveto_out['lp_eta_alphas117'], ttbar_jetveto_out['lp_eta_alphas119']])
-lm_pt  = details('ttbar_ept', ttbar_out['lm_pt'], [ttbar_out['lm_pt_Scale'+str(i)] for i in range(1,7)], [ttbar_out['lm_pt_pdf'+str(i)] for i in range(1,101)], [ttbar_out['lm_pt_alphas117'], ttbar_out['lm_pt_alphas119']])
-lm_eta  = details('ttbar_eeta', ttbar_out['lm_eta'], [ttbar_out['lm_eta_Scale'+str(i)] for i in range(1,7)], [ttbar_out['lm_eta_pdf'+str(i)] for i in range(1,101)], [ttbar_out['lm_eta_alphas117'], ttbar_out['lm_eta_alphas119']])
+lp_pt  = details('ttbar_lp_pt', ttbar_out['lp_pt'], [ttbar_out['lp_pt_Scale'+str(i)] for i in range(1,7)], [ttbar_out['lp_pt_pdf'+str(i)] for i in range(1,101)], [ttbar_out['lp_pt_alphas117'], ttbar_out['lp_pt_alphas119']])
+lp_eta  = details('ttbar_lp_eta', ttbar_out['lp_eta'], [ttbar_out['lp_eta_Scale'+str(i)] for i in range(1,7)], [ttbar_out['lp_eta_pdf'+str(i)] for i in range(1,101)], [ttbar_out['lp_eta_alphas117'], ttbar_out['lp_eta_alphas119']])
+lm_pt  = details('ttbar_lm_pt', ttbar_out['lm_pt'], [ttbar_out['lm_pt_Scale'+str(i)] for i in range(1,7)], [ttbar_out['lm_pt_pdf'+str(i)] for i in range(1,101)], [ttbar_out['lm_pt_alphas117'], ttbar_out['lm_pt_alphas119']])
+lm_eta  = details('ttbar_lm_eta', ttbar_out['lm_eta'], [ttbar_out['lm_eta_Scale'+str(i)] for i in range(1,7)], [ttbar_out['lm_eta_pdf'+str(i)] for i in range(1,101)], [ttbar_out['lm_eta_alphas117'], ttbar_out['lm_eta_alphas119']])
 
 t_y_acc = ratio_details('ttbar_ty_acc', ttbar_fiducial_out['t_y'], [ttbar_fiducial_out['t_y_Scale'+str(i)] for i in range(1,7)],
                           ttbar_out['t_y'], [ttbar_out['t_y_Scale'+str(i)] for i in range(1,7)],
@@ -502,29 +462,7 @@ t_y_acc = ratio_details('ttbar_ty_acc', ttbar_fiducial_out['t_y'], [ttbar_fiduci
 
 lp_eta_WW  = details('WW_lp_eta', WW_out['lp_eta'], [WW_out['lp_eta_Scale'+str(i)] for i in range(1,7)], [WW_out['lp_eta_pdf'+str(i)] for i in range(1,101)], [WW_out['lp_eta_alphas117'], WW_out['lp_eta_alphas119']])
 
-lp_eta_WW_jetveto  = details('WW_lp_eta_jetveto', WW_jetveto_out['lp_eta'], [WW_jetveto_out['lp_eta_Scale'+str(i)] for i in range(1,7)], [WW_jetveto_out['lp_eta_pdf'+str(i)] for i in range(1,101)], [WW_jetveto_out['lp_eta_alphas117'], WW_jetveto_out['lp_eta_alphas119']])
-lp_eta_WW_jetveto_acc = ratio_details('lp_eta_WW_jetveto_acc',
-                                      WW_jetveto_out['lp_eta'],
-                                      [WW_jetveto_out['lp_eta_Scale'+str(i)] for i in range(1,7)],
-                                      WW_out['lp_eta'], [WW_out['lp_eta_Scale'+str(i)] for i in range(1,7)],
-                                      pdfs1 = [WW_jetveto_out['lp_eta_pdf'+str(i)] for i in range(1,101)],
-                                      pdfs2 = [WW_out['lp_eta_pdf'+str(i)] for i in range(1,101)],
-                                      alphas1 = [WW_jetveto_out['lp_eta_alphas117'], WW_jetveto_out['lp_eta_alphas119']],
-                                      alphas2 = [WW_out['lp_eta_alphas117'], WW_out['lp_eta_alphas119']])
-
-lp_eta_ttbar_jetveto_acc = ratio_details('lp_eta_ttbar_jetveto_acc',
-                                      ttbar_jetveto_out['lp_eta'],
-                                      [ttbar_jetveto_out['lp_eta_Scale'+str(i)] for i in range(1,7)],
-                                      ttbar_out['lp_eta'], [ttbar_out['lp_eta_Scale'+str(i)] for i in range(1,7)],
-                                      pdfs1 = [ttbar_jetveto_out['lp_eta_pdf'+str(i)] for i in range(1,101)],
-                                      pdfs2 = [ttbar_out['lp_eta_pdf'+str(i)] for i in range(1,101)],
-                                      alphas1 = [ttbar_jetveto_out['lp_eta_alphas117'], ttbar_jetveto_out['lp_eta_alphas119']],
-                                      alphas2 = [ttbar_out['lp_eta_alphas117'], ttbar_out['lp_eta_alphas119']])
-
-
-
-
-lm_eta_asy = asymm_details('lm_eta_asy', ttbar_fwdasy_out['lm_eta'],
+lm_eta_asy = asymm_details('ttbar_lm_eta_asy', ttbar_fwdasy_out['lm_eta'],
                           [ttbar_fwdasy_out['lm_eta_Scale'+str(i)] for i in range(1,7)],
                           ttbar_bwdasy_out['lm_eta'], 
                           [ttbar_bwdasy_out['lm_eta_Scale'+str(i)] for i in range(1,7)],
@@ -537,16 +475,13 @@ lm_eta_asy = asymm_details('lm_eta_asy', ttbar_fwdasy_out['lm_eta'],
 
 lp_eta_WZ  = details('WZ_lp_eta', WZ_out['lp_eta'], [WZ_out['lp_eta_Scale'+str(i)] for i in range(1,7)], [WZ_out['lp_eta_pdf'+str(i)] for i in range(1,101)], [WZ_out['lp_eta_alphas117'], WZ_out['lp_eta_alphas119']])
 
-output = TFile("/user2/sfarry/workspaces/top/tuples/ttbar_13tev_amcatnlo_mue_predictions.root", "RECREATE")
+output = TFile("/user2/sfarry/workspaces/top/tuples/ttbar_mueb_13tev_amcatnlo_predictions.root", "RECREATE")
 lp_pt.write()
 lp_eta.write()
 lm_pt.write()
 lm_eta.write()
 t_y_acc.write()
 lp_eta_WW.write()
-lp_eta_jetveto.write()
-lp_eta_ttbar_jetveto_acc.write()
-lp_eta_WW_jetveto_acc.write()
 lp_eta_WZ.write()
 lm_eta_asy.write()
 output.Close()
