@@ -2,7 +2,7 @@ j=0
 
 NOW=`date +"%k%m"`
 QUEUE=medium64
-if [ $NOW -gt 1800 or $NOW -lt 900 ]; then QUEUE=all64; fi
+if [[ $NOW -gt 1800 || $NOW -lt 900 ]]; then QUEUE=all64; fi
 
 for i in `ls -d $1/Events/*`
 do

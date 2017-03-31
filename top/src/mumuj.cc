@@ -988,12 +988,12 @@ int main(int argc, char* argv[]) {
   outParts["parton"]    = std::map<string, double>();
   outParts["t"]         = std::map<string, double>();
   outParts["tbar"]      = std::map<string, double>();
-  outParts["mup"]       = std::map<string, double>();
-  outParts["mum"]       = std::map<string, double>();
-  outParts["mup_born"]  = std::map<string, double>();
-  outParts["mum_born"]  = std::map<string, double>();
-  outParts["diell"]     = std::map<string, double>();
-  outParts["muej"]      = std::map<string, double>();
+  outParts["lp"]       = std::map<string, double>();
+  outParts["lm"]       = std::map<string, double>();
+  outParts["lp_born"]  = std::map<string, double>();
+  outParts["lm_born"]  = std::map<string, double>();
+  outParts["ll"]     = std::map<string, double>();
+  outParts["llj"]      = std::map<string, double>();
 
   std::map<string, std::map<string, double> > outJets;
   outJets["jet"]        = std::map<string, double>();
@@ -1005,23 +1005,6 @@ int main(int argc, char* argv[]) {
   
 
 
-  /*
-  std::map<string, double> parton;
-  std::map<string, double> Z;
-  std::map<string, double> mup;
-  std::map<string, double> mum;
-  std::map<string, double> mup_born;
-  std::map<string, double> mum_born;
-  std::map<string, double> dimu;
-  std::map<string, double> jet;
-  std::map<string, double> jet_flav;
-  std::map<string, double> jet2;
-  std::map<string, double> fwdjet;
-  std::map<string, double> bwdjet;
-  std::map<string, double> mujet;
-  std::map<string, double> mufwdjet;
-  std::map<string, double> mubwdjet;
-  */
   std::map<string, double> jet_flav;
   std::vector<string> part_vars     = {"px", "py", "pz", "e", "pt", "phi", "eta", "y", "m", "id"};
   std::vector<string> jet_vars      = {"px", "py", "pz", "e", "pt", "phi", "eta", "y", "m", "mult"};
@@ -1143,6 +1126,7 @@ int main(int argc, char* argv[]) {
       
       // Otherwise count event failure and continue/exit as necessary
       cout << "Warning: event " << iEvent << " failed" << endl;
+      pythia.process.list();
       if (++iError == nError) {
         cout << "Error: too many event failures.. exiting" << endl;
         break;
@@ -1227,7 +1211,8 @@ int main(int argc, char* argv[]) {
 	}
     }
 
-    if (mups.size() == 0 && mums.size() == 0){
+     // remove this for now, doesn't seem relevant when we expect not to have two muons
+    /*if (mups.size() == 0 && mums.size() == 0){
       for (int i = 0 ; i < pythia.event.size(); ++i ){
 	if ( ((abs(pythia.event[i].id())  == 13)
 	     || abs(pythia.event[i].id() == 11))
@@ -1255,7 +1240,7 @@ int main(int argc, char* argv[]) {
 	  }
 	}
       }
-    }
+    }*/
     
     for (int i = 0 ; i < pythia.event.size(); ++i ){
       //Fill Particles fpr jet
@@ -1295,34 +1280,31 @@ int main(int argc, char* argv[]) {
 
     if (tops.size()  == 1) {
       getVals(tops[0], outParts["t"]);
-      //Z_id = Zparts[0].id();
     }
     if (antitops.size() > 0 ) {
       getVals(antitops[0], outParts["tbar"]);
-      //mup_id = mups[0].id();
     }
     if (mups.size() > 0) {
-      getVals(mups[0], outParts["mup"]);
-      //mum_id = mums[0].id();
+      getVals(mups[0], outParts["lp"]);
     }
     if (mups_born.size() > 0) {
-      getVals(mups_born[0], outParts["mup_born"]);
+      getVals(mups_born[0], outParts["lp_born"]);
     }
     if (mums_born.size() > 0) {
-      getVals(mums_born[0], outParts["mum_born"]);
+      getVals(mums_born[0], outParts["lm_born"]);
     }
     if (mums.size() > 0) {
-      getVals(mums[0], outParts["mum"]);
+      getVals(mums[0], outParts["lm"]);
     }
 
     if (mups.size() > 0 && mums.size() > 0){
       Vec4 diell_p = mups[0].p() + mums[0].p();
-      getVals(diell_p, outParts["diell"]);
+      getVals(diell_p, outParts["ll"]);
     }
     if (mups.size() > 0 && mums.size() > 0 && jets.size() > 0){
       Vec4 j(jets[0].px(), jets[0].py(), jets[0].pz(), jets[0].e());
       Vec4 muej_p = mups[0].p() + mums[0].p() + j;
-      getVals(muej_p, outParts["muej"]);
+      getVals(muej_p, outParts["llj"]);
     }
     if (jets.size() > 0) {
       getVals(jets[0], outJets["jet"], hard_partons, mesons, pythia.event);

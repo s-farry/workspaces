@@ -1,4 +1,4 @@
-CXXFLAGS = -O0 -ansi -W -Wall -g -std=c++11
+CXXFLAGS = -O0 -ansi -W -Wall -g -std=c++17
 PYTHON_VERSION = 2.7
 PYTHON_INCLUDE = $(PYTHONHOME)/include/python$(PYTHON_VERSION)
 BOOST_INC = /cvmfs/sft.cern.ch/lcg/external/Boost/1.53.0_python2.7/x86_64-slc6-gcc48-opt/include
@@ -9,11 +9,11 @@ PYTHON_LIB = $(PYTHONHOME)/lib/
 PYTHIA8 = /cvmfs/sft.cern.ch/lcg/external/MCGenerators_lcgcmt67b/pythia8/205/x86_64-slc6-gcc48-opt
 FASTJET = /cvmfs/sft.cern.ch/lcg/external/fastjet/3.0.3/x86_64-slc6-gcc48-opt
 
-ROOTLIBS = -lRIO -lNet -lHist -lTree -lMatrix -lMathCore -lThread -lPhysics -lPyROOT -lMinuit -lMinuit2 -lGpad # root libraries
+ROOTLIBS = -lCore -lRIO -lNet -lHist -lTree -lMatrix -lMathCore -lThread -lPhysics -lMinuit -lMinuit2 -lGpad # root libraries
 FASTJETLIBS = -lfastjet -lfastjettools
 PYTHON_CPP_FLAGS   = -I/cvmfs/lhcb.cern.ch/lib/lcg/releases/LCG_79/Python/2.7.9.p1/x86_64-slc6-gcc48-opt/include/python2.7
 # Define make targets.
-all           : muej mumuj tuneipchi2
+all           : muej mumuj tuneipchi2 LHEFCat makeLHEtoptuple
 clean         : rm muej mumuj
 
 %	: src/%.cc

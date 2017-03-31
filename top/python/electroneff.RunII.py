@@ -14,7 +14,6 @@ dataMU2016     = TFile("/hepstore/sfarry/GridOutput/2680/ElectronID.MU.2016.root
 dataMD2015     = TFile.Open("root://hepgrid11.ph.liv.ac.uk//dpm/ph.liv.ac.uk/home/lhcb/Run2Effs/ElectronID.MD.2015.root")
 dataMU2015     = TFile.Open("root://hepgrid11.ph.liv.ac.uk//dpm/ph.liv.ac.uk/home/lhcb/Run2Effs/ElectronID.MU.2015.root")
 
-
 trktag   = TCut("tag_PT > 20000 && tag_ETA > 2.0 && tag_ETA < 4.5 && tag_CaloEcalE/tag_P > 0.2 && tag_CaloHcalE/tag_P < 0.01")
 isotag = TCut("(tag_cpt_0.50 - tag_cpt_0.10) < 2000")
 isoprobe = TCut("(probe_cpt_0.50 - probe_cpt_0.10) < 2000")

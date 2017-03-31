@@ -34,6 +34,8 @@ Turbojettag  = TCut("boson_Turbojet_BDTTag == 1")
 
 onejet = TCut("boson_mult20==1")
 
+runs = [174000, 176000, 178000, 180000, 182000, 184000, 186000]
+
 plots = [
     Bunch(name="ptj"     ,var= "<jet>_PT/1000.0" , bins = 30, lo = 15.0, hi = 100.0, xlabel = 'p_{T}^{j} [GeV]'),
     Bunch(name="etaj"    ,var= "<jet>_ETA", bins = 20, lo = 2.0, hi = 4.5, xlabel = '#eta^{j}'),
@@ -46,7 +48,9 @@ plots = [
     Bunch(name="npoint"  ,var= "<jet>_npoint" , bins = 46, lo = -0.5, hi = 45.5, xlabel = 'npoint'),
     Bunch(name="width"   ,var= "<jet>_width" , bins = 50, lo = 0, hi = 1.0, xlabel = 'jet width'),
     Bunch(name="n90"     ,var= "<jet>_n90" , bins = 16, lo = -0.5, hi = 15.5, xlabel = 'n90'),
-    Bunch(name='balance' ,var = "(boson_PT - <jet>_PT) / boson_PT", bins = 50, lo = -2.0, hi = 2.0, xlabel = 'Jet Balance')]
+    Bunch(name='balance' ,var = "(boson_PT - <jet>_PT) / boson_PT", bins = 50, lo = -2.0, hi = 2.0, xlabel = 'Jet Balance'),
+    Bunch(name='run', var='runNumber', binedges = runs, xlabel = 'run')
+    ]
 
 tag_plots = [
     Bunch(name="bdt0"   ,var= "<jet>_Tag0_bdt0" , bins = 50, lo = 0, hi = 1.0, xlabel = 'bdt0'),
@@ -57,7 +61,7 @@ res_plots = [
     Bunch(name="dptj"     ,var= "(<jet1>_PT - <jet2>_PT)/<jet1>_PT"   , bins = 50, lo = -1, hi = 1),
     Bunch(name="detaj"    ,var= "(<jet1>_ETA - <jet2>_ETA)/<jet1>_ETA", bins = 50, lo = -1, hi = 1)]
 
-true2dvars = [ ['true_ptj10', 'dptj'], ['true_etaj10', 'dptj'] ]
+true2dvars = [ ['true_ptj10', 'dptj'], ['true_etaj10', 'dptj'], ['run', 'dptj'] ]
 
 run1jet = Template("run1jet")
 run1jet.SetSelCut(fid + recRunIjet)
@@ -65,9 +69,13 @@ run1jet.AddTree(mu_t)
 run1jet.AddTree(md_t)
 for p in plots:
     var = p.var.replace('<jet>', 'boson_RunIjet')
-    run1jet.AddVar(p.name, var, p.bins, p.lo, p.hi)
+    if hasattr(p, 'binedges'):
+        run1jet.AddVar(p.name, var, p.binedges )
+    else:
+        run1jet.AddVar(p.name, var, p.bins, p.lo, p.hi)
 run1jet.Add2DVar(['etaj10', 'balance'])
 run1jet.Add2DVar(['ptj10', 'balance'])
+run1jet.Add2DVar(['run', 'balance'])
 run1jet.Run()
 run1jet.SaveToFile(loc + '/run1zjet.root')
 
@@ -77,9 +85,13 @@ hltjet.AddTree(mu_t)
 hltjet.AddTree(md_t)
 for p in plots:
     var = p.var.replace('<jet>', 'boson_Hltjet')
-    hltjet.AddVar(p.name, var, p.bins, p.lo, p.hi)
+    if hasattr(p, 'binedges'):
+        hltjet.AddVar(p.name, var, p.binedges)
+    else:
+        hltjet.AddVar(p.name, var, p.bins, p.lo, p.hi)
 hltjet.Add2DVar(['etaj10', 'balance'])
 hltjet.Add2DVar(['ptj10', 'balance'])
+hltjet.Add2DVar(['run', 'balance'])
 hltjet.Run()
 hltjet.SaveToFile(loc + '/hltzjet.root')
 
@@ -89,9 +101,13 @@ turbojet.AddTree(mu_t)
 turbojet.AddTree(md_t)
 for p in plots:
     var = p.var.replace('<jet>', 'boson_Turbojet')
-    turbojet.AddVar(p.name, var, p.bins, p.lo, p.hi)
+    if hasattr(p, 'binedges'):
+        turbojet.AddVar(p.name, var, p.binedges)
+    else:
+        turbojet.AddVar(p.name, var, p.bins, p.lo, p.hi)
 turbojet.Add2DVar(['etaj10', 'balance'])
 turbojet.Add2DVar(['ptj10', 'balance'])
+turbojet.Add2DVar(['run', 'balance'])
 turbojet.Run()
 turbojet.SaveToFile(loc + '/turbozjet.root')
 
@@ -101,7 +117,10 @@ run11jet.AddTree(mu_t)
 run11jet.AddTree(md_t)
 for p in plots:
     var = p.var.replace('<jet>', 'boson_RunIjet')
-    run11jet.AddVar(p.name, var, p.bins, p.lo, p.hi)
+    if hasattr(p, 'binedges'):
+        run11jet.AddVar(p.name, var, p.binedges)
+    else:
+        run11jet.AddVar(p.name, var, p.bins, p.lo, p.hi)
 run11jet.Run()
 run11jet.SaveToFile(loc + '/run1z1jet.root')
 
@@ -111,7 +130,10 @@ hlt1jet.AddTree(mu_t)
 hlt1jet.AddTree(md_t)
 for p in plots:
     var = p.var.replace('<jet>', 'boson_Hltjet')
-    hlt1jet.AddVar(p.name, var, p.bins, p.lo, p.hi)
+    if hasattr(p, 'binedges'):
+        hlt1jet.AddVar(p.name, var, p.binedges )
+    else:
+        hlt1jet.AddVar(p.name, var, p.bins, p.lo, p.hi)
 hlt1jet.Run()
 hlt1jet.SaveToFile(loc + '/hltz1jet.root')
 
@@ -121,7 +143,10 @@ turbo1jet.AddTree(mu_t)
 turbo1jet.AddTree(md_t)
 for p in plots:
     var = p.var.replace('<jet>', 'boson_Turbojet')
-    turbo1jet.AddVar(p.name, var, p.bins, p.lo, p.hi)
+    if hasattr(p, 'binedges'):
+        turbo1jet.AddVar(p.name, var, p.binedges)
+    else:
+        turbo1jet.AddVar(p.name, var, p.bins, p.lo, p.hi)
 turbo1jet.Run()
 turbo1jet.SaveToFile(loc + '/turboz1jet.root')
 
@@ -217,7 +242,7 @@ for p in plots:
 
 
 
-for p in ('ptj10', 'etaj10'):
+for p in ('ptj10', 'etaj10', 'run'):
     #plot mean and resolution
     d = Plot([run1fit.GetParHist(p,3), hltfit.GetParHist(p,3), turbofit.GetParHist(p,4)])
     d.forceStyle()

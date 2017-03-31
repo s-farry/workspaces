@@ -36,24 +36,28 @@ trueRunIjet     = TCut("muminus_trueRunIjet_PT > 15000")
 rec2trueRunIjet = TCut("muminus_mcRunIjet_PT >7500")
 rec2fakeRunIjet = TCut("muminus_mcRunIjet_PT <7500")
 true2recRunIjet = TCut("muminus_rectrueRunIjet_PT > 7500") 
+pvtrueRunIjet   = TCut("sqrt(pow(muminus_rectrueRunIjet_vtx_x - muminus_OWNPV_X,2) + pow(muminus_rectrueRunIjet_vtx_y - muminus_OWNPV_Y,2) + pow(muminus_rectrueRunIjet_vtx_z - muminus_OWNPV_Z,2)) < 1")
 
 recHltjet      = TCut("muminus_Hltjet_PT > 15000")
 trueHltjet     = TCut("muminus_trueHltjet_PT > 15000")
 rec2trueHltjet = TCut("muminus_mcHltjet_PT >7500")
 rec2fakeHltjet = TCut("muminus_mcHltjet_PT <7500")
 true2recHltjet = TCut("muminus_rectrueHltjet_PT > 7500") 
+pvtrueHltjet   = TCut("sqrt(pow(muminus_rectrueHltjet_vtx_x - muminus_OWNPV_X,2) + pow(muminus_rectrueHltjet_vtx_y - muminus_OWNPV_Y,2) + pow(muminus_rectrueHltjet_vtx_z - muminus_OWNPV_Z,2)) < 1")
 
 recHltGPjet      = TCut("muminus_HltGPjet_PT > 15000")
 trueHltGPjet     = TCut("muminus_trueHltGPjet_PT > 15000")
 rec2trueHltGPjet = TCut("muminus_mcHltGPjet_PT >7500")
 rec2fakeHltGPjet = TCut("muminus_mcHltGPjet_PT <7500")
 true2recHltGPjet = TCut("muminus_rectrueHltGPjet_PT > 7500") 
+pvtrueHltGPjet   = TCut("sqrt(pow(muminus_rectrueHltGPjet_vtx_x - muminus_OWNPV_X,2) + pow(muminus_rectrueHltGPjet_vtx_y - muminus_OWNPV_Y,2) + pow(muminus_rectrueHltGPjet_vtx_z - muminus_OWNPV_Z,2)) < 1")
 
 recTurbojet      = TCut("muminus_Turbojet_PT > 15000")
 trueTurbojet     = TCut("muminus_trueTurbojet_PT > 15000")
 rec2trueTurbojet = TCut("muminus_mcTurbojet_PT >7500")
 rec2fakeTurbojet = TCut("muminus_mcTurbojet_PT <7500")
 true2recTurbojet = TCut("muminus_rectrueTurbojet_PT > 7500") 
+pvtrueTurbojet   = TCut("sqrt(pow(muminus_rectrueTurbojet_vtx_x - muminus_OWNPV_X,2) + pow(muminus_rectrueTurbojet_vtx_y - muminus_OWNPV_Y,2) + pow(muminus_rectrueTurbojet_vtx_z - muminus_OWNPV_Z,2)) < 1")
 
 RunIjettag   = TCut("muminus_RunIjet_BDTTag == 1")
 Hltjettag    = TCut("muminus_Hltjet_BDTTag == 1")
@@ -68,6 +72,7 @@ Turbojet_trueb = TCut("abs(muminus_mcTurbojet_flavour) == 5")
 plots = [
     Bunch(name="ptj"     ,var= "<jet>_PT/1000.0" , bins = 50, lo = 15.0, hi = 150.0, xlabel = 'p_{T}^{j} [GeV]'),
     Bunch(name="etaj"    ,var= "<jet>_ETA", bins = 20, lo = 2.0, hi = 4.5, xlabel = '#eta^{j}'),
+    Bunch(name="phi"    ,var= "<jet>_PHI", bins = 20, lo = -TMath.Pi(), hi = TMath.Pi(), xlabel = '#phi(j)'),
     Bunch(name="ptj10"   ,var= "<jet>_PT/1000.0" , bins = 10, lo = 15.0, hi = 100.0, xlabel = 'p_{T}^{j} [GeV]'),
     Bunch(name="etaj10"  ,var= "<jet>_ETA", bins = 10, lo = 2.0, hi = 4.5, xlabel='#eta^{j}'),
     Bunch(name="cpf"     ,var= "<jet>_cpf" , bins = 100, lo = 0, hi = 1.0, xlabel = 'cpf', shiftlegx = -0.4),
@@ -78,16 +83,18 @@ plots = [
     Bunch(name="width"   ,var= "<jet>_width" , bins = 50, lo = 0, hi = 1.0, xlabel = 'jet width'),
     Bunch(name="n90"     ,var= "<jet>_n90" , bins = 16, lo = -0.5, hi = 15.5, xlabel = 'n90')]
 tag_plots = [
-    Bunch(name="bdt0"    ,var= "<jet>_Tag0_bdt0" , bins = 50, lo = 0, hi = 1.0, xlabel = 'bdt0'),
-    Bunch(name="bdt1"    ,var= "<jet>_Tag0_bdt1" , bins = 50, lo = 0, hi = 1.0, xlabel = 'bdt1'),
+    Bunch(name="bdt0"    ,var= "<jet>_Tag0_bdt0" , bins = 50, lo = 0, hi = 1.0, xlabel = 'bdt0', shiftlegx = -0.2, shiftlegy = -0.3),
+    Bunch(name="bdt1"    ,var= "<jet>_Tag0_bdt1" , bins = 50, lo = 0, hi = 1.0, xlabel = 'bdt1', shiftlegx = -0.2, shiftlegy = -0.3)
     ]
 true_plots = [
-    Bunch(name="true_ptj"     ,var= "<jet>_PT/1000.0" , bins = 18, lo = 0, hi = 100.0, xlabel = 'p_{T}^{j} [GeV]'),
+    Bunch(name="true_ptj"     ,var= "<jet>_PT/1000.0" , bins = 50, lo = 15.0, hi = 150.0, xlabel = 'p_{T}^{j} [GeV]'),
     Bunch(name="true_etaj"    ,var= "<jet>_ETA", bins = 20, lo = 2.0, hi = 4.5, xlabel = '#eta^{j}'),
     Bunch(name="true_ptj10"   ,var= "<jet>_PT/1000.0" , bins = 9, lo = 10.0, hi = 100.0, xlabel = 'p_{T}^{j} [GeV]'),
     Bunch(name="true_etaj10"  ,var= "<jet>_ETA", bins = 10, lo = 2.0, hi = 4.5, xlabel = '#eta^{j}'),
     Bunch(name="true_cpf"     ,var= "<jet>_cpf" , bins = 100, lo = 0.0, hi = 1.0, xlabel = 'cpf'),
     Bunch(name="true_mult"    ,var= "<jet>_ndauts", bins = 46, lo = -0.5, hi = 45.5, xlabel = 'multiplicity'),
+    Bunch(name="true_mpt"     ,var= "<jet>_mpt" , bins = 100, lo = 0, hi = 40000.0, xlabel = 'mpt'),
+    Bunch(name="true_mtf"     ,var= "<jet>_mtf" , bins = 100, lo = 0, hi = 1.0, xlabel = 'mtf'),
     Bunch(name="true_width"   ,var= "<jet>_width", bins = 50, lo = 0, hi = 1.0, xlabel = 'width')
     ]
 
@@ -173,7 +180,7 @@ for p in plots:
     var = p.var.replace('<jet>', 'muminus_Turbojet')
     turbojet_fake.AddVar(p.name, var, p.bins, p.lo, p.hi)
 turbojet_fake.Run()
-
+'''
 run1jet_true = Template("run1jet_true")
 run1jet_true.SetSelCut(fid + trueRunIjet + rec2trueRunIjet)
 run1jet_true.AddTree(mu_t)
@@ -283,6 +290,50 @@ for p in plots:
 turbojet_eff.Run()
 turbojet_eff.SaveToFile(loc + '/turbojet_eff.root')
 
+run1jet_pveff = EfficiencyClass("run1jet_pveff")
+run1jet_pveff.SetSelectionCut(fid + trueRunIjet + true2recRunIjet )
+run1jet_pveff.SetPassCut( pvtrueRunIjet )
+run1jet_pveff.AddTree(mu_t)
+run1jet_pveff.AddTree(md_t)
+for p in plots:
+    var = p.var.replace('<jet>', 'muminus_trueRunIjet')
+    run1jet_pveff.AddVar(p.name, var, p.bins, p.lo, p.hi)
+run1jet_pveff.Run()
+run1jet_pveff.SaveToFile(loc + '/run1jet_pveff.root')
+
+hltjet_pveff = EfficiencyClass("hltjet_pveff")
+hltjet_pveff.SetSelectionCut(fid + trueHltjet + true2recHltjet )
+hltjet_pveff.SetPassCut( pvtrueHltGPjet )
+hltjet_pveff.AddTree(mu_t)
+hltjet_pveff.AddTree(md_t)
+for p in plots:
+    var = p.var.replace('<jet>', 'muminus_trueHltjet')
+    hltjet_pveff.AddVar(p.name, var, p.bins, p.lo, p.hi)
+hltjet_pveff.Run()
+hltjet_pveff.SaveToFile(loc + '/hltjet_pveff.root')
+
+hltgpjet_pveff = EfficiencyClass("hltgpjet_pveff")
+hltgpjet_pveff.SetSelectionCut(fid + trueHltGPjet + true2recHltGPjet)
+hltgpjet_pveff.SetPassCut( pvtrueHltGPjet )
+hltgpjet_pveff.AddTree(mu_t)
+hltgpjet_pveff.AddTree(md_t)
+for p in plots:
+    var = p.var.replace('<jet>', 'muminus_trueHltGPjet')
+    hltgpjet_pveff.AddVar(p.name, var, p.bins, p.lo, p.hi)
+hltgpjet_pveff.Run()
+hltgpjet_pveff.SaveToFile(loc + '/hltgpjet_pveff.root')
+
+turbojet_pveff = EfficiencyClass("turbojet_pveff")
+turbojet_pveff.SetSelectionCut(fid + trueTurbojet + true2recTurbojet)
+turbojet_pveff.SetPassCut( pvtrueTurbojet)
+turbojet_pveff.AddTree(mu_t)
+turbojet_pveff.AddTree(md_t)
+for p in plots:
+    var = p.var.replace('<jet>', 'muminus_trueTurbojet')
+    turbojet_pveff.AddVar(p.name, var, p.bins, p.lo, p.hi)
+turbojet_pveff.Run()
+turbojet_pveff.SaveToFile(loc + '/turbojet_pveff.root')
+
 run1jet_tageff = EfficiencyClass("run1jet_tageff")
 run1jet_tageff.SetSelectionCut(fid + recRunIjet + rec2trueRunIjet + Run1jet_trueb)
 run1jet_tageff.SetPassCut(RunIjettag)
@@ -342,6 +393,7 @@ turbojet_tageff.SaveToFile(loc + '/turbojet_tageff.root')
 run1fit = FitAnalysis("res_RunI", "dptj", "Voigtian(x, N, m, s, a)")
 run1fit.SetVal('m', 0.1)
 run1fit.SetVal('s', 0.15)
+run1fit.FixVal('a', 0.08)
 run1fit.SetRange('m', -0.4, 0.4)
 run1fit.SetRange('s', 0, 0.5)
 run1fit.Init(run1jet_true)
@@ -354,6 +406,7 @@ run1fit.SaveToFile(loc+"/run1jetres.root")
 hltfit = FitAnalysis("res_Hlt", "dptj", "Voigtian(x, N, m, s,a)")
 hltfit.SetVal('m', 0.0)
 hltfit.SetVal('s', 0.15)
+hltfit.FixVal('a', 0.08)
 hltfit.SetRange('m', -0.4, 0.4)
 hltfit.SetRange('s', 0, 0.5)
 hltfit.Init(hltjet_true)
@@ -366,6 +419,7 @@ hltfit.SaveToFile(loc+"/hltjetres.root")
 hltgpfit = FitAnalysis("res_HltGP", "dptj", "Voigtian(x, N, m, s,a)")
 hltgpfit.SetVal('m', 0.0)
 hltgpfit.SetVal('s', 0.15)
+hltgpfit.FixVal('a', 0.08)
 hltgpfit.SetRange('m', -0.4, 0.4)
 hltgpfit.SetRange('s', 0, 0.5)
 hltgpfit.Init(hltgpjet_true)
@@ -378,6 +432,7 @@ hltgpfit.SaveToFile(loc+"/hltgpjetres.root")
 turbofit = FitAnalysis("res_Turbo", "dptj", "Voigtian(x, N, m, s,a)")
 turbofit.SetVal('m', 0.0)
 turbofit.SetVal('s', 0.15)
+turbofit.FixVal('a', 0.08)
 turbofit.SetRange('m', -0.4, 0.4)
 turbofit.SetRange('s', 0, 0.5)
 turbofit.Init(turbojet_true)
@@ -387,7 +442,7 @@ turbofit.SetToRMS('s')
 turbofit.FitIt("MLLQ")
 turbofit.SaveToFile(loc+"/turbojetres.root")
 
-
+'''
 from PlotTools import *
 from Style import *
 
@@ -395,14 +450,18 @@ SetLHCbStyle()
 
 
 for p in plots:
+    
     #plot distributions
-    d = Plot([run1jet.GetVar(p.name).GetHist(), hltjet.GetVar(p.name).GetHist(), hltgpjet.GetVar(p.name).GetHist(), turbojet.GetVar(p.name).GetHist()])
+    d = Plot([run1jet.GetVar(p.name).GetHist(), hltjet.GetVar(p.name).GetHist(), turbojet.GetVar(p.name).GetHist()])
+    #d = Plot([run1jet.GetVar(p.name).GetHist(), hltjet.GetVar(p.name).GetHist(), hltgpjet.GetVar(p.name).GetHist(), turbojet.GetVar(p.name).GetHist()])
     d.forceStyle()
     d.AutoYlims()
     d.setProp('xlabel', p.xlabel)
     d.setProp('ylabel', 'Events')
-    d.setProp('labels', ['Run I Jets', 'Hlt Jets', 'Hlt Jets (GP)', 'Turbo Jets'])
-    d.setProp('colors', ['red','black','green','blue'])
+    d.setProp('labels', ['Run I Jets', 'Hlt Jets', 'Turbo Jets'])
+    #d.setProp('labels', ['Run I Jets', 'Hlt Jets', 'Hlt Jets (GP)', 'Turbo Jets'])
+    d.setProp('colors', ['red','black','blue'])
+    #d.setProp('colors', ['red','black','green','blue'])
     d.setProp('location', '/user2/sfarry/workspaces/top/figures')
     d.setProp('filename', 'jetcomp_'+p.name+'.pdf')
     d.setProp('markerstyles', 20)
@@ -411,20 +470,23 @@ for p in plots:
     if hasattr(p, 'shiftlegy'): d.ShiftLegY(p.shiftlegy)
     d.drawROOT()
 
-    d = Plot([run1jet_fake.GetVar(p.name).GetHist(), hltjet_fake.GetVar(p.name).GetHist(),  hltgpjet_fake.GetVar(p.name).GetHist(), turbojet_fake.GetVar(p.name).GetHist()])
+    d = Plot([run1jet_fake.GetVar(p.name).GetHist(), hltjet_fake.GetVar(p.name).GetHist(), turbojet_fake.GetVar(p.name).GetHist()])
+    #d = Plot([run1jet_fake.GetVar(p.name).GetHist(), hltjet_fake.GetVar(p.name).GetHist(),  hltgpjet_fake.GetVar(p.name).GetHist(), turbojet_fake.GetVar(p.name).GetHist()])
     d.forceStyle()
     d.AutoYlims()
     d.setProp('xlabel', p.xlabel)
     d.setProp('ylabel', '[A.U.]')
-    d.setProp('labels', ['Run I Jets', 'Hlt Jets', 'Hlt Jets (GP)', 'Turbo Jets'])
-    d.setProp('colors', ['red','black','green','blue'])
+    d.setProp('labels', ['Run I Jets', 'Hlt Jets', 'Turbo Jets'])
+    #d.setProp('labels', ['Run I Jets', 'Hlt Jets', 'Hlt Jets (GP)', 'Turbo Jets'])
+    d.setProp('colors', ['red','black','blue'])
+    #d.setProp('colors', ['red','black','green','blue'])
     d.setProp('location', '/user2/sfarry/workspaces/top/figures')
     d.setProp('filename', 'jetfake_'+p.name+'.pdf')
     d.setProp('markerstyles', 20)
     d.setProp('leglims', [0.65, 0.7, 0.9, 0.9])
     d.setProp('normalised', True)
     d.drawROOT()
-
+    '''
     d = Plot([run1jet_true.GetVar(p.name).GetHist(), run1jet_fake.GetVar(p.name).GetHist()])
     d.forceStyle()
     d.AutoYlims()
@@ -469,7 +531,7 @@ for p in plots:
     d.setProp('normalised', True)
     if hasattr(p, 'lims'): d.setProp('ylims', p.ylims)
     d.drawROOT()
-
+    '''
     #plot fake rate
     
     run1  = run1jet_fake.GetVar(p.name).GetHist().Clone('run1_'+p.name+'_fake_rate')
@@ -481,30 +543,76 @@ for p in plots:
     hltgp.Divide(hltgpjet.GetVar(p.name).GetHist())
     turbo.Divide(turbojet.GetVar(p.name).GetHist())
 
-    d = Plot([run1, hlt, hltgp,turbo])
+    d = Plot([run1, hlt, turbo])
+    #d = Plot([run1, hlt, hltgp,turbo])
     d.forceStyle()
     d.AutoYlims()
     d.setProp('xlabel', p.xlabel)
     d.setProp('ylabel', 'Jet Fake Rate')
-    d.setProp('labels', ['Run 1 Jets', 'Hlt Jets', 'Hlt Jets (GP)', 'Turbo Jets'])
-    d.setProp('colors', ['red','black','green','blue'])
+    d.setProp('labels', ['Run 1 Jets', 'Hlt Jets', 'Turbo Jets'])
+    #d.setProp('labels', ['Run 1 Jets', 'Hlt Jets', 'Hlt Jets (GP)', 'Turbo Jets'])
+    #d.setProp('colors', ['red','black','green','blue'])
+    d.setProp('colors', ['red','black','blue'])
     d.setProp('location', '/user2/sfarry/workspaces/top/figures')
     d.setProp('filename', 'jetfakerate_'+p.name+'.pdf')
     d.setProp('markerstyles', 20)
     d.setProp('leglims', [0.65, 0.7, 0.9, 0.9])
     if hasattr(p, 'lims'): d.setProp('ylims', p.ylims)
     d.drawROOT()
-    
+    '''
     #plot efficiency
-    d = Plot([run1jet_eff.GetVar(p.name).GetEffGraph(), hltjet_eff.GetVar(p.name).GetEffGraph(),  hltgpjet_eff.GetVar(p.name).GetEffGraph(),turbojet_eff.GetVar(p.name).GetEffGraph()])
+    d = Plot([run1jet_eff.GetVar(p.name).GetEffGraph(), hltjet_eff.GetVar(p.name).GetEffGraph(), turbojet_eff.GetVar(p.name).GetEffGraph()])
+    #d = Plot([run1jet_eff.GetVar(p.name).GetEffGraph(), hltjet_eff.GetVar(p.name).GetEffGraph(),  hltgpjet_eff.GetVar(p.name).GetEffGraph(),turbojet_eff.GetVar(p.name).GetEffGraph()])
     d.forceStyle()
     d.AutoYlims()
     d.setProp('xlabel', p.xlabel)
     d.setProp('ylabel', 'Jet Rec. Eff.')
-    d.setProp('labels', ['Run 1 Jets', 'Hlt Jets', 'Hlt Jets (GP)', 'Turbo Jets'])
-    d.setProp('colors', ['red','black','green','blue'])
+    d.setProp('labels', ['Run 1 Jets', 'Hlt Jets', 'Turbo Jets'])
+    #d.setProp('labels', ['Run 1 Jets', 'Hlt Jets', 'Hlt Jets (GP)', 'Turbo Jets'])
+    d.setProp('colors', ['red','black','blue'])
+    #d.setProp('colors', ['red','black','green','blue'])
     d.setProp('location', '/user2/sfarry/workspaces/top/figures')
     d.setProp('filename', 'jeteff_'+p.name+'.pdf')
+    d.setProp('markerstyles', 20)
+    d.setProp('leglims', [0.65, 0.7, 0.9, 0.9])
+    d.ShiftLegX(-0.4)
+    d.ShiftLegY(-0.4)
+    d.setProp('ylims', [0.8, 1.05])
+    d.drawROOT()
+    
+    #plot efficiency
+    d = Plot([run1jet_eff.GetVar(p.name).GetEffGraph(), hltjet_eff.GetVar(p.name).GetEffGraph(), turbojet_eff.GetVar(p.name).GetEffGraph()])
+    #d = Plot([run1jet_eff.GetVar(p.name).GetEffGraph(), hltjet_eff.GetVar(p.name).GetEffGraph(),  hltgpjet_eff.GetVar(p.name).GetEffGraph(),turbojet_eff.GetVar(p.name).GetEffGraph()])
+    d.forceStyle()
+    d.AutoYlims()
+    d.setProp('xlabel', p.xlabel)
+    d.setProp('ylabel', 'Jet Rec. Eff.')
+    d.setProp('labels', ['Run 1 Jets', 'Hlt Jets', 'Turbo Jets'])
+    #d.setProp('labels', ['Run 1 Jets', 'Hlt Jets', 'Hlt Jets (GP)', 'Turbo Jets'])
+    d.setProp('colors', ['red','black','blue'])
+    #d.setProp('colors', ['red','black','green','blue'])
+    d.setProp('location', '/user2/sfarry/workspaces/top/figures')
+    d.setProp('filename', 'jeteff_'+p.name+'.pdf')
+    d.setProp('markerstyles', 20)
+    d.setProp('leglims', [0.65, 0.7, 0.9, 0.9])
+    d.ShiftLegX(-0.4)
+    d.ShiftLegY(-0.4)
+    d.setProp('ylims', [0.8, 1.05])
+    d.drawROOT()
+    
+    #plot efficiency
+    d = Plot([run1jet_pveff.GetVar(p.name).GetEffGraph(), hltjet_pveff.GetVar(p.name).GetEffGraph(), turbojet_pveff.GetVar(p.name).GetEffGraph()])
+    #d = Plot([run1jet_eff.GetVar(p.name).GetEffGraph(), hltjet_eff.GetVar(p.name).GetEffGraph(),  hltgpjet_eff.GetVar(p.name).GetEffGraph(),turbojet_eff.GetVar(p.name).GetEffGraph()])
+    d.forceStyle()
+    d.AutoYlims()
+    d.setProp('xlabel', p.xlabel)
+    d.setProp('ylabel', 'Jet PV. Eff.')
+    d.setProp('labels', ['Run 1 Jets', 'Hlt Jets', 'Turbo Jets'])
+    #d.setProp('labels', ['Run 1 Jets', 'Hlt Jets', 'Hlt Jets (GP)', 'Turbo Jets'])
+    d.setProp('colors', ['red','black','blue'])
+    #d.setProp('colors', ['red','black','green','blue'])
+    d.setProp('location', '/user2/sfarry/workspaces/top/figures')
+    d.setProp('filename', 'jetpveff_'+p.name+'.pdf')
     d.setProp('markerstyles', 20)
     d.setProp('leglims', [0.65, 0.7, 0.9, 0.9])
     d.ShiftLegX(-0.4)
@@ -525,9 +633,10 @@ for p in plots:
     d.setProp('markerstyles', 20)
     d.setProp('leglims', [0.65, 0.7, 0.9, 0.9])
     d.ShiftLegX(-0.4)
-    d.ShiftLegY(-0.4)
-    d.setProp('ylims', [0.8, 1.05])
+    #d.ShiftLegY(-0.4)
+    d.setProp('ylims', [0, 1.05])
     d.drawROOT()
+    
 
 
 for p in tag_plots:
@@ -542,7 +651,8 @@ for p in tag_plots:
     d.setProp('filename', 'jetcomp_'+p.name+'.pdf')
     d.setProp('leglims', [0.65, 0.7, 0.9, 0.9])
     d.setProp('normalised', True)
-    d.setProp('drawOpts', 'e1')
+    d.setProp('drawOpts', 'hist')
+    d.setProp('fillstyles', 0)
     if hasattr(p, 'shiftlegx'): d.ShiftLegX(p.shiftlegx)
     if hasattr(p, 'shiftlegy'): d.ShiftLegY(p.shiftlegy)
     d.drawROOT()
@@ -550,11 +660,14 @@ for p in tag_plots:
 
 for p in ('true_ptj10', 'true_etaj10'):
     #plot mean and resolution
-    d = Plot([run1fit.GetParHist(p,1), hltfit.GetParHist(p,1), hltgpfit.GetParHist(p,1), turbofit.GetParHist(p,1)])
+    d = Plot([run1fit.GetParHist(p,1), hltfit.GetParHist(p,1), turbofit.GetParHist(p,1)])
+    #d = Plot([run1fit.GetParHist(p,1), hltfit.GetParHist(p,1), hltgpfit.GetParHist(p,1), turbofit.GetParHist(p,1)])
     d.forceStyle()
     d.setProp('ylabel', 'Mean')
-    d.setProp('labels', ['Run 1 Jets', 'Hlt Jets', 'Hlt Jets (GP)', 'Turbo Jets'])
-    d.setProp('colors', ['red', 'black', 'green', 'blue'])
+    d.setProp('labels', ['Run 1 Jets', 'Hlt Jets', 'Turbo Jets'])
+    #d.setProp('labels', ['Run 1 Jets', 'Hlt Jets', 'Hlt Jets (GP)', 'Turbo Jets'])
+    d.setProp('colors', ['red', 'black', 'blue'])
+    #d.setProp('colors', ['red', 'black', 'green', 'blue'])
     d.setProp('location', '/user2/sfarry/workspaces/top/figures')
     d.setProp('filename', 'jetmeans_'+p+'.pdf')
     d.setProp('markerstyles', 20)
@@ -562,25 +675,33 @@ for p in ('true_ptj10', 'true_etaj10'):
     d.ShiftLegX(-0.3)
     d.setProp('ylims', [-0.4, 0.45])
     d.drawROOT()
-    d = Plot([run1fit.GetParHist(p,2), hltfit.GetParHist(p,2), hltgpfit.GetParHist(p,2), turbofit.GetParHist(p,2)])
+    d = Plot([run1fit.GetParHist(p,2), hltfit.GetParHist(p,2), turbofit.GetParHist(p,2)])
+    #d = Plot([run1fit.GetParHist(p,2), hltfit.GetParHist(p,2), hltgpfit.GetParHist(p,2), turbofit.GetParHist(p,2)])
     d.forceStyle()
     d.AutoYlims()
     d.setProp('ylabel', '#sigma')
-    d.setProp('labels', ['Run 1 Jets', 'Hlt Jets', 'Hlt Jets (GP)', 'Turbo Jets'])
-    d.setProp('colors', ['red','black','green', 'blue'])
+    d.setProp('labels', ['Run 1 Jets', 'Hlt Jets', 'Turbo Jets'])
+    #d.setProp('labels', ['Run 1 Jets', 'Hlt Jets', 'Hlt Jets (GP)', 'Turbo Jets'])
+    d.setProp('colors', ['red','black', 'blue'])
+    #d.setProp('colors', ['red','black','green', 'blue'])
     d.setProp('location', '/user2/sfarry/workspaces/top/figures')
     d.setProp('filename', 'jetres_'+p+'.pdf')
     d.setProp('markerstyles', 20)
     d.setProp('leglims', [0.25, 0.2, 0.5, 0.4])
     d.drawROOT()
 
-for p in ('cpf', 'mult'):
+
+for p in ('cpf', 'mult', 'mpt', 'width', 'ptj', 'etaj'):
     #plot mean and resolution
-    d = Plot([run1jet.GetVar(p).GetHist(), hltjet.GetVar(p).GetHist(), hltgpjet.GetVar(p).GetHist(), turbojet.GetVar(p).GetHist(), run1jet_true.GetVar('true_'+p).GetHist()])
+    d = Plot([run1jet.GetVar(p).GetHist(), hltjet.GetVar(p).GetHist(), turbojet.GetVar(p).GetHist(), run1jet_true.GetVar('true_'+p).GetHist()])
+    #d = Plot([run1jet.GetVar(p).GetHist(), hltjet.GetVar(p).GetHist(), hltgpjet.GetVar(p).GetHist(), turbojet.GetVar(p).GetHist(), run1jet_true.GetVar('true_'+p).GetHist()])
     d.forceStyle()
     d.setProp('ylabel', '[A.U.]')
-    d.setProp('labels', ['Run 1 Jets', 'Hlt Jets', 'Hlt Jest (GP)', 'Turbo Jets', 'True Jets'])
-    d.setProp('colors', ['red', 'black', 'green', 'blue', 'orange'])
+    d.setProp('xlabel', p)
+    d.setProp('labels', ['Run 1 Jets', 'Hlt Jets', 'Turbo Jets', 'True Jets'])
+    #d.setProp('labels', ['Run 1 Jets', 'Hlt Jets', 'Hlt Jest (GP)', 'Turbo Jets', 'True Jets'])
+    d.setProp('colors', ['red', 'black', 'blue', 'orange'])
+    #d.setProp('colors', ['red', 'black', 'green', 'blue', 'orange'])
     d.setProp('location', '/user2/sfarry/workspaces/top/figures')
     d.setProp('filename', 'jetcomp_norm_'+p+'.pdf')
     d.setProp('markerstyles', 20)
@@ -590,3 +711,4 @@ for p in ('cpf', 'mult'):
         d.ShiftLegX(-0.4)
         d.setProp('ynormlims', [0, 0.04])
     d.drawROOT()
+'''

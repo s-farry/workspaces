@@ -1140,7 +1140,7 @@ struct Weight : public TagBase {
   /**
    * The weights of this event.
    */
-  mutable std::vector<double> weights;
+  std::vector<double> weights;
 
   /**
    * The indices where the weights are stored.
@@ -2089,7 +2089,8 @@ public:
 	  iswgt = false;
 	}
 	for ( int j = 0, M = namedweights[i].indices.size(); j < M; ++j )
-	  namedweights[i].weights[j] = weight(namedweights[i].indices[j]);
+	  //removed necesarily when mutable was removed (S. Farry)
+	  //namedweights[i].weights[j] = weight(namedweights[i].indices[j]);
 	namedweights[i].print(file);
       }
       if ( iswgt ) file << "</rwgt>\n";

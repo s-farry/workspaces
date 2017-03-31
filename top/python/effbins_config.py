@@ -56,7 +56,7 @@ eff2dvars = [
 
 trk2dvars = [
     ["ETA_PHI", "ETA5","PHI5"],
-    ["ETA_PT" , "ETA5","PT5"],
+    ["ETA_PT" , "ETA","PT"],
     ]
 
 effvars = GetVars(stdvars + ['eta_ref'], 'probe')

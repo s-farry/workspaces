@@ -7,7 +7,7 @@ SetLHCbStyle()
 
 trk2015  = TFile("/user2/sfarry/workspaces/top/tuples/efficiencies/MuonTracking2015.root")
 trk2016  = TFile("/user2/sfarry/workspaces/top/tuples/efficiencies/MuonTracking2016.root")
-trkrunII = TFile("/user2/sfarry/workspaces/top/tuples/efficiencies/MuonTrackingRunII.root")
+trkRunII = TFile("/user2/sfarry/workspaces/top/tuples/efficiencies/MuonTrackingRunII.root")
 
 id2015  = TFile("/user2/sfarry/workspaces/top/tuples/efficiencies/MuonID2015.root")
 id2016  = TFile("/user2/sfarry/workspaces/top/tuples/efficiencies/MuonID2016.root")
@@ -19,23 +19,23 @@ trgRunII = TFile("/user2/sfarry/workspaces/top/tuples/efficiencies/MuonTriggerRu
 
 idmc2016  = TFile("/user2/sfarry/workspaces/top/tuples/efficiencies/MuonIDMC2016.root")
 trgmc2016 = TFile("/user2/sfarry/workspaces/top/tuples/efficiencies/MuonTriggerMC2016.root")
-#trkmc2016 = TFile("/user2/sfarry/workspaces/top/tuples/efficiencies/MuonTrackingMC2016.root")
+trkmc2016 = TFile("/user2/sfarry/workspaces/top/tuples/efficiencies/MuonTrackingMC2016.root")
 
 plots = [
     Bunch(name='ETA', xlabel = '#eta', trgshiftlegx=-0.4, trgshiftlegy=-0.4, idshiftlegx=-0.2, idshiftlegy=-0.5,
           trkylims = [0.88, 1.00], idylims = [0.88, 1.00]),
     Bunch(name='PT', xlabel = 'p_{T} [GeV]', trgshiftlegx = -0.4, trkshiftlegx=-0.2, trkshiftlegy=-0.5,
-          idshiftlegx=-0.2, idshiftlegy=-0.5),
+          idshiftlegx=-0.2, idshiftlegy=-0.5, trkylims = [0.88, 1.01]),
     Bunch(name='PHI', xlabel = '#phi [rad.]', idshiftlegx=-0.2, idshiftlegy=-0.5),
     Bunch(name='SPDHits', xlabel = 'SPD Hits')
 ]
 
 for p in plots:
-    d = Plot([trk2015.Get(p.name+'/EfficiencyGraph'), trk2016.Get(p.name+'/EfficiencyGraph')])
+    d = Plot([trk2015.Get(p.name+'/EfficiencyGraph'), trk2016.Get(p.name+'/EfficiencyGraph'), trkmc2016.Get(p.name+'/EfficiencyGraph')])
     d.setProp('xlabel', p.xlabel)
     d.setProp('ylabel', 'Tracking Eff.')
-    d.setProp('labels', ['2015', '2016'])
-    d.setProp('colors', ['red', 'blue'])
+    d.setProp('labels', ['2015', '2016', 'MC2016'])
+    d.setProp('colors', ['black', 'blue', 'red'])
     d.setProp('location', '/user2/sfarry/workspaces/top/figures/')
     d.setProp('filename', 'muontrkeff_'+p.name+'.pdf')
     d.setProp('markerstyles', 20)
@@ -81,9 +81,9 @@ id_data.Divide(id_mc)
 trg_data = trgRunII.Get("ETA_PT/EffGraph2D").Clone("pt_eta_trg_weights")
 trg_mc   = trgmc2016.Get("ETA_PT/EffGraph2D")
 trg_data.Divide(trg_mc)
-#trk_data = trkRunII.Get("PT_ETA/EffGraph2D").Clone("pt_eta_trk_weights")
-#trk_mc   = trkmc2016.Get("PT_ETA/EffGraph2D")
-#trk_data.Divide(trk_mc)
+trk_data = trkRunII.Get("ETA_PT/EffGraph2D").Clone("pt_eta_trk_weights")
+trk_mc   = trkmc2016.Get("ETA_PT/EffGraph2D")
+trk_data.Divide(trk_mc)
 
 d = Plot([id_data])
 d.setProp('ylabel', 'p_{T} [GeV]')
@@ -111,8 +111,21 @@ d.setProp('markerstyles', 20)
 d.setProp('drawOpts', 'colztexterror')
 d.drawROOT()
 
+d = Plot([trk_data])
+d.setProp('ylabel', 'p_{T} [GeV]')
+d.setProp('xlabel', '#eta')
+#d.setProp('colors', ['black'])
+d.setProp('location', '/user2/sfarry/workspaces/top/figures/')
+d.setProp('filename', 'muontrkeffsf_etapt.pdf')
+d.setProp('markerstyles', 20)
+#d.setProp('leglims', [0.65, 0.6, 0.95, 0.9])
+#d.ShiftLegX(-0.4)
+#d.setProp('ylims', [0.5, 1.5])
+d.setProp('drawOpts', 'colztexterror')
+d.drawROOT()
+
 f = TFile("/user2/sfarry/workspaces/top/tuples/muon_eff_weights.root", "RECREATE")
 id_data.Write()
 trg_data.Write()
-#trk_data.Write()
+trk_data.Write()
 f.Close()

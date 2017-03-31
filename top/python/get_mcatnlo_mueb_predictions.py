@@ -12,7 +12,6 @@ def getpdfuncertainty(central, pdfsets):
     return sqrt(sumsq / (len(pdfsets) - 1))
 
 
-
 TH1.AddDirectory(False)
 dpm = "root://hepgrid11.ph.liv.ac.uk///dpm/ph.liv.ac.uk/home/lhcb/electroweak/"
 
@@ -50,34 +49,38 @@ variables = [
     ]
 
 fwdvars = [
-    ["lp_pt"        , "lp_pt"           , 8  , 20 , 100 ],
-    ["lm_pt"         , "lm_pt"            , 8  , 20 , 100 ],
-    ["lp_eta"       , "abs(lp_eta)"     , [2.0, 2.5, 3.0, 3.5, 4.5 ]], 
-    ["lm_eta"        , "abs(lm_eta)"      , [2.0, 2.5, 3.0, 3.5, 4.5 ]], 
+    ["lp_pt"        , "lp_pt"         , 8  , 20 , 100 ],
+    ["lm_pt"         , "lm_pt"        , 8  , 20 , 100 ],
+    ["lp_eta"       , "abs(lp_eta)"   , [2.0, 2.5, 3.0, 3.5, 4.5 ]], 
+    ["lm_eta"        , "abs(lm_eta)"  , [2.0, 2.5, 3.0, 3.5, 4.5 ]], 
     #["m_vis"        , fwd_vis_m         , 100, 0, 50],
     #["m_muj"        , fwd_muj_m         , 100, 0, 50],
-    ["t_y"          , "abs(t_y)"     ,    10, 0, 5.0],
-    ["tbar_y"       , "abs(tbar_y)" ,    10, 0, 5.0],
-    ["t_pt"          , "abs(t_pt)"     ,    20, 0, 100.0],
-    ["tbar_pt"       , "abs(tbar_pt)" ,    20, 0, 100.0]
+    ["t_y"          , "abs(t_y)"      ,    10, 0, 5.0],
+    ["tbar_y"       , "abs(tbar_y)"   ,    10, 0, 5.0],
+    ["t_pt"          , "abs(t_pt)"    ,    20, 0, 100.0],
+    ["tbar_pt"       , "abs(tbar_pt)" ,    20, 0, 100.0],
+    ["pseudot_rap"   , "abs(llj_y)"   ,  10, 0, 4],
+    ["pseudot_eta"   , "abs(llj_eta)" ,  5, 2.0, 4.0]
     ]
 bwdvars = [
-    ["lp_pt"        , "lp_pt"           , 8  , 20 , 100 ],
-    ["lm_pt"         , "lm_pt"            , 8  , 20 , 100 ],
-    ["lp_eta"       , "abs(lp_eta)"     , [2.0, 2.5, 3.0, 3.5, 4.5 ]], 
-    ["lm_eta"        , "abs(lm_eta)"      , [2.0, 2.5, 3.0, 3.5, 4.5 ]], 
-    ["t_y"          , "abs(t_y)"     ,    10, 0, 5.0],
-    ["tbar_y"       , "abs(tbar_y)" ,    10, 0, 5.0],
-    ["t_pt"          , "abs(t_pt)"     ,    20, 0, 100.0],
-    ["tbar_pt"       , "abs(tbar_pt)" ,    20, 0, 100.0]
+    ["lp_pt"        , "lp_pt"         , 8  , 20 , 100 ],
+    ["lm_pt"         , "lm_pt"        , 8  , 20 , 100 ],
+    ["lp_eta"       , "abs(lp_eta)"   , [2.0, 2.5, 3.0, 3.5, 4.5 ]], 
+    ["lm_eta"        , "abs(lm_eta)"  , [2.0, 2.5, 3.0, 3.5, 4.5 ]], 
+    ["t_y"          , "abs(t_y)"      ,    10, 0, 5.0],
+    ["tbar_y"       , "abs(tbar_y)"   ,    10, 0, 5.0],
+    ["t_pt"          , "abs(t_pt)"    ,    20, 0, 100.0],
+    ["tbar_pt"       , "abs(tbar_pt)" ,    20, 0, 100.0],
+    ["pseudot_rap"   , "abs(llj_y)"   ,  10, 0, 4],
+    ["pseudot_eta"   , "abs(llj_eta)" ,  5, 2.0, 4.0]
     ]
 
 vars2d = [ ['t_y', 'tbar_y'] ]
 
 pltvars = ['ptj', 'eta', 'yj']
 
-lhcbfwd = TCut("lp_eta > 2.0  && lm_eta <  4.5 && lp_eta > 2.0  && lm_eta <  4.5")
-lhcbbwd = TCut("lp_eta < -2.0 && lm_eta > -4.5 && lp_eta < -2.0 && lm_eta > -4.5")
+lhcbfwd = TCut("lp_eta > 2.0  && lp_eta <  4.5 && lm_eta > 2.0  && lm_eta <  4.5")
+lhcbbwd = TCut("lp_eta < -2.0 && lp_eta > -4.5 && lm_eta < -2.0 && lm_eta > -4.5")
 
 pt20  = TCut("lp_pt  > 20 && lm_pt > 20")
 
@@ -287,7 +290,7 @@ if relaunch:
         ttbar_out[v+"_alphas117"] = ttbar[0].GetWeightHist(v, "alphas_117")
         ttbar_out[v+"_alphas119"] = ttbar[0].GetWeightHist(v, "alphas_119")
 
-    for v in ['lm_eta']:
+    for v in ['lm_eta', 'pseudot_rap', 'pseudot_eta']:
         ttbar_fwdasy_out[v] = ttbar[1].GetWeightHist(v, "Central")
         for w in range(1,7):
             ttbar_fwdasy_out[v+'_Scale'+str(w)] = ttbar[1].GetWeightHist(v, "Scale"+str(w))
@@ -473,6 +476,28 @@ lm_eta_asy = asymm_details('ttbar_lm_eta_asy', ttbar_fwdasy_out['lm_eta'],
                           alphas2 = [ttbar_bwdasy_out['lm_eta_alphas117'],
                                      ttbar_bwdasy_out['lm_eta_alphas119']])
 
+pseudot_rap_asy = asymm_details('ttbar_pseudot_rap_asy', ttbar_fwdasy_out['pseudot_rap'],
+                          [ttbar_fwdasy_out['pseudot_rap_Scale'+str(i)] for i in range(1,7)],
+                          ttbar_bwdasy_out['pseudot_rap'], 
+                          [ttbar_bwdasy_out['pseudot_rap_Scale'+str(i)] for i in range(1,7)],
+                          pdfs1 = [ttbar_fwdasy_out['pseudot_rap_pdf'+str(i)] for i in range(1,101)],
+                          pdfs2 = [ttbar_bwdasy_out['pseudot_rap_pdf'+str(i)] for i in range(1,101)],
+                          alphas1 = [ttbar_fwdasy_out['pseudot_rap_alphas117'],
+                                     ttbar_fwdasy_out['pseudot_rap_alphas119']],
+                          alphas2 = [ttbar_bwdasy_out['pseudot_rap_alphas117'],
+                                     ttbar_bwdasy_out['pseudot_rap_alphas119']])
+
+pseudot_eta_asy = asymm_details('ttbar_pseudot_eta_asy', ttbar_fwdasy_out['pseudot_eta'],
+                          [ttbar_fwdasy_out['pseudot_eta_Scale'+str(i)] for i in range(1,7)],
+                          ttbar_bwdasy_out['pseudot_eta'], 
+                          [ttbar_bwdasy_out['pseudot_eta_Scale'+str(i)] for i in range(1,7)],
+                          pdfs1 = [ttbar_fwdasy_out['pseudot_eta_pdf'+str(i)] for i in range(1,101)],
+                          pdfs2 = [ttbar_bwdasy_out['pseudot_eta_pdf'+str(i)] for i in range(1,101)],
+                          alphas1 = [ttbar_fwdasy_out['pseudot_eta_alphas117'],
+                                     ttbar_fwdasy_out['pseudot_eta_alphas119']],
+                          alphas2 = [ttbar_bwdasy_out['pseudot_eta_alphas117'],
+                                     ttbar_bwdasy_out['pseudot_eta_alphas119']])
+
 lp_eta_WZ  = details('WZ_lp_eta', WZ_out['lp_eta'], [WZ_out['lp_eta_Scale'+str(i)] for i in range(1,7)], [WZ_out['lp_eta_pdf'+str(i)] for i in range(1,101)], [WZ_out['lp_eta_alphas117'], WZ_out['lp_eta_alphas119']])
 
 output = TFile("/user2/sfarry/workspaces/top/tuples/ttbar_mueb_13tev_amcatnlo_predictions.root", "RECREATE")
@@ -484,4 +509,6 @@ t_y_acc.write()
 lp_eta_WW.write()
 lp_eta_WZ.write()
 lm_eta_asy.write()
+pseudot_rap_asy.write()
+pseudot_eta_asy.write()
 output.Close()

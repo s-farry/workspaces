@@ -56,7 +56,9 @@ vars2d = [
     Bunch(var1="ptj", var2 =  "etaj"),
     Bunch(var1="lp_pt10", var2 =  "lp_eta10"),
     Bunch(var1="lm_pt10", var2 =  "lm_eta10"),
-    Bunch(var1="ptj10", var2 =  "etaj10")
+    Bunch(var1="ptj10", var2 =  "etaj10"),
+    Bunch(var1="lp_pt10", var2 = "ptj10"),
+    Bunch(var1="lm_pt10", var2 = "ptj10")
     ]
 
 lhcbfwd = TCut("mu_eta > 2.0 && mu_eta < 4.5 && e_eta > 2.0 && e_eta < 4.5")
@@ -347,7 +349,7 @@ ttbar_py8_mumep.Run()
 ttbar_py8_mumep.SaveToFile()
 
 ttbar_py8 = Template('ttbar_py8', ttbar_py8_mumep, ttbar_py8_mupem)
-ttbar_py8.SaveToFile()
+ttbar_py8.SaveToFile("/user2/sfarry/workspaces/top/tuples/ttbar_py8.root")
 
 from PlotTools import *
 from Style import *

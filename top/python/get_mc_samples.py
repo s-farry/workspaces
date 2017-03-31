@@ -73,8 +73,8 @@ mumepvars = [
     ["etaj"         , "ttbar_jet_ETA"   , 10, 2.2, 4.2 ],
     ]
 vars = [
-    ["mu_pt"        , "mu_PT/1000.0"           , 10  , 20 , 80 ],
-    ["e_pt"         , "e_PT/1000.0"            , 10  , 20 , 80 ],
+    ["mu_pt"        , "mu_PT/1000.0"           , 10  , 20 , 100 ],
+    ["e_pt"         , "e_PT/1000.0"            , 10  , 20 , 100 ],
     ["mu_eta"       , "mu_ETA"     , 10, 2, 4.5], 
     ["e_eta"        , "e_ETA"      , 10, 2, 4.5], 
     ["ptj"          , "ttbar_jet_PT/1000"       , 15, 20, 170],
@@ -246,11 +246,11 @@ ww_py8_mumep.Scale(ww_scale)
 ww_py8_mumep.Run()
 
 ww_py8 = Template("ww_py8", ww_py8_mupem, ww_py8_mumep)
-ww_py8.SaveToFile()
+ww_py8.SaveToFile("/user2/sfarry/workspaces/top/tuples/ww_py8.root")
 
 
 #get NLO prediction from mc@NLO
-nlo_xsecs = TFile("/user2/sfarry/workspaces/top/tuples/ttbar_13teV_amcatnlo_predictions.root")
+nlo_xsecs = TFile("/user2/sfarry/workspaces/top/tuples/ttbar_13tev_amcatnlo_predictions.root")
 ww_nlo       = nlo_xsecs.Get("etaj_WW_tot")
 ww_nlo_errhi = nlo_xsecs.Get("etaj_WW_toterr_hi")
 ww_nlo_errlo = nlo_xsecs.Get("etaj_WW_toterr_lo")
@@ -281,7 +281,8 @@ ww.SaveToFile()
 #wz.SaveToFile()
 
 # Wt
-wt_xsec = nlo_xsecs.Get("Wt_dr_xsec").GetVal()
+nlo_xsecs_powheg = TFile("/user2/sfarry/workspaces/top/tuples/ttbar_13tev_powheg_predictions.root")
+wt_xsec = nlo_xsecs_powheg.Get("Wt_dr_xsec").GetVal()
 ttbar_xsec = nlo_xsecs.Get("etaj_tot").GetVal()
 wtOttbar = wt_xsec/ttbar_xsec
 
@@ -313,7 +314,7 @@ wt_ttbar_murw_mumep.AddVars(vars)
 wt_ttbar_murw_mumep.Reweight('mu_PT/1000.0', 'mu_ETA', wt_lmw)
 wt_ttbar_murw_mumep.Run()
 
-wt_ttbar_murw = Template("ttbar_murw", ttbar_murw_mupem, ttbar_murw_mumep)
+wt_ttbar_murw = Template("wt_ttbar_murw", ttbar_murw_mupem, ttbar_murw_mumep)
 wt_ttbar_murw.SaveToFile("/user2/sfarry/workspaces/top/tuples/wt_ttbar_mc2016_murw.root")
 
 wt_ttbar_erw_mupem = Template("wt_ttbar_erw_mupem")

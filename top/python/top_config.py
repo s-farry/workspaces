@@ -39,12 +39,15 @@ Ep       = TCut("((muminus_CaloHcalE + muminus_CaloEcalE)/muminus_P)<0.04 && mum
 
 trigger_plus   = TCut("muplus_Hlt2EWSingleMuonVHighPtDecision_TOS==1 && muplus_Hlt1SingleMuonHighPTDecision_TOS == 1 && muplus_L0MuonEWDecision_TOS ==1")
 trigger_minus = TCut("muminus_Hlt2EWSingleMuonVHighPtDecision_TOS==1 && muminus_Hlt1SingleMuonHighPTDecision_TOS == 1 && muminus_L0MuonEWDecision_TOS ==1")
-ztrigger   = TCut("(muplus_Hlt2EWSingleMuonVHighPtDecision_TOS==1 && muplus_Hlt1SingleMuonHighPTDecision_TOS == 1 && muplus_L0MuonEWDecision_TOS ==1) || (muminus_Hlt2EWSingleMuonVHighPtDecision_TOS==1 && muminus_Hlt1SingleMuonHighPTDecision_TOS == 1 && muminus_L0MuonEWDecision_TOS ==1)")
-trigger = TCut("mu_Hlt2EWSingleMuonVHighPtDecision_TOS==1 && mu_Hlt1SingleMuonHighPTDecision_TOS == 1 && mu_L0MuonEWDecision_TOS ==1")
+#ztrigger   = TCut("(muplus_Hlt2EWSingleMuonVHighPtDecision_TOS==1 && muplus_Hlt1SingleMuonHighPTDecision_TOS == 1 && muplus_L0MuonEWDecision_TOS ==1) || (muminus_Hlt2EWSingleMuonVHighPtDecision_TOS==1 && muminus_Hlt1SingleMuonHighPTDecision_TOS == 1 && muminus_L0MuonEWDecision_TOS ==1)")
+ztrigger   = TCut("(muplus_Hlt1SingleMuonHighPTDecision_TOS == 1 && muplus_L0MuonEWDecision_TOS ==1) || (muminus_Hlt1SingleMuonHighPTDecision_TOS == 1 && muminus_L0MuonEWDecision_TOS ==1)")
+#trigger = TCut("mu_Hlt2EWSingleMuonVHighPtDecision_TOS==1 && mu_Hlt1SingleMuonHighPTDecision_TOS == 1 && mu_L0MuonEWDecision_TOS ==1")
+trigger = TCut("mu_Hlt1SingleMuonHighPTDecision_TOS == 1 && mu_L0MuonEWDecision_TOS ==1")
 
-etrigger = TCut("e_L0ElectronDecision_TOS == 1 && e_Hlt1SingleElectronNoIP_TOS == 1 && e_Hlt2EWSingleElectronVHighPtDecision_TOS == 1")
+#etrigger = TCut("e_L0ElectronDecision_TOS == 1 && e_Hlt1SingleElectronNoIPDecision_TOS == 1 && e_Hlt2EWSingleElectronVHighPtDecision_TOS == 1")
+etrigger = TCut("e_L0ElectronDecision_TOS == 1 && e_Hlt1SingleElectronNoIPDecision_TOS == 1")
 
-dileptrigger = TCut(trigger.GetTitle() + " || ("+etrigger.GetTitle()+")")
+dileptrigger = TCut("("+trigger.GetTitle() + ") || ("+etrigger.GetTitle()+")")
 
 fwdcut = 'fwdjet_pt > 20 && mup_pt > 20 && mum_pt > 20 && min(mup_eta, mum_eta) > 2 && max(mum_eta, mup_eta) < 4.5 && Z_m > 60 && Z_m < 120'
 bwdcut = 'fwdjet_pt > 20 && mup_pt > 20 && mum_pt > 20 && min(mup_eta, mum_eta) > -4.5 && max(mum_eta, mup_eta) < -2 && Z_m > 60 && Z_m < 120'
@@ -91,15 +94,15 @@ ww_mc2016       = DataObj('ttbar.WW_ll.<P>.MC2016', folder='ttbar')
 ztautau_mc2016  = DataObj('ttbar.Z_tautau.<P>.MC2016', folder='ttbar')
 ttbar_2016      = DataObj('ttbar.<P>.2016', folder='ttbar')
 ttbar_2015      = DataObj('ttbar.<P>.2015', folder='ttbar')
-zmumuj_mc2015   = DataObj('Zmumujet.Z_mumujet17.<P>.MC2015', folder='ZMuMu')
-zmumu_mc2015    = DataObj('Zmumujet.Zg_mumu.<P>.MC2015', folder='ZMuMu')
-ztautau_mc2016  = DataObj('ttbar.Z_tautau.<P>.MC2016', folder='ttbar')
+#zmumuj_mc2016   = DataObj('Zmumujet.Z_mumujet17.<P>.MC2016', folder='ZMuMu')
+#zmumu_mc2016    = DataObj('Zmumujet.Zg_mumu.<P>.MC2016', folder='ZMuMu')
+ztautauj_mc2016  = DataObj('ttbar.Z_tautaujet.<P>.MC2016', folder='ttbar')
 
 zmumuj_2015     = DataObj('ZMuMuJet.<P>.2015', folder='ZMuMu')
 zmumuj_2016     = DataObj('ZMuMuJet.<P>.2016', folder='ZMuMu')
 
-gg2ttbar_muj_mc2016 = DataObj('WMuJet.ttbar_gg.<P>.MC2016', folder='WTuple')
-qq2ttbar_muj_mc2016 = DataObj('WMuJet.ttbar_qqbar.<P>.MC2016', folder='WTuple')
+#gg2ttbar_muj_mc2016 = DataObj('WMuJet.ttbar_gg.<P>.MC2016', folder='WTuple')
+#qq2ttbar_muj_mc2016 = DataObj('WMuJet.ttbar_qqbar.<P>.MC2016', folder='WTuple')
 
 mcjetvars = [
     ['ptj', 'jet_truejet_PT/1000', 15, 20, 80],

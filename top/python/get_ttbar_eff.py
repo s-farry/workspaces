@@ -604,7 +604,7 @@ seleff_obj = tag_effs('seleff',
 
 
 
-outputFile = TFile("ttbar_mu_effs.root")
+outputFile = TFile("/user2/sfarry/workspaces/tuples/ttbar_effs.root")
 mu_trkeff_obj.Write()
 mu_ideff_obj.Write()
 mu_trgeff_obj.Write()
