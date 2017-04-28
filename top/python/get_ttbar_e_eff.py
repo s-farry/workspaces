@@ -150,6 +150,32 @@ e_trackeff_nlorw = EfficiencyClass("e_trackeff_nlorw", eplus_trackeff_nlorw, emi
 e_trackeff_nlorw.MakeEfficiencyGraph()
 e_trackeff_nlorw.SaveToFile("/user2/sfarry/workspaces/top/tuples/e_trackeff_nlorw.root")
 
+
+eplus_trackeff_wtrw = EfficiencyClass("eplus_trackeff_wtrw")
+eplus_trackeff_wtrw.SetSelectionCut(fid + mumep)
+eplus_trackeff_wtrw.SetPassCut(lp_rec)
+eplus_trackeff_wtrw.AddTrees(qq2ttbar_mc2016.true_trees(), tt_qq_scale / tt_gg_scale)
+eplus_trackeff_wtrw.AddTrees(gg2ttbar_mc2016.true_trees())
+eplus_trackeff_wtrw.AddVars(mumepvars)
+eplus_trackeff_wtrw.Reweight("lp_PT/1000.0", "lp_ETA", wf.Get("sf_wt_powheg_lp_pt10_lp_eta10"))
+eplus_trackeff_wtrw.Run()
+#eplus_trackeff_wtrw.SaveToFile()
+
+eminus_trackeff_wtrw = EfficiencyClass("eminus_trackeff_wtrw")
+eminus_trackeff_wtrw.SetSelectionCut(fid + mupem)
+eminus_trackeff_wtrw.SetPassCut(lm_rec)
+eminus_trackeff_wtrw.AddTrees(qq2ttbar_mc2016.true_trees(), tt_qq_scale / tt_gg_scale)
+eminus_trackeff_wtrw.AddTrees(gg2ttbar_mc2016.true_trees())
+eminus_trackeff_wtrw.AddVars(mupemvars)
+eminus_trackeff_wtrw.Reweight("lm_PT/1000.0", "lm_ETA", wf.Get("sf_wt_powheg_lm_pt10_lm_eta10"))
+eminus_trackeff_wtrw.Run()
+#eminus_trackeff_wtrw.SaveToFile()
+
+e_trackeff_wtrw = EfficiencyClass("e_trackeff_wtrw", eplus_trackeff_wtrw, eminus_trackeff_wtrw)
+e_trackeff_wtrw.MakeEfficiencyGraph()
+e_trackeff_wtrw.SaveToFile("/user2/sfarry/workspaces/top/tuples/e_trackeff_wtrw.root")
+
+
 eplus_ideff = EfficiencyClass("eplus_ideff")
 eplus_ideff.SetSelectionCut(fid + mumep + lp_rec)
 eplus_ideff.SetPassCut(lp_eid)
@@ -223,6 +249,35 @@ eminus_ideff_effrw.SaveToFile()
 e_ideff_effrw = EfficiencyClass("e_ideff_effrw", eplus_ideff_effrw, eminus_ideff_effrw)
 e_ideff_effrw.MakeEfficiencyGraph()
 e_ideff_effrw.SaveToFile("/user2/sfarry/workspaces/top/tuples/e_ideff_effrw.root")
+
+eplus_ideff_wtrw = EfficiencyClass("eplus_ideff_wtrw")
+eplus_ideff_wtrw.SetSelectionCut(fid + mumep + lp_rec)
+eplus_ideff_wtrw.SetPassCut(lp_eid)
+eplus_ideff_wtrw.AddTrees(qq2ttbar_mc2016.true_trees(), tt_qq_scale / tt_gg_scale)
+eplus_ideff_wtrw.AddTrees(gg2ttbar_mc2016.true_trees())
+eplus_ideff_wtrw.AddVars(mumepvars)
+eplus_ideff_wtrw.ScaleErrs = True
+eplus_ideff_wtrw.Reweight("lp_PT/1000.0", "lp_ETA", wf.Get("sf_wt_powheg_lp_pt10_lp_eta10"))
+eplus_ideff_wtrw.ReweightEff("lp_ETA", 'lp_PT/1000.0', ef.Get("zee_eid_weights_etapt"))
+eplus_ideff_wtrw.Run()
+eplus_ideff_wtrw.SaveToFile()
+
+eminus_ideff_wtrw = EfficiencyClass("eminus_ideff_wtrw")
+eminus_ideff_wtrw.SetSelectionCut(fid + mupem + lm_rec)
+eminus_ideff_wtrw.SetPassCut(lm_eid)
+eminus_ideff_wtrw.AddTrees(qq2ttbar_mc2016.true_trees(), tt_qq_scale / tt_gg_scale)
+eminus_ideff_wtrw.AddTrees(gg2ttbar_mc2016.true_trees())
+eminus_ideff_wtrw.AddVars(mupemvars)
+eminus_ideff_wtrw.ScaleErrs = True
+eminus_ideff_wtrw.Reweight("lm_PT/1000.0", "lm_ETA", wf.Get("sf_wt_powheg_lm_pt10_lm_eta10"))
+eminus_ideff_wtrw.ReweightEff("lm_ETA", 'lm_PT/1000.0', ef.Get("zee_eid_weights_etapt"))
+eminus_ideff_wtrw.Run()
+eminus_ideff_wtrw.SaveToFile()
+
+e_ideff_wtrw = EfficiencyClass("e_ideff_wtrw", eplus_ideff_wtrw, eminus_ideff_wtrw)
+e_ideff_wtrw.MakeEfficiencyGraph()
+e_ideff_wtrw.SaveToFile("/user2/sfarry/workspaces/top/tuples/e_ideff_wtrw.root")
+
 
 '''
 eplus_kineff = EfficiencyClass("eplus_kineff")
@@ -305,9 +360,24 @@ e_ideff_obj   = eff_vals('e_ideff',
                          e_ideff_effrw.GetTotEffErrLo(),
                          abs(e_ideff.GetTotEff() - e_ideff_nlorw.GetTotEff()),
                          e_ideff_effrw.GetTotEffRWErr())
+e_wt_trkeff_obj     = eff_vals('e_wt_trkeff',
+                               e_trackeff_wtrw.GetTotEff(),
+                               e_trackeff_wtrw.GetTotEffErrLo(),
+                               0.0,
+                               e_trackeff_wtrw.GetTotEff() * 0.028)
+
+e_wt_ideff_obj   = eff_vals('e_wt_ideff',
+                            e_ideff_wtrw.GetTotEff(),
+                            e_ideff_wtrw.GetTotEffErrLo(),
+                            0.0,
+                            e_ideff_wtrw.GetTotEffRWErr())
+
+
 
 outputFile = TFile("/user2/sfarry/workspaces/top/tuples/ttbar_e_effs.root", "RECREATE")
 e_trkeff_obj.write()
 e_ideff_obj.write()
+e_wt_trkeff_obj.write()
+e_wt_ideff_obj.write()
 outputFile.Close()
 
