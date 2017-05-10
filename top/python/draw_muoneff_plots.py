@@ -26,6 +26,8 @@ plots = [
           trkylims = [0.88, 1.00], idylims = [0.88, 1.00]),
     Bunch(name='PT', xlabel = 'p_{T} [GeV]', trgshiftlegx = -0.4, trkshiftlegx=-0.2, trkshiftlegy=-0.5,
           idshiftlegx=-0.2, idshiftlegy=-0.5, trkylims = [0.88, 1.01]),
+    #Bunch(name='P', xlabel = 'p [GeV]', trgshiftlegx = -0.4, trkshiftlegx=-0.2, trkshiftlegy=-0.5,
+    #      idshiftlegx=-0.2, idshiftlegy=-0.5, trkylims = [0.88, 1.01]),
     Bunch(name='PHI', xlabel = '#phi [rad.]', idshiftlegx=-0.2, idshiftlegy=-0.5),
     Bunch(name='SPDHits', xlabel = 'SPD Hits')
 ]
@@ -85,6 +87,13 @@ trk_data = trkRunII.Get("ETA_PT/EffGraph2D").Clone("pt_eta_trk_weights")
 trk_mc   = trkmc2016.Get("ETA_PT/EffGraph2D")
 trk_data.Divide(trk_mc)
 
+trk_pteta_2016   = trk2016.Get("ETA_PT/EffGraph2D").Clone("pt_eta_trk_weights_2016")
+trk_pteta_mc2016 = trkmc2016.Get("ETA_PT/EffGraph2D")
+trk_pteta_2016.Divide(trk_pteta_mc2016)
+trk_peta_2016   = trk2016.Get("ETA_P/EffGraph2D").Clone("p_eta_trk_weights_2016")
+trk_peta_mc2016 = trkmc2016.Get("ETA_P/EffGraph2D")
+trk_peta_2016.Divide(trk_peta_mc2016)
+
 d = Plot([id_data])
 d.setProp('ylabel', 'p_{T} [GeV]')
 d.setProp('xlabel', '#eta')
@@ -124,8 +133,27 @@ d.setProp('markerstyles', 20)
 d.setProp('drawOpts', 'colztexterror')
 d.drawROOT()
 
+
+d = Plot([trk_peta_2016])
+d.setProp('ylabel', 'p [GeV]')
+d.setProp('xlabel', '#eta')
+#d.setProp('colors', ['black'])
+d.setProp('location', '/user2/sfarry/workspaces/top/figures/')
+d.setProp('filename', 'muontrkeffsf_etap_2016.pdf')
+d.setProp('markerstyles', 20)
+#d.setProp('leglims', [0.65, 0.6, 0.95, 0.9])
+#d.ShiftLegX(-0.4)
+#d.setProp('ylims', [0.5, 1.5])
+d.setProp('drawOpts', 'colztexterror')
+d.drawROOT()
+
 f = TFile("/user2/sfarry/workspaces/top/tuples/muon_eff_weights.root", "RECREATE")
 id_data.Write()
 trg_data.Write()
 trk_data.Write()
+f.Close()
+
+g = TFile("/user2/sfarry/workspaces/top/tuples/trk_eff_2016_weights.root", "RECREATE")
+trk_pteta_2016.Write()
+trk_peta_2016.Write()
 f.Close()

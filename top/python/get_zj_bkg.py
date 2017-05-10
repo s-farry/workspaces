@@ -24,12 +24,16 @@ zmumu_jet = TCut("boson_jet_PT > 20000 && boson_jet_BDTTag == 1")
 jet_notag       = TCut("ttbar_jet_PT > 20000")
 zmumu_jet_notag = TCut("boson_jet_PT > 20000")
 
+pi = '3.14159265959'
+dPhi  = "abs(<A>_PHI - <B>_PHI) + (abs(<A>_PHI - <B>_PHI) > <pi>)*2*(<pi> - abs(<A>_PHI - <B>_PHI) )".replace('<pi>', pi)
+
 vars = [
     ["mu_pt"        , "mu_PT/1000.0"           , 10  , 20 , 100 ],
     ["e_pt"         , "e_PT/1000.0"            , 10  , 20 , 100 ],
     ["mu_eta"       , "mu_ETA"     , 10, 2, 4.5], 
     ["e_eta"        , "e_ETA"      , 10, 2, 4.5], 
     ["ptj"          , "ttbar_jet_PT/1000"       , 15, 20, 170],
+    ['dphi'         , dPhi.replace('<A>', 'mu').replace('<B>', 'e'), 10, 0, TMath.Pi()],
     ["etaj"         , "ttbar_jet_ETA"   , 10, 2.2, 4.2 ]
     ]
 
@@ -39,6 +43,7 @@ zvars = [
     ["mum_pt"       , "muminus_PT/1000.0"            , 10  , 20 , 100 ],
     ["mup_eta"      , "muplus_ETA"     , 10, 2, 4.5], 
     ["mum_eta"      , "muminus_ETA"      , 10, 2, 4.5], 
+    ['dphi'         , dPhi.replace('<A>', 'muplus').replace('<B>', 'muminus'), 10, 0, TMath.Pi()],
     ["ptj"          , "boson_jet_PT/1000"       , 15, 20, 170],
     ["etaj"         , "boson_jet_ETA"   , 10, 2.2, 4.2 ]
     ]
@@ -93,7 +98,7 @@ zmumuj_mc2016_t.AddTrees(zmumuj_mc2016.trees())
 zmumuj_mc2016_t.AddVars(zvars)
 zmumuj_mc2016_t.Run()
 zmumuj_mc2016_t.Scale(zmumuj_sf)
-zmumuj_mc2016_t.SaveToFile()
+zmumuj_mc2016_t.SaveToFile("/user2/sfarry/workspaces/top/tuples/zmumuj_mc2016.root")
 
 ztautauj_mc2016_t = Template("ztautauj_mc2016")
 ztautauj_mc2016_t.SetSelCut(trigger + selection + jet_notag)

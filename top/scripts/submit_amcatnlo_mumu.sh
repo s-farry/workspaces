@@ -6,7 +6,7 @@ MAXJOBS=-1
 
 #if [ $NOW -gt 1800 ] or [ $NOW -lt 900 ]; then QUEUE=all64; fi
 
-for i in `ls -d $1/Events/*`
+for i in `ls -d $1/Events/*_decayed_1`
 do
     if [[ -e ${i}/events.lhe.gz ]]  || [[ -e ${i}/events.lhe.bz2 ]]
     then

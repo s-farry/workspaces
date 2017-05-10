@@ -20,7 +20,7 @@ passcutW = TCut("probe_AssocWM == 1")
 passcutStd = TCut("probe_AssocStdM == 1")
 mass = TCut("boson_M > 70000 && boson_M < 110000")
 
-selcut = ptcut + phicut + triggercut + trkqual + vtxcut + eta + mass
+selcut = ptcut + phicut + triggercut + vtxcut + eta + mass
 
 f = TFile.Open('root://hepgrid11.ph.liv.ac.uk///dpm/ph.liv.ac.uk/home/lhcb/Run2Effs/MuonTracking_WLine.MD.2016.root')
 g = TFile.Open('root://hepgrid11.ph.liv.ac.uk///dpm/ph.liv.ac.uk/home/lhcb/Run2Effs/MuonTracking_WLine.MU.2016.root')

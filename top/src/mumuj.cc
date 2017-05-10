@@ -1039,7 +1039,7 @@ int main(int argc, char* argv[]) {
 
 
   TFile outputF(output.c_str(), "RECREATE");
-  TTree* tree = new TTree("ttbar", "Zj Tree", 1);
+  TTree* tree = new TTree("tree", "Zj Tree", 1);
 
   tree->Branch ("evtNum" , &iEvent, "evt/I" );
   tree->Branch( "w"      , &ws["w"] , "w/D"   );
@@ -1186,6 +1186,7 @@ int main(int argc, char* argv[]) {
       }
       if ( (abs(pythia.event[i].id())  == 13 || abs(pythia.event[i].id()) == 11)
 	   && (abs(pythia.event[pythia.event[i].mother1()].id()) == 24
+	       || abs(pythia.event[pythia.event[i].mother1()].id()) == 23
 	    || abs(pythia.event[pythia.event[i].mother1()].id()) == 15))
 	{
 	  int idx = pythia.event[i].iBotCopy();
@@ -1345,9 +1346,9 @@ int main(int argc, char* argv[]) {
 	 || (mups[0].p().eta() < -2 && mups[0].p().eta() > -4.5 && mums[0].p().eta() < -2 && mums[0].p().eta() > -4.5 && bwdjets.size() > 0))) tree->Fill();
     }
     else{
-      if (mups.size() > 0 || mums.size() > 0){
+      //if (mups.size() > 0 || mums.size() > 0){
 	tree->Fill();
-      }
+	//}
     }
   } // End of event loop.
 

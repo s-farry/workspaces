@@ -17,6 +17,8 @@ mumep_bwdasy = TCut("mu_ID == 13 && mu_ETA > e_ETA")
 jet = TCut("ttbar_jet_PT > 20000 && ttbar_jet_BDTTag == 1")
 
 
+pi = '3.14159265959'
+dPhi  = "abs(<A>_PHI - <B>_PHI) + (abs(<A>_PHI - <B>_PHI) > <pi>)*2*(<pi> - abs(<A>_PHI - <B>_PHI) )".replace('<pi>', pi)
 mvis = "sqrt((mu_E + e_E + ttbar_jet_E)^2 - (mu_PX + e_PX + ttbar_jet_PX)^2 - (mu_PY + e_PY + ttbar_jet_PY)^2 - (mu_PZ + e_PZ + ttbar_jet_PZ)^2)"
 
 mvis_true = "sqrt((lp_E + lm_E + ttbar_jet_E)^2 - (lp_PX + lm_PX + ttbar_jet_PX)^2 - (lp_PY + lm_PY + ttbar_jet_PY)^2 - (lp_PZ + lm_PZ + ttbar_jet_PZ)^2)"
@@ -62,6 +64,7 @@ mupemvars = [
     ["mu_eta"       , "abs(lp_ETA)"     , [2.0, 2.5, 3.0, 3.5, 4.5 ]], 
     ["e_eta"        , "abs(lm_ETA)"      , [2.0, 2.5, 3.0, 3.5, 4.5 ]], 
     ["ptj"          , "ttbar_jet_PT/1000.0"       , 5, 20, 220],
+    ['dphi'         , dPhi.replace('<A>', 'mu').replace('<B>', 'e'), 10, 0, TMath.Pi()],
     ["etaj"         , "ttbar_jet_ETA"   , 10, 2.2, 4.2 ],
     ]
 mumepvars = [
@@ -70,6 +73,7 @@ mumepvars = [
     ["mu_eta"       , "abs(lm_ETA)"     , [2.0, 2.5, 3.0, 3.5, 4.5 ]], 
     ["e_eta"        , "abs(lp_ETA)"      , [2.0, 2.5, 3.0, 3.5, 4.5 ]], 
     ["ptj"          , "ttbar_jet_PT/1000.0"       , 5, 20, 220],
+    ['dphi'         , dPhi.replace('<A>', 'mu').replace('<B>', 'e'), 10, 0, TMath.Pi()],
     ["etaj"         , "ttbar_jet_ETA"   , 10, 2.2, 4.2 ],
     ]
 vars = [
@@ -79,6 +83,8 @@ vars = [
     ["e_eta"        , "e_ETA"      , 10, 2, 4.5], 
     ["ptj"          , "ttbar_jet_PT/1000"       , 15, 20, 170],
     ["etaj"         , "ttbar_jet_ETA"   , 10, 2.2, 4.2 ],
+    ['dphi'         , dPhi.replace('<A>', 'mu').replace('<B>', 'e'), 10, 0, TMath.Pi()],
+    ['mue_m'        , 'ttbar_M/1000.0', 10, 0, 100],
     ["iso"          , "max(mu_cpt_0.50, e_cpt_0.50)", 25, 0, 50000],
     ]
 

@@ -4,7 +4,7 @@ NOW=`date +"%k%m"`
 QUEUE=medium64
 if [[ $NOW -gt 1800 || $NOW -lt 900 ]]; then QUEUE=all64; fi
 
-for i in `ls $1/pwgevents*filter.lhe.bz2`
+for i in `ls $1/pwgevents*.lhe.bz2`
 do
     if [ -e $i ]
     then

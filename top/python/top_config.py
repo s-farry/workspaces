@@ -4,7 +4,7 @@ from Jawa import GetLumi
 gandir = '/hepstore/sfarry/gangadir/workspace/sfarry/LocalXML/'
 dpm_loc = 'root://hepgrid11.ph.liv.ac.uk///dpm/ph.liv.ac.uk/home/lhcb/top/'
 eos_loc = 'root://eoslhcb.cern.ch///eos/lhcb/user/s/sfarry/WZJets/'
-local = '/user2/sfarry/workspaces/strange/tuples/'
+local = '/user2/sfarry/workspaces/top/tuples/'
 
 truth_stag = TCut("abs(jet_mc_flavour) == 3")
 truth_qtag = TCut("abs(jet_mc_flavour) != 3 && abs(jet_mc_flavour) < 4")
@@ -58,6 +58,7 @@ bwd_flav = 'abs(bwdjet_flav) == 3'
 class DataObj:
     def __init__(self, name, folder="ZMuMu", dpm = dpm_loc):
         print "Opening ",dpm+name.replace("<P>","MU")+".root"
+        self.name=name
         self.MU = TFile.Open(dpm+name.replace("<P>","MU")+".root")
         print "Opening ",dpm+name.replace("<P>","MD")+".root"
         self.MD = TFile.Open(dpm+name.replace("<P>","MD")+".root")
@@ -87,6 +88,13 @@ class DataObj:
             return self.MUt.GetEntries(a) + self.MDt.GetEntries(a)
         else:
             print "not a valid cut type"
+    def add_iptune(self):
+        self.MU_iptune = TFile.Open(local+'/'+self.name.replace("<P>","MU")+".iptune.root")
+        self.MD_iptune = TFile.Open(local+'/'+self.name.replace("<P>","MD")+".iptune.root")
+        self.MU_iptune_t = self.MU_iptune.Get('iptune')
+        self.MD_iptune_t = self.MD_iptune.Get('iptune')
+        self.MUt.AddFriend(self.MU_iptune_t)
+        self.MDt.AddFriend(self.MD_iptune_t)
 
 gg2ttbar_mc2016 = DataObj('ttbar.ttbar_gg.<P>.MC2016', folder='ttbar')
 qq2ttbar_mc2016 = DataObj('ttbar.ttbar_qqbar.<P>.MC2016', folder='ttbar')
@@ -94,8 +102,8 @@ ww_mc2016       = DataObj('ttbar.WW_ll.<P>.MC2016', folder='ttbar')
 ztautau_mc2016  = DataObj('ttbar.Z_tautau.<P>.MC2016', folder='ttbar')
 ttbar_2016      = DataObj('ttbar.<P>.2016', folder='ttbar')
 ttbar_2015      = DataObj('ttbar.<P>.2015', folder='ttbar')
-#zmumuj_mc2016   = DataObj('Zmumujet.Z_mumujet17.<P>.MC2016', folder='ZMuMu')
-#zmumu_mc2016    = DataObj('Zmumujet.Zg_mumu.<P>.MC2016', folder='ZMuMu')
+zmumuj_mc2016   = DataObj('Zmumujet.Z_mumujet17.<P>.MC2016', folder='ZMuMu')
+zmumu_mc2016    = DataObj('Zmumujet.Zg_mumu.<P>.MC2016', folder='ZMuMu')
 ztautauj_mc2016  = DataObj('ttbar.Z_tautaujet.<P>.MC2016', folder='ttbar')
 
 zmumuj_2015     = DataObj('ZMuMuJet.<P>.2015', folder='ZMuMu')

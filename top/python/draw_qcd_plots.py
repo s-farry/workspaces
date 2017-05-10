@@ -6,8 +6,8 @@ from Style import *
 SetLHCbStyle()
 
 
-f = TFile("/user2/sfarry/workspaces/top/tuples/ttbar_noiso.root")
-g = TFile("/user2/sfarry/workspaces/top/tuples/ttbar_noiso_ss.root")
+f = TFile("/user2/sfarry/workspaces/top/tuples/ttbar_data13tev_noiso.root")
+g = TFile("/user2/sfarry/workspaces/top/tuples/ttbar_data13tev_noiso_ss.root")
 
 h = TFile("/user2/sfarry/workspaces/top/tuples/zmumuj_data.root")
 

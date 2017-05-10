@@ -18,7 +18,7 @@ passcutW = TCut("probe_AssocWM == 1")
 passcutStd = TCut("probe_AssocStdM == 1")
 mass = TCut("boson_M > 70000 && boson_M < 110000")
 
-selcut = ptcut + phicut + triggercut + trkqual + vtxcut + eta + mass
+selcut = ptcut + phicut + triggercut + vtxcut + eta + mass
 
 #f = TFile("/hepstore/sfarry/GridOutput/2614/MuonTracking.MU.2015.root")
 #g = TFile("/hepstore/sfarry/GridOutput/2613/MuonTracking.MD.2015.root")

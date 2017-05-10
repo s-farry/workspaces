@@ -104,10 +104,7 @@ fwdjet20_nobtag = pt20 + lhcbfwd + fwdjetpt20
 fwdasy = TCut("abs(lp_eta) > abs(lm_eta)")
 bwdasy = TCut("abs(lm_eta) > abs(lp_eta)")
 
-mupem = TCut("lp_id == -13 && lm_id == 11")
-mumep = TCut("lm_id == 13  && lp_id == -11")
-
-ttf   = TFile.Open("/hepstore/sfarry/aMCatNLO/ttbar/Events/llj_ttbar_amcatnlo_13tev.root")
+ttf   = TFile.Open("/hepstore/sfarry/aMCatNLO/ttbar/Events/llj_ttbar_amcatnlo_13tev_madspin.root")
 t     = ttf.Get("ttbar")
 
 wwf   = TFile.Open("/hepstore/sfarry/aMCatNLO/WW/Events/ll_WW_amcatnlo_13tev.root")
@@ -123,13 +120,14 @@ N = t.GetEntries()
 #correct by enforced branching ratio of W to mu or e
 bf_ww = pow(2*0.1080,2)
 bf_wz = 2*0.1080*2*0.03366
+bf_ee = pow(0.1080,2)
 
 wb_mgxsec = 57.052
 
 #one factor of 1/2 for fwd and bwd, another for using muons and electrons
-top_sf = 0.5*0.5*bf_ww/N
-ww_sf = 0.5*0.5*bf_ww/wwt.GetEntries()
-wz_sf = 0.5*bf_wz/wzt.GetEntries()
+top_sf = 0.5*2.0/N
+ww_sf  = 0.5*0.5*bf_ww/wwt.GetEntries()
+wz_sf  = 0.5*bf_wz/wzt.GetEntries()
 ww_madgraph_sf = 0.5*bf_ww*wb_mgxsec/wwmgt.GetEntries()
 
 fwd_vis_m = "sqrt((mu_E + e_E + fwdjet_E)^2 - (mu_px + e_px + fwdjet_px)^2 - (mu_py + e_py + fwdjet_py)^2 - (mu_pz + e_pz + fwdjet_pz)^2)"
@@ -274,8 +272,8 @@ def get_fiducial(name, t, fidreg = None, weights = True):
     fiducial.AddWeight("alphas_117", "w1111")
     fiducial.AddWeight("alphas_119", "w1112")
     fiducial.FillVars()
-    fiducial.Scale(1.0/N)
-    fiducial.ScaleAllWeights(1.0/N)
+    fiducial.Scale(1.0/(N*bf_ee))
+    fiducial.ScaleAllWeights(1.0/(N*bf_ee))
     fiducial.SaveToFile("/user2/sfarry/workspaces/top/tuples/"+name+"_fiducial.root")
     return fiducial
 
@@ -462,6 +460,7 @@ t_y_acc = ratio_details('ttbar_ty_acc', ttbar_fiducial_out['t_y'], [ttbar_fiduci
                           alphas1 = [ttbar_fiducial_out['t_y_alphas117'], ttbar_fiducial_out['t_y_alphas119']],
                           alphas2 = [ttbar_out['t_y_alphas117'], ttbar_out['t_y_alphas119']])
 
+t_y  = details('ttbar_t_y', ttbar_fiducial_out['t_y'], [ttbar_fiducial_out['t_y_Scale'+str(i)] for i in range(1,7)], [ttbar_fiducial_out['t_y_pdf'+str(i)] for i in range(1,101)], [ttbar_fiducial_out['t_y_alphas117'], ttbar_fiducial_out['t_y_alphas119']])
 
 lp_eta_WW  = details('WW_lp_eta', WW_out['lp_eta'], [WW_out['lp_eta_Scale'+str(i)] for i in range(1,7)], [WW_out['lp_eta_pdf'+str(i)] for i in range(1,101)], [WW_out['lp_eta_alphas117'], WW_out['lp_eta_alphas119']])
 
@@ -506,6 +505,7 @@ lp_eta.write()
 lm_pt.write()
 lm_eta.write()
 t_y_acc.write()
+t_y.write()
 lp_eta_WW.write()
 lp_eta_WZ.write()
 lm_eta_asy.write()

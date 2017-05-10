@@ -31,17 +31,17 @@ vars = [
 #seems more sensible to split them into +ve and -ve leptons
 
 vars = [
-    Bunch(name="lp_pt", var =  "<lp>_pt", nbins =  20  ,lo =  20 , hi = 100, ylims = [0, 0.01],
+    Bunch(name="lp_pt", var =  "<lp>_pt", nbins =  50  ,lo =  20 , hi = 100, ylims = [0, 0.01],
           py8var='lp_PT/1000.0', xlabel = 'p_{T}(l^{+}) [GeV]', ylabel = '#sigma [pb]', ynormlims = [0, 0.25] ),
-    Bunch(name="lm_pt"   , var="<lm>_pt"           , nbins = 20  , lo = 20 , hi = 100, ylims = [0, 0.01],
+    Bunch(name="lm_pt"   , var="<lm>_pt"           , nbins = 50  , lo = 20 , hi = 100, ylims = [0, 0.01],
           py8var='lm_PT/1000.0', label = 'p_{T}(l^{-}) [GeV]', ylabel = '#sigma [pb]', ynormlims = [0, 0.25]),
-    Bunch(name="lp_eta" , var="abs(<lp>_eta)"    , nbins = 20, lo = 2.0, hi = 4.5, ylims = [0, 0.02],
+    Bunch(name="lp_eta" , var="abs(<lp>_eta)"    , nbins = 50, lo = 2.0, hi = 4.5, ylims = [0, 0.02],
           py8var = 'lp_ETA', xlabel = '#eta(l^{+})', ylabel = '#sigma [pb]', ynormlims = [0, 0.52]), 
-    Bunch(name="lm_eta"  , var="abs(<lm>_eta)"     , nbins = 20, lo = 2.0, hi = 4.5, ylims = [0, 0.02],
+    Bunch(name="lm_eta"  , var="abs(<lm>_eta)"     , nbins = 50, lo = 2.0, hi = 4.5, ylims = [0, 0.02],
           py8var = 'lm_ETA', xlabel = '#eta(l^{-})', ylabel = '#sigma [pb]', ynormlims = [0, 0.58]), 
-    Bunch(name="ptj"    , var="<jet>_pt"       , nbins = 10, lo = 20, hi = 220, ylims = [0, 0.02],
+    Bunch(name="ptj"    , var="<jet>_pt"       , nbins = 50, lo = 20, hi = 220, ylims = [0, 0.02],
           py8var = '<jet>_PT/1000.0', xlabel = 'p_{T}(j)', ylabel = '#sigma [pb]', ynormlims = [0, 0.52]),
-    Bunch(name="etaj"   , var="abs(<jet>_eta)" , nbins = 20, lo = 2.2, hi = 4.2, ylims = [0, 0.02],
+    Bunch(name="etaj"   , var="abs(<jet>_eta)" , nbins = 50, lo = 2.2, hi = 4.2, ylims = [0, 0.02],
           py8var = '<jet>_ETA', xlabel = '#eta(j)', ylabel = '#sigma [pb]', ynormlims = [0, 0.62]), 
     Bunch(name="lp_pt10" , var = "<lp>_pt", nbins = 10 , lo = 20 , hi = 100, py8var='lp_PT/1000.0'),
     Bunch(name="lm_pt10" , var = "<lm>_pt", nbins = 10 , lo = 20 , hi = 100, py8var='lm_PT/1000.0'),
@@ -138,7 +138,6 @@ wt_mupem_bwd.Scale(wt_tot_xsec * bf_wt / wtt.GetEntries())
 
 
 wt_mupem = Template("wt_powheg_mupem", wt_mupem_fwd, wt_mupem_bwd)
-wt_mupem.SaveToFile()
 
 wt_mumep_fwd = Template("wt_powheg_mumep_fwd", wtt, fwdjet20 + mumep)
 for v in vars: 
@@ -172,10 +171,9 @@ wt_mumep_bwd.Scale(wt_tot_xsec * bf_wt / wtt.GetEntries())
 
 
 wt_mumep = Template("wt_powheg_mumep", wt_mumep_fwd, wt_mumep_bwd)
-wt_mumep.SaveToFile()
 
 wt = Template("wt_powheg", wt_mupem, wt_mumep)
-wt.SaveToFile()
+wt.SaveToFile("/user2/sfarry/workspaces/top/tuples/wt_powheg.root")
 
 amcatnlo_f = TFile.Open("/hepstore/sfarry/aMCatNLO/ttbar/Events/ttbar.root")
 amcatnlo_t = amcatnlo_f.Get("ttbar")
@@ -219,9 +217,8 @@ ttbar_powheg_bwd.ApplyCut()
 ttbar_powheg_bwd.Run()
 ttbar_powheg_bwd.Scale(powheg_scale)
 
-
 ttbar_powheg = Template("ttbar_powheg_mupem", ttbar_powheg_fwd, ttbar_powheg_bwd)
-ttbar_powheg.SaveToFile()
+ttbar_powheg.SaveToFile("/user2/sfarry/workspaces/top/tuples/ttbar_powheg.root")
 
 ttbar_amcatnlo_mupem_fwd = Template("ttbar_amcatnlo_mupem_fwd", amcatnlo_t, fwdjet20 + mupem)
 for v in vars: 
@@ -257,7 +254,6 @@ ttbar_amcatnlo_mupem_bwd.Scale(amcatnlo_scale)
 
 
 ttbar_amcatnlo_mupem = Template("ttbar_amcatnlo_mupem", ttbar_amcatnlo_mupem_fwd, ttbar_amcatnlo_mupem_bwd)
-ttbar_amcatnlo_mupem.SaveToFile()
 
 ttbar_amcatnlo_mumep_fwd = Template("ttbar_amcatnlo_mumep_fwd", amcatnlo_t, fwdjet20 + mumep)
 for v in vars: 
@@ -293,10 +289,9 @@ ttbar_amcatnlo_mumep_bwd.Scale(amcatnlo_scale)
 
 
 ttbar_amcatnlo_mumep = Template("ttbar_amcatnlo_mumep", ttbar_amcatnlo_mumep_fwd, ttbar_amcatnlo_mumep_bwd)
-ttbar_amcatnlo_mumep.SaveToFile()
 
 ttbar_amcatnlo = Template("ttbar_amcatnlo", ttbar_amcatnlo_mupem, ttbar_amcatnlo_mumep)
-ttbar_amcatnlo.SaveToFile()
+ttbar_amcatnlo.SaveToFile("/user2/sfarry/workspaces/top/tuples/ttbar_amcatnlo.root")
 
 tt_qq_evts = qq2ttbar_mc2016.MU.Get('TotEvts').GetVal() + qq2ttbar_mc2016.MD.Get('TotEvts').GetVal()
 tt_qq_xsec = 9.966e-8*1e9
@@ -329,7 +324,6 @@ for v in vars:
 for v in vars2d:
     ttbar_py8_mupem.Add2DVar(v.var1, v.var2)
 ttbar_py8_mupem.Run()
-ttbar_py8_mupem.SaveToFile()
 
 ttbar_py8_mumep = Template("ttbar_py8_mumep")
 ttbar_py8_mumep.SetSelCut( fid + mumep )
@@ -346,7 +340,6 @@ for v in vars:
 for v in vars2d:
     ttbar_py8_mumep.Add2DVar(v.var1, v.var2)
 ttbar_py8_mumep.Run()
-ttbar_py8_mumep.SaveToFile()
 
 ttbar_py8 = Template('ttbar_py8', ttbar_py8_mumep, ttbar_py8_mupem)
 ttbar_py8.SaveToFile("/user2/sfarry/workspaces/top/tuples/ttbar_py8.root")
@@ -356,12 +349,13 @@ from Style import *
 SetLHCbStyle()
 
 for b in vars:
-    p = Plot([wt.GetVar(b.name).GetHist(), ttbar_amcatnlo.GetVar(b.name).GetHist(), ttbar_powheg.GetVar(b.name).GetHist(), ttbar_py8.GetVar(b.name).GetHist()])
+    p = Plot([ttbar_amcatnlo.GetVar(b.name).GetHist(), ttbar_powheg.GetVar(b.name).GetHist(), ttbar_py8.GetVar(b.name).GetHist()])
+    p.AutoYlims()
     for plot in p.plots: plot.UseCurrentStyle()
-    p.setProp('labels', ['Wt (Powheg)', 't#bar{t} (aMC@NLO)', 't#bar{t} (Powheg)', 't#bar{t} (Pythia 8)'])
+    p.setProp('labels', ['t#bar{t} (aMC@NLO)', 't#bar{t} (Powheg)', 't#bar{t} (Pythia 8)'])
     p.setProp('colors', ['red', 'blue', 'black', 'green'])
     p.setProp('location', '/user2/sfarry/workspaces/top/figures')
-    p.setProp('filename', 'wt_top_'+b.name+'.pdf')
+    p.setProp('filename', 'top_gencomp_'+b.name+'.pdf')
     p.setProp('normalised', False)
     p.setProp('ylabel', '[A.U.]')
     p.setProp('leglims', [0.6, 0.6, 0.9, 0.9])
@@ -372,15 +366,17 @@ for b in vars:
     if hasattr(b, 'ylabel'): p.setProp('ylabel', b.ylabel)
     if hasattr(b, 'shiftlegx'): p.ShiftLegX(b.shiftlegx)
     if hasattr(b, 'shiftlegy'): p.ShiftLegX(b.shiftlegy)
-    if hasattr(b, 'ylims'): p.setProp('ylims', b.ylims)
     p.drawROOT()
 
-    p = Plot([wt.GetVar(b.name).GetHist(), ttbar_amcatnlo.GetVar(b.name).GetHist(), ttbar_powheg.GetVar(b.name).GetHist(), ttbar_py8.GetVar(b.name).GetHist()])
+    #p = Plot([wt.GetVar(b.name).GetHist(), ttbar_amcatnlo.GetVar(b.name).GetHist(), ttbar_powheg.GetVar(b.name).GetHist(), ttbar_py8.GetVar(b.name).GetHist()])
+
+    p = Plot([ttbar_amcatnlo.GetVar(b.name).GetHist(), ttbar_powheg.GetVar(b.name).GetHist(), ttbar_py8.GetVar(b.name).GetHist()])
     for plot in p.plots: plot.UseCurrentStyle()
-    p.setProp('labels', ['Wt (Powheg)', 't#bar{t} (aMC@NLO)', 't#bar{t} (Powheg)', 't#bar{t} (Pythia 8)'])
+    p.AutoYlims()
+    p.setProp('labels', ['t#bar{t} (aMC@NLO)', 't#bar{t} (Powheg)', 't#bar{t} (Pythia 8)'])
     p.setProp('colors', ['red', 'blue', 'black', 'green'])
     p.setProp('location', '/user2/sfarry/workspaces/top/figures')
-    p.setProp('filename', 'wt_top_norm_'+b.name+'.pdf')
+    p.setProp('filename', 'top_gencomp_norm_'+b.name+'.pdf')
     p.setProp('normalised', True)
     p.setProp('ylabel', '[A.U.]')
     p.setProp('leglims', [0.6, 0.6, 0.9, 0.9])
@@ -391,7 +387,6 @@ for b in vars:
     if hasattr(b, 'ylabel'): p.setProp('ylabel', b.ylabel)
     if hasattr(b, 'shiftlegx'): p.ShiftLegX(b.shiftlegx)
     if hasattr(b, 'shiftlegy'): p.ShiftLegX(b.shiftlegy)
-    if hasattr(b, 'ynormlims'): p.setProp('ynormlims', b.ynormlims)
     p.drawROOT()
 
 

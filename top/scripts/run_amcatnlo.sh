@@ -2,7 +2,7 @@ source /cvmfs/lhcb.cern.ch/lib/LbLogin.sh
 source /cvmfs/sft.cern.ch/lcg/releases/gcc/4.9.3/x86_64-slc6-gcc49-opt/setup.sh
 export ROOTSYS=/cvmfs/sft.cern.ch/lcg/releases/ROOT/6.06.00-a82d7/x86_64-slc6-gcc48-opt
 source $ROOTSYS/bin/thisroot.sh
-#if [ -e ${input}.gz ]; then gunzip ${input}.gz; fi;
+if [ -e ${input}.gz ]; then gunzip ${input}.gz; bzip2 ${input}; fi;
 if [ -e ${input}.bz2 ]; then
     echo f=/scratch/sfarry/$(basename ${input%/*})_$(basename $input).lhe
     echo cp ${input}.bz2 ${f}.bz2

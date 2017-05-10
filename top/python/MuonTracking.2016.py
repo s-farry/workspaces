@@ -20,7 +20,7 @@ passcutW = TCut("probe_AssocWM == 1")
 passcutStd = TCut("probe_AssocStdM == 1")
 mass = TCut("boson_M > 70000 && boson_M < 110000")
 
-selcut = ptcut + phicut + triggercut + trkqual + vtxcut + eta + mass
+selcut = ptcut + phicut + triggercut + vtxcut + eta + mass
 
 #f = TFile("/hepstore/sfarry/GridOutput/2618/MuonTracking.MU.2016.root")
 #g = TFile("/hepstore/sfarry/GridOutput/2617/MuonTracking.MD.2016.root")
@@ -111,24 +111,24 @@ def makeMuonTracking2016(name, selcut, passcut):
     
     MuonTracking2016MagDown = EfficiencyClass("Muon"+name+"Tracking2016MagDown", MuonTracking2016MagDownMuPlus, MuonTracking2016MagDownMuMinus)
     MuonTracking2016MagDown.MakeEfficiencyGraph()
-    MuonTracking2016MagDown.SaveToFile()
+    MuonTracking2016MagDown.SaveToFile("/user2/sfarry/workspaces/top/tuples/Muon"+name+"Tracking2016MagDown.root")
     
     MuonTracking2016MagUp = EfficiencyClass("Muon"+name+"Tracking2016MagUp", MuonTracking2016MagUpMuPlus, MuonTracking2016MagUpMuMinus)
     MuonTracking2016MagUp.MakeEfficiencyGraph()
-    MuonTracking2016MagUp.SaveToFile()
+    MuonTracking2016MagUp.SaveToFile("/user2/sfarry/workspaces/top/tuples/Muon"+name+"Tracking2016MagUp.root")
     
     MuonTracking2016MuPlus = EfficiencyClass("Muon"+name+"Tracking2016MuPlus", MuonTracking2016MagDownMuPlus, MuonTracking2016MagUpMuPlus)
     MuonTracking2016MuPlus.MakeEfficiencyGraph()
-    MuonTracking2016MuPlus.SaveToFile()
+    MuonTracking2016MuPlus.SaveToFile("/user2/sfarry/workspaces/top/tuples/Muon"+name+"Tracking2016MuPlus.root")
 
     MuonTracking2016MuMinus = EfficiencyClass("Muon"+name+"Tracking2016MuMinus", MuonTracking2016MagDownMuMinus, MuonTracking2016MagUpMuMinus)
     MuonTracking2016MuMinus.MakeEfficiencyGraph()
     MuonTracking2016MuMinus.PrintEfficiencies("ETA")
-    MuonTracking2016MuMinus.SaveToFile()
+    MuonTracking2016MuMinus.SaveToFile("/user2/sfarry/workspaces/top/tuples/Muon"+name+"Tracking2016MuMinus.root")
     
     MuonTracking2016 = EfficiencyClass("Muon"+name+"Tracking2016", MuonTracking2016MagDown, MuonTracking2016MagUp)
     MuonTracking2016.MakeEfficiencyGraph()
-    MuonTracking2016.SaveToFile()
+    MuonTracking2016.SaveToFile("/user2/sfarry/workspaces/top/tuples/Muon"+name+"Tracking2016.root")
 
 makeMuonTracking2016("",selcut,passcut)
 #makeMuonTracking2016("W",selcut,passcutW)

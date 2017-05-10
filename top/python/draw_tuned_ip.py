@@ -13,7 +13,11 @@ files = [
     ['dy_magup_plus'   , 'dy_etaphitune_magup_plus.root'],
     ['dy_magup_minus'  , 'dy_etaphitune_magup_minus.root'],
     ['dy_magdown_plus' , 'dy_etaphitune_magdown_plus.root'],
-    ['dy_magdown_minus', 'dy_etaphitune_magdown_minus.root']
+    ['dy_magdown_minus', 'dy_etaphitune_magdown_minus.root'],
+    ['dx_plus'         , 'dx_etaphitune_plus.root'],
+    ['dx_minus'        , 'dx_etaphitune_minus.root'],
+    ['dy_plus'         , 'dy_etaphitune_plus.root'],
+    ['dy_minus'        , 'dy_etaphitune_minus.root']
 ]
 
 for f in files:
@@ -31,8 +35,8 @@ for f in files:
             for p in d.plots:
                 p.UseCurrentStyle()
             
-            chi2ndof_1 = d.plots[0].Chi2Test(d.plots[1],"UW")
-            chi2ndof_2 = d.plots[0].Chi2Test(d.plots[2],"UW")
+            chi2ndof_1 = d.plots[0].Chi2Test(d.plots[1],"CHI2/NDF")
+            chi2ndof_2 = d.plots[0].Chi2Test(d.plots[2],"CHI2/NDF")
             
             etalo = etaphi.GetXaxis().GetBinLowEdge(i+1)
             etahi = etaphi.GetXaxis().GetBinLowEdge(i+2)
@@ -57,7 +61,7 @@ for f in files:
             d.setProp('fillstyles', [0,0,0,0])
             d.setProp('normalised', True)
             d.setProp('drawOpts', ['p1','h','h', 'p'])
-            d.setProp('labels', ['2016 Data', 'MC2015', 'MC2015 Tuned'])
+            d.setProp('labels', ['2016 Data', 'MC2016', 'MC2016 Tuned'])
             d.setProp('leglims', [0.65, 0.7, 0.9, 0.9])
             d.setProp('ynormlims', [0, get_max(d.plots, norm = True)*1.1])
             d.setProp('extraObjs', [a])

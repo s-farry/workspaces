@@ -70,18 +70,18 @@ int main(int argc, char ** argv) {
 
     for ( int i = 0 ; i < n ; ++i){
       std::pair<double, double> pteta = mom(pup.at(i));
-      if (ids.at(i) == 11 ) {
+      if ( ids.at(i) == 11 || ids.at(i) == 13 ) {
 	pt1  = pteta.first;
 	eta1 = pteta.second;
       }
-      if (ids.at(i) == -11 ) {
+      if ( ids.at(i) == -11 || ids.at(i) == -13 ) {
 	pt2  = pteta.first;
 	eta2 = pteta.second;
       }
     }
     if (pt1 > 15 && pt2 > 15){
-      if (eta1 > 1.5 && eta1 < 5.0 && eta2 > 1.5 && eta2 < 5.0) pass = true;
-      if (eta1 < -1.5 && eta1 > -5.0 && eta2 < -1.5 && eta2 > -5.0){
+      if (eta1 > 1.0 && eta1 < 6.0 && eta2 > 1.0 && eta2 < 6.0) pass = true;
+      if (eta1 < -1.0 && eta1 > -6.0 && eta2 < -1.0 && eta2 > -6.0){
 
 
 	//one does not simply flip the z's in an event...

@@ -9,8 +9,10 @@ SetLHCbStyle()
 
 etrigger = TCut("tag_L0ElectronDecision_TOS == 1 && tag_Hlt1SingleElectronNoIPDecision_TOS == 1 && tag_Hlt2EWSingleElectronVHighPtDecision_TOS == 1")
 
-dataMD2016     = TFile("/hepstore/sfarry/GridOutput/2679/ElectronID.MD.2016.root")
-dataMU2016     = TFile("/hepstore/sfarry/GridOutput/2680/ElectronID.MU.2016.root")
+#dataMD2016     = TFile("/hepstore/sfarry/GridOutput/2679/ElectronID.MD.2016.root")
+#dataMU2016     = TFile("/hepstore/sfarry/GridOutput/2680/ElectronID.MU.2016.root")
+dataMD2016     = TFile.Open("root://hepgrid11.ph.liv.ac.uk//dpm/ph.liv.ac.uk/home/lhcb/Run2Effs/ElectronID.MD.2016.root")
+dataMU2016     = TFile.Open("root://hepgrid11.ph.liv.ac.uk//dpm/ph.liv.ac.uk/home/lhcb/Run2Effs/ElectronID.MU.2016.root")
 dataMD2015     = TFile.Open("root://hepgrid11.ph.liv.ac.uk//dpm/ph.liv.ac.uk/home/lhcb/Run2Effs/ElectronID.MD.2015.root")
 dataMU2015     = TFile.Open("root://hepgrid11.ph.liv.ac.uk//dpm/ph.liv.ac.uk/home/lhcb/Run2Effs/ElectronID.MU.2015.root")
 
