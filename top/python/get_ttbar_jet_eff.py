@@ -41,7 +41,7 @@ mumep = TCut("lp_ID == -11  && lm_ID == 13")
 
 lp_rec = TCut("lp_isRec == 1")
 lm_rec = TCut("lm_isRec == 1")
-jet_rec = TCut("ttbar_recjet_PT > 0")
+jet_rec = TCut("ttbar_recjet_PT > 12500")
 lp_muid = TCut("lp_rec_ISMUON == 1")
 lm_muid = TCut("lm_rec_ISMUON == 1")
 
@@ -98,19 +98,28 @@ recvars = [
     ["e_eta"        , "abs(e_ETA)"      , [2.0, 2.5, 3.0, 3.5, 4.5 ]], 
     ["ptj"          , "ttbar_jet_PT/1000.0"       , 5, 20, 220],
     ["etaj"         , "ttbar_jet_ETA"   , [2.2, 2.7, 3.2, 3.7, 4.2] ],
+    ["cpf"          , "ttbar_jet_cpf"   , 20, 0, 1],
+    ["mult",    "ttbar_jet_ndauts" , 26, -0.5, 25.5],
+    ["mpt",     "ttbar_jet_mpt" , 20, 0, 40000.0],
+    ["mtf",     "ttbar_jet_mtf" , 20, 0, 1.0 ],
+    ["npoint",  "ttbar_jet_npoint" ,23, -0.5, 45.5],
+    ["width",   "ttbar_jet_width" , 20, 0, 1.0 ],
+    ["n90",     "ttbar_jet_n90" , 16, -0.5, 15.5],
     ["eiso"         , "e_cpt_0.50/1000.0"       , 10, 0, 20],
     ["muiso"        , "mu_cpt_0.50/1000.0"      , 10, 0, 20],
     ["iso"          , "max(mu_cpt_0.50,e_cpt_0.50)/1000.0" , 10, 0, 20],
     ]
+
+recvars2d = [ ['ptj', 'etaj'] ]
 
 # get other efficiencies from fully reconstructed version
 kinematic = TCut("mu_ETA > 2.0 && mu_ETA < 4.5 && e_ETA > 2.0 && e_ETA < 4.5 && mu_PT > 20000 && e_PT > 20000 && ttbar_jet_PT > 20000")
 ip  = TCut("mu_IP_OWNPV < 0.04 && e_IP_OWNPV < 0.04")
 iso = TCut("mu_cpt_0.50 < 5000 && e_cpt_0.50 < 5000")
 iso = TCut("mu_cpt_0.50 < 5000")
-trueb = TCut("ttbar_mcjet_PT > 0 && abs(ttbar_mcjet_flavour) == 5")
+trueb = TCut("ttbar_mcjet_PT > 12500 && abs(ttbar_mcjet_flavour) == 5")
 jettag = TCut("ttbar_jet_BDTTag == 1")
-
+'''
 jeteff_mupem = EfficiencyClass("jeteff_mupem")
 jeteff_mupem.SetSelectionCut(fid + lp_rec + lm_rec + mupem)
 jeteff_mupem.SetPassCut(jet_rec)
@@ -181,15 +190,26 @@ jeteff_wtrw = EfficiencyClass("jeteff_wtrw", jeteff_mupem_wtrw, jeteff_mumep_wtr
 jeteff_wtrw.MakeEfficiencyGraph()
 jeteff_wtrw.SaveToFile("/user2/sfarry/workspaces/top/tuples/jeteff_wtrw.root")
 
-
+'''
 tageff = EfficiencyClass("tageff")
 tageff.SetSelectionCut(kinematic + trueb)
 tageff.SetPassCut(jettag)
 tageff.AddTrees(qq2ttbar_mc2016.trees(), tt_qq_scale / tt_gg_scale)
 tageff.AddTrees(gg2ttbar_mc2016.trees())
 tageff.AddVars(recvars)
+tageff.Add2DVars(recvars2d)
 tageff.Run()
 tageff.SaveToFile("/user2/sfarry/workspaces/top/tuples/tageff.root")
+
+tageff_2012 = EfficiencyClass("tageff_2012")
+tageff_2012.SetSelectionCut(kinematic + trueb)
+tageff_2012.SetPassCut(jettag)
+tageff_2012.AddTrees(qq2ttbar_mc2012.trees(), tt_qq_scale / tt_gg_scale)
+tageff_2012.AddTrees(gg2ttbar_mc2012.trees())
+tageff_2012.AddVars(recvars)
+tageff_2012.Add2DVars(recvars2d)
+tageff_2012.Run()
+tageff_2012.SaveToFile("/user2/sfarry/workspaces/top/tuples/tageff_2012.root")
 
 tageff_nlorw = EfficiencyClass("tageff_nlorw")
 tageff_nlorw.SetSelectionCut(kinematic + trueb)
@@ -197,6 +217,7 @@ tageff_nlorw.SetPassCut(jettag)
 tageff_nlorw.AddTrees(qq2ttbar_mc2016.trees(), tt_qq_scale / tt_gg_scale)
 tageff_nlorw.AddTrees(gg2ttbar_mc2016.trees())
 tageff_nlorw.AddVars(recvars)
+tageff_nlorw.Add2DVars(recvars2d)
 tageff_nlorw.Reweight("ttbar_jet_PT/1000.0", "ttbar_jet_ETA", wf.Get("sf_tt_amcatnlo_ptj10_etaj10"))
 tageff_nlorw.Run()
 tageff_nlorw.SaveToFile("/user2/sfarry/workspaces/top/tuples/tageff_nlorw.root")
@@ -210,7 +231,7 @@ tageff_wtrw.AddVars(recvars)
 tageff_wtrw.Reweight("ttbar_jet_PT/1000.0", "ttbar_jet_ETA", wf.Get("sf_wt_powheg_ptj10_etaj10"))
 tageff_wtrw.Run()
 tageff_wtrw.SaveToFile("/user2/sfarry/workspaces/top/tuples/tageff_wtrw.root")
-
+'''
 jet_receff_obj = eff_vals('jet_receff',
                           jeteff_nlorw.GetTotEff(),
                           jeteff_nlorw.GetTotEffErrLo(),
@@ -241,3 +262,4 @@ jet_tageff_obj.write()
 jet_wt_receff_obj.write()
 jet_wt_tageff_obj.write()
 outputFile.Close()
+'''

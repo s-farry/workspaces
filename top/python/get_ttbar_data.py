@@ -6,10 +6,12 @@ from math import sqrt
 selection         = TCut("min(mu_ETA,e_ETA) > 2.0 && max(mu_ETA,e_ETA) < 4.5 && mu_PT > 20000 && e_PT > 20000 && mu_cpt_0.50 < 5000 && e_cpt_0.50 < 5000 && mu_ipubs_d < 0.04 && e_ipubs_d < 0.04 && e_isMuonLoose == 0")
 selection_antiiso = TCut("mu_cpt_0.50 > 5000 && e_cpt_0.50 > 5000 && mu_ipubs_d < 0.04 && e_ipubs_d < 0.04 && min(mu_ETA,e_ETA) > 2.0 && max(mu_ETA,e_ETA) < 4.5  && mu_PT > 20000 && e_PT > 20000 && e_isMuonLoose == 0 ")
 selection_noiso   = TCut("mu_ipubs_d < 0.04 && e_ipubs_d < 0.04 && min(mu_ETA,e_ETA) > 2.0 && max(mu_ETA,e_ETA) < 4.5 && mu_PT > 20000 && e_PT > 20000 && e_isMuonLoose == 0")
+selection_noisoip   = TCut("min(mu_ETA,e_ETA) > 2.0 && max(mu_ETA,e_ETA) < 4.5 && mu_PT > 20000 && e_PT > 20000 && e_isMuonLoose == 0")
 
 selection_ss         = TCut("min(mu_ETA,e_ETA) > 2.0 && max(mu_ETA,e_ETA) < 4.5 && mu_PT > 20000 && e_PT > 20000 && mu_cpt_0.50 < 5000 && e_cpt_0.50 < 5000 && mu_IP_OWNPV < 0.04 && e_IP_OWNPV < 0.04 && e_isMuonLoose == 0")
 selection_antiiso_ss = TCut("mu_cpt_0.50 > 5000 && e_cpt_0.50 > 5000 && mu_IP_OWNPV < 0.04 && e_IP_OWNPV < 0.04 && min(mu_ETA,e_ETA) > 2.0 && max(mu_ETA,e_ETA) < 4.5  && mu_PT > 20000 && e_PT > 20000 && e_isMuonLoose == 0 ")
 selection_noiso_ss  = TCut("mu_IP_OWNPV < 0.04 && e_IP_OWNPV < 0.04 && min(mu_ETA,e_ETA) > 2.0 && max(mu_ETA,e_ETA) < 4.5 && mu_PT > 20000 && e_PT > 20000 && e_isMuonLoose == 0")
+selection_noisoip_ss  = TCut("min(mu_ETA,e_ETA) > 2.0 && max(mu_ETA,e_ETA) < 4.5 && mu_PT > 20000 && e_PT > 20000 && e_isMuonLoose == 0")
 
 
 mupem_fwdasy = TCut("mu_ID == -13 && mu_ETA > e_ETA")
@@ -121,6 +123,24 @@ ttbar_noiso_ss.AddTrees(ttbar_2015.trees_ss())
 ttbar_noiso_ss.AddVars(vars)
 ttbar_noiso_ss.Run()
 ttbar_noiso_ss.SaveToFile('/user2/sfarry/workspaces/top/tuples/ttbar_data13tev_noiso_ss.root')
+
+
+ttbar_noisoip = Template("ttbar_noisoip")
+ttbar_noisoip.SetSelCut(trigger + selection_noisoip + jet)
+ttbar_noisoip.AddTrees(ttbar_2016.trees())
+ttbar_noisoip.AddTrees(ttbar_2015.trees())
+ttbar_noisoip.AddVars(vars)
+ttbar_noisoip.Run()
+ttbar_noisoip.SaveToFile('/user2/sfarry/workspaces/top/tuples/ttbar_data13tev_noisoip.root')
+
+ttbar_noisoip_ss = Template("ttbar_noisoip_ss")
+ttbar_noisoip_ss.SetSelCut(trigger + selection_noisoip_ss + jet)
+ttbar_noisoip_ss.AddTrees(ttbar_2016.trees_ss())
+ttbar_noisoip_ss.AddTrees(ttbar_2015.trees_ss())
+ttbar_noisoip_ss.AddVars(vars)
+ttbar_noisoip_ss.Run()
+ttbar_noisoip_ss.SaveToFile('/user2/sfarry/workspaces/top/tuples/ttbar_data13tev_noisoip_ss.root')
+
 '''
 ttbar_noiso_notag = Template("ttbar_noiso_notag")
 ttbar_noiso_notag.SetSelCut(trigger + selection_noiso + jet_notag)

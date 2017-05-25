@@ -24,15 +24,15 @@
 using namespace std;
 using namespace RooFit;
 #endif
-void fit_tagging_simultaneous(){
+void fit_tagging_simultaneous_2012(){
   
   gROOT->ProcessLine(".x /user2/sfarry/workspaces/WJet/root/lhcbStyle.C");
   TH1::AddDirectory(false);
   
-  TFile* f = new TFile("/user2/sfarry/workspaces/top/tuples/j_untagged_unw.root");
-  TFile* ff = new TFile("/user2/sfarry/workspaces/top/tuples/j_notag_unw.root");
-  TFile* g = new TFile("/user2/sfarry/workspaces/top/tuples/j_tagged_unw.root");
-  TFile* gg = new TFile("/user2/sfarry/workspaces/top/tuples/j_light_unw.root");
+  TFile* f = new TFile("/user2/sfarry/workspaces/top/tuples/j_2012_untagged.root");
+  TFile* ff = new TFile("/user2/sfarry/workspaces/top/tuples/j_notag_2012.root");
+  TFile* g = new TFile("/user2/sfarry/workspaces/top/tuples/j_tagged_2012.root");
+  TFile* gg = new TFile("/user2/sfarry/workspaces/top/tuples/j_light_2012.root");
   TFile* h = new TFile("/user2/sfarry/workspaces/top/tuples/b_j_untagged.root");
   TFile* hh = new TFile("/user2/sfarry/workspaces/top/tuples/b_j_tagged.root");
   TFile* i = new TFile("/user2/sfarry/workspaces/top/tuples/c_j_untagged.root");
@@ -159,7 +159,7 @@ void fit_tagging_simultaneous(){
 
   frame->Draw();
   legend->Draw("same");
-  c1->Print("/user2/sfarry/workspaces/top/figures/tagging_tot_simultaneous.pdf");
+  c1->Print("/user2/sfarry/workspaces/top/figures/tagging_tot_simultaneous_2012.pdf");
 
   TCanvas* c2 = new TCanvas();
   RooPlot* frame2 = x.frame();
@@ -170,7 +170,7 @@ void fit_tagging_simultaneous(){
   pass_datahist->plotOn(frame2);
   frame2->Draw();
   legend->Draw("same");
-  c2->Print("/user2/sfarry/workspaces/top/figures/tagging_pass_simultaneous.pdf");
+  c2->Print("/user2/sfarry/workspaces/top/figures/tagging_pass_simultaneous_2012.pdf");
 
   TCanvas* c2b = new TCanvas();
   RooPlot* frame2b = x.frame();
@@ -181,38 +181,7 @@ void fit_tagging_simultaneous(){
   fail_datahist->plotOn(frame2b);
   frame2b->Draw();
   legend->Draw("same");
-  c2b->Print("/user2/sfarry/workspaces/top/figures/tagging_fail_simultaneous.pdf");
-
-  TCanvas* c3 = new TCanvas();
-  RooPlot* frame3 = x.frame();
-  tot_datahist->plotOn(frame3);
-  tot_model.plotOn(frame3, RooFit::Name("beauty"), RooFit::Components("pdfhist0"), RooFit::DrawOption("L"));
-  tot_model.plotOn(frame3, RooFit::Name("charm"), RooFit::Components("pdfhist1"), RooFit::LineColor(kViolet-1), RooFit::DrawOption("L"));
-  tot_model.plotOn(frame3, RooFit::Name("light"), RooFit::Components("pdfhist2"), RooFit::LineColor(kRed), RooFit::DrawOption("L"));
-  tot_datahist->plotOn(frame3);
-
-  TLegend* legend2 = new TLegend(0.2, 0.7, 0.5, 0.9);
-  legend2->SetFillStyle(0);
-  legend2->AddEntry(frame3->findObject("beauty"), "beauty", "L");
-  legend2->AddEntry(frame3->findObject("charm"), "charm", "L");
-  legend2->AddEntry(frame3->findObject("light"), "light", "L");
-
-  frame3->Draw();
-  legend2->Draw("same");
-  c3->Print("/user2/sfarry/workspaces/top/figures/tagging_tot_unstacked_simultaneous.pdf");
-
-
-  TCanvas* c4 = new TCanvas();
-  RooPlot* frame4 = x.frame();
-  pass_datahist->plotOn(frame4);
-  pass_model.plotOn(frame4, RooFit::Name("beauty"), RooFit::Components("pdfhist3"), RooFit::DrawOption("L"));
-  pass_model.plotOn(frame4, RooFit::Name("charm"), RooFit::Components("pdfhist4"), RooFit::LineColor(kViolet-1), RooFit::DrawOption("L"));
-  pass_model.plotOn(frame4, RooFit::Name("light"), RooFit::Components("pdfhist5"), RooFit::LineColor(kRed), RooFit::DrawOption("L"));
-  pass_datahist->plotOn(frame4);
-
-  frame4->Draw();
-  legend2->Draw("same");
-  c4->Print("/user2/sfarry/workspaces/top/figures/tagging_pass_unstacked_simultaneous.pdf");
+  c2b->Print("/user2/sfarry/workspaces/top/figures/tagging_fail_simultaneous_2012.pdf");
 
   TFile* eff = new TFile("/user2/sfarry/workspaces/top/tuples/b_j_eff.root");
 
@@ -242,7 +211,7 @@ void fit_tagging_simultaneous(){
 int main(){
   gROOT->ProcessLine(".x /user2/sfarry/workspaces/WJet/root/lhcbStyle.C");
   TH1::AddDirectory(false);
-  fit_tagging_simultaneous();
+  fit_tagging_simultaneous_2012();
   return 0;
 }
 #endif

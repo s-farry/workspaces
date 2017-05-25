@@ -48,7 +48,7 @@ plots = [
     Bunch(name="ptj"     ,var= "<jet>_PT/1000.0" , bins = 30, lo = 15.0, hi = 100.0, xlabel = 'p_{T}^{j} [GeV]'),
     Bunch(name="etaj"    ,var= "<jet>_ETA", bins = 20, lo = 2.0, hi = 4.5, xlabel = '#eta^{j}'),
     Bunch(name="ptj10"     ,var= "<jet>_PT/1000.0" , bins = 10, lo = 15.0, hi = 100.0, xlabel = 'p_{T}^{j} [GeV]'),
-    Bunch(name="etaj10"    ,var= "<jet>_ETA", bins = 10, lo = 2.0, hi = 4.5, xlabel='#eta^{j}'),
+    Bunch(name="etaj10"    ,var= "<jet>_ETA", bins = 10, lo = 2.2, hi = 4.2, xlabel='#eta^{j}'),
     Bunch(name="cpf"     ,var= "<jet>_cpf" , bins = 100, lo = 0, hi = 1.0, xlabel = 'cpf', shiftlegx = -0.4),
     Bunch(name="mult"    ,var= "<jet>_ndauts" , bins = 26, lo = -0.5, hi = 25.5, xlabel = 'jet multiplicity', shiftlegx = -0.4),
     Bunch(name="mpt"     ,var= "<jet>_mpt" , bins = 100, lo = 0, hi = 40000.0, xlabel = 'mpt'),
@@ -115,8 +115,8 @@ datafit.SetToEntries('N')
 datafit.SetToRMS('s')
 datafit.SetVal('ptj10', 3, 'm', 0.13)
 datafit.SetVal('ptj10', 3, 's', 0.25)
-#datafit.SetVal('etaj10', 5, 'm', 0.1)
-#datafit.SetVal('etaj10', 5, 's', 0.2)
+datafit.SetVal('etaj10', 6, 'm', 0.2)
+datafit.SetVal('etaj10', 6, 's', 0.27)
 datafit.FitIt("MLLQ")
 datafit.SaveToFile(loc+"/datazjetres.root")
 
@@ -129,8 +129,12 @@ mcfit.Init(mc)
 mcfit.SetToMean('m')
 mcfit.SetToEntries('N')
 mcfit.SetToRMS('s')
-#mcfit.SetVal('etaj10', 8, 'm', 0.08)
-#mcfit.SetVal('etaj10', 8, 's', 0.3)
+mcfit.SetVal('etaj10', 0, 'm', 0.12)
+mcfit.SetVal('etaj10', 0, 's', 0.27)
+mcfit.SetVal('etaj10', 1, 'm', 0.15)
+mcfit.SetVal('etaj10', 1, 's', 0.3)
+mcfit.SetVal('etaj10', 2, 'm', 0.16)
+mcfit.SetVal('etaj10', 2, 's', 0.25)
 #mcfit.SetVal('ptj10', 3, 'm', 0.02)
 #mcfit.SetVal('ptj10', 3, 's', 0.2)
 mcfit.SetVal('ptj10', 1, 'm', 0.15)
@@ -176,6 +180,8 @@ for p in ('ptj10', 'etaj10'):
     d.setProp('ylims', [-0.4, 0.45])
     if p == 'ptj10':
         d.setProp('xlabel', 'p_{T}(j) [GeV]')
+    else:
+        d.setProp('xlabel', '#eta(j)')
     d.drawROOT()
     d = Plot([datafit.GetParHist(p,4), mcfit.GetParHist(p,4)])
     d.forceStyle()
@@ -190,16 +196,18 @@ for p in ('ptj10', 'etaj10'):
     d.setProp('ylims', [0,0.4])
     if p == 'ptj10':
         d.setProp('xlabel', 'p_{T}(j) [GeV]')
+    else:
+        d.setProp('xlabel', '#eta(j)')
     d.drawROOT()
 
 d = Plot([datafit.GetHist(), mcfit.GetHist()])
 d.forceStyle()
-d.plots[0].GetListOfFunctions()[0].SetLineColor(1)
-d.plots[1].GetListOfFunctions()[0].SetLineColor(2)
-d.plotObjs[0].norm.GetListOfFunctions().Clear()
-d.plotObjs[1].norm.GetListOfFunctions().Clear()
-d.plotObjs[0].plot.GetListOfFunctions().Clear()
-d.plotObjs[1].plot.GetListOfFunctions().Clear()
+#d.plots[0].GetListOfFunctions()[0].SetLineColor(1)
+#d.plots[1].GetListOfFunctions()[0].SetLineColor(2)
+#d.plotObjs[0].norm.GetListOfFunctions().Clear()
+#d.plotObjs[1].norm.GetListOfFunctions().Clear()
+#d.plotObjs[0].plot.GetListOfFunctions().Clear()
+#d.plotObjs[1].plot.GetListOfFunctions().Clear()
 #d.plotObjs[0].norm.GetListOfFunctions()[0].SetParameter(0, d.plots[0].GetListOfFunctions()[0].GetParameter(0) / d.plots[0].Integral())
 #d.plotObjs[1].norm.GetListOfFunctions()[0].SetParameter(0, d.plots[1].GetListOfFunctions()[0].GetParameter(0) / d.plots[1].Integral())
 d.setProp('ylabel', '[A.U.]')

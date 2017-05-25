@@ -98,6 +98,8 @@ class DataObj:
 
 gg2ttbar_mc2016 = DataObj('ttbar.ttbar_gg.<P>.MC2016', folder='ttbar')
 qq2ttbar_mc2016 = DataObj('ttbar.ttbar_qqbar.<P>.MC2016', folder='ttbar')
+gg2ttbar_mc2012 = DataObj('ttbar.ttbar_gg.<P>.MC2012', folder='ttbar')
+qq2ttbar_mc2012 = DataObj('ttbar.ttbar_qqbar.<P>.MC2012', folder='ttbar')
 ww_mc2016       = DataObj('ttbar.WW_ll.<P>.MC2016', folder='ttbar')
 ztautau_mc2016  = DataObj('ttbar.Z_tautau.<P>.MC2016', folder='ttbar')
 ttbar_2016      = DataObj('ttbar.<P>.2016', folder='ttbar')

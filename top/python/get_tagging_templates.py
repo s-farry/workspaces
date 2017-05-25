@@ -5,6 +5,9 @@ from Utils import Bunch
 f = TFile("/hepstore/sfarry/GridOutput/2998/dijet.MD.2016.root")
 g = TFile("/hepstore/sfarry/GridOutput/2999/dijet.MU.2016.root")
 
+ff = TFile("/hepstore/sfarry/GridOutput/3022/dijet.MD.2012.root")
+gg = TFile("/hepstore/sfarry/GridOutput/3023/dijet.MU.2012.root")
+
 h = TFile("/hepstore/sfarry/GridOutput/2992/dijet.dijet_udsg.MU.MC2016.root")
 i = TFile("/hepstore/sfarry/GridOutput/2993/dijet.dijet_udsg.MD.MC2016.root")
 jj = TFile("/hepstore/sfarry/GridOutput/2994/dijet.dijet_b.MU.MC2016.root")
@@ -35,7 +38,9 @@ vars = [
     Bunch(name="eta", var = "<jet>_ETA", bins = 100, lo = 2.2, hi = 4.2),
     Bunch(name="eta5", var = "<jet>_ETA", bins = 5, lo = 2.2, hi = 4.2),
     Bunch(name="pt10", var = "<jet>_PT/1000.0", bins = 10, lo = 20.0, hi = 100.0),
-    Bunch(name="dijet_m", var = "dijet_M", bins = 100, lo = 2000, hi = 100000)
+    Bunch(name="dijet_m", var = "dijet_M", bins = 100, lo = 2000, hi = 100000),
+    Bunch(name="mCor", var = "<jet>_Tag0_mCor", bins = 100, lo = 0, hi = 10000),
+    Bunch(name='fdChi2', var="<jet>_Tag0_fdChi2", bins = 100, lo = 0 , hi = 5000)
 ]
 
 vars2d = [
@@ -75,7 +80,7 @@ truec1 = TCut("abs(j1_mc_flavour) == 4")
 truec2 = TCut("abs(j2_mc_flavour) == 4")
 truel1 = TCut("abs(j1_mc_flavour) != 5 && abs(j1_mc_flavour) != 6 && j1_mc_PT > 0")
 truel2 = TCut("abs(j2_mc_flavour) != 5 && abs(j2_mc_flavour) != 6 && j2_mc_PT > 0")
-
+'''
 j1 = Template("j1")
 j1.SetSelCut(onecand + probe2 + dijetm + muon1)
 j1.AddTree(f.Get("dijet/DecayTree"))
@@ -100,7 +105,29 @@ j2.Run()
 
 j = Template("j", j1, j2)
 j.SaveToFile("/user2/sfarry/workspaces/top/tuples/j_untagged.root")
+'''
+j1_2012 = Template("j1_2012")
+j1_2012.SetSelCut(onecand + probe2 + dijetm + muon1)
+j1_2012.AddTree(ff.Get("dijet/DecayTree"))
+j1_2012.AddTree(gg.Get("dijet/DecayTree"))
+for v in vars:
+    j1_2012.AddVar([v.name, v.var.replace('<jet>','j1'), v.bins, v.lo, v.hi])
+j1_2012.Add2DVars(vars2d)
+j1_2012.Run()
 
+j2_2012 = Template("j2")
+j2_2012.SetSelCut(onecand + probe1 + dijetm + muon2)
+j2_2012.AddTree(ff.Get("dijet/DecayTree"))
+j2_2012.AddTree(gg.Get("dijet/DecayTree"))
+for v in vars:
+    j2_2012.AddVar([v.name, v.var.replace('<jet>','j2'), v.bins, v.lo, v.hi])
+j2_2012.Add2DVars(vars2d)
+j2_2012.Run()
+
+j_2012 = Template("j_2012", j1_2012, j2_2012)
+j_2012.SaveToFile("/user2/sfarry/workspaces/top/tuples/j_2012_untagged.root")
+
+'''
 j1_unw = Template("j1_unw")
 j1_unw.SetSelCut(onecand + probe2 + dijetm + muon1)
 j1_unw.AddTree(f.Get("dijet/DecayTree"))
@@ -141,13 +168,35 @@ j2_tagged.AddTree(g.Get("dijet/DecayTree"))
 j2_tagged.Reweight('j2_ETA', 'j2_PT/1000.0', eta_pt_weights)
 for v in vars:
     j2_tagged.AddVar([v.name, v.var.replace('<jet>','j2'), v.bins, v.lo, v.hi])
-j2.Add2DVars(vars2d)
+j2_tagged.Add2DVars(vars2d)
 j2_tagged.Run()
 
 j_tagged = Template("j_tagged", j1_tagged, j2_tagged)
 j_tagged.SaveToFile("/user2/sfarry/workspaces/top/tuples/j_tagged.root")
+'''
 
+j1_tagged_2012 = Template("j1_tagged_2012")
+j1_tagged_2012.SetSelCut(onecand + probe2 + dijetm + tag1 + muon1)
+j1_tagged_2012.AddTree(ff.Get("dijet/DecayTree"))
+j1_tagged_2012.AddTree(gg.Get("dijet/DecayTree"))
+for v in vars:
+    j1_tagged_2012.AddVar([v.name, v.var.replace('<jet>','j1'), v.bins, v.lo, v.hi])
+j1_tagged_2012.Add2DVars(vars2d)
+j1_tagged_2012.Run()
 
+j2_tagged_2012 = Template("j2_tagged_2012")
+j2_tagged_2012.SetSelCut(onecand + probe1 + dijetm + tag2 + muon2)
+j2_tagged_2012.AddTree(ff.Get("dijet/DecayTree"))
+j2_tagged_2012.AddTree(gg.Get("dijet/DecayTree"))
+for v in vars:
+    j2_tagged_2012.AddVar([v.name, v.var.replace('<jet>','j2'), v.bins, v.lo, v.hi])
+j2_tagged_2012.Add2DVars(vars2d)
+j2_tagged_2012.Run()
+
+j_tagged_2012 = Template("j_tagged_2012", j1_tagged_2012, j2_tagged_2012)
+j_tagged_2012.SaveToFile("/user2/sfarry/workspaces/top/tuples/j_tagged_2012.root")
+
+'''
 j1_tagged_unw = Template("j1_tagged_unw")
 j1_tagged_unw.SetSelCut(onecand + probe2 + dijetm + tag1 + muon1)
 j1_tagged_unw.AddTree(f.Get("dijet/DecayTree"))
@@ -195,9 +244,29 @@ j2_notag.Run()
 
 j_notag = Template("j_notag", j1_notag, j2_notag)
 j_notag.SaveToFile("/user2/sfarry/workspaces/top/tuples/j_notag.root")
+'''
 
+j1_notag_2012 = Template("j1_notag_2012")
+j1_notag_2012.SetSelCut(onecand + probe2 + dijetm + notag1 + muon1)
+j1_notag_2012.AddTree(ff.Get("dijet/DecayTree"))
+j1_notag_2012.AddTree(gg.Get("dijet/DecayTree"))
+for v in vars:
+    j1_notag_2012.AddVar([v.name, v.var.replace('<jet>','j1'), v.bins, v.lo, v.hi])
+j1_notag_2012.Add2DVars(vars2d)
+j1_notag_2012.Run()
 
+j2_notag_2012 = Template("j2_notag_2012")
+j2_notag_2012.SetSelCut(onecand + probe1 + dijetm + notag2 + muon2)
+j2_notag_2012.AddTree(ff.Get("dijet/DecayTree"))
+j2_notag_2012.AddTree(gg.Get("dijet/DecayTree"))
+for v in vars:
+    j2_notag_2012.AddVar([v.name, v.var.replace('<jet>','j2'), v.bins, v.lo, v.hi])
+j2_notag_2012.Add2DVars(vars2d)
+j2_notag_2012.Run()
 
+j_notag_2012 = Template("j_notag_2012", j1_notag_2012, j2_notag_2012)
+j_notag_2012.SaveToFile("/user2/sfarry/workspaces/top/tuples/j_notag_2012.root")
+'''
 j1_notag_unw = Template("j1_notag_unw")
 j1_notag_unw.SetSelCut(onecand + probe2 + dijetm + notag1 + muon1)
 j1_notag_unw.AddTree(f.Get("dijet/DecayTree"))
@@ -246,6 +315,31 @@ j2_light.Run()
 
 j_light = Template("j_light", j1_light, j2_light)
 j_light.SaveToFile("/user2/sfarry/workspaces/top/tuples/j_light.root")
+
+'''
+
+j1_light_2012 = Template("j1_light_2012")
+j1_light_2012.SetSelCut(onecand + probe2_notag + dijetm + notag1 + nolep1)
+j1_light_2012.AddTree(ff.Get("dijet/DecayTree"))
+j1_light_2012.AddTree(gg.Get("dijet/DecayTree"))
+for v in vars:
+    j1_light_2012.AddVar([v.name, v.var.replace('<jet>','j1'), v.bins, v.lo, v.hi])
+j1_light_2012.Add2DVars(vars2d)
+j1_light_2012.Run()
+
+j2_light_2012 = Template("j2_light_2012")
+j2_light_2012.SetSelCut(onecand + probe1_notag + dijetm + notag2 + nolep2)
+j2_light_2012.AddTree(ff.Get("dijet/DecayTree"))
+j2_light_2012.AddTree(gg.Get("dijet/DecayTree"))
+for v in vars:
+    j2_light_2012.AddVar([v.name, v.var.replace('<jet>','j2'), v.bins, v.lo, v.hi])
+j2_light_2012.Add2DVars(vars2d)
+j2_light_2012.Run()
+
+j_light_2012 = Template("j_light_2012", j1_light_2012, j2_light_2012)
+j_light_2012.SaveToFile("/user2/sfarry/workspaces/top/tuples/j_light_2012.root")
+
+'''
 
 j1_light_unw = Template("j1_light_unw")
 j1_light_unw.SetSelCut(onecand + probe2_notag + dijetm + notag1 + nolep1)
@@ -483,3 +577,4 @@ b_j2_eff.Run()
 b_j_eff = EfficiencyClass("b_j_eff", b_j1_eff, b_j2_eff)
 b_j_eff.MakeEfficiencyGraph()
 b_j_eff.SaveToFile("/user2/sfarry/workspaces/top/tuples/b_j_eff.root")
+'''

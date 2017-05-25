@@ -80,8 +80,8 @@ int main(int argc, char ** argv) {
       }
     }
     if (pt1 > 15 && pt2 > 15){
-      if (eta1 > 1.0 && eta1 < 6.0 && eta2 > 1.0 && eta2 < 6.0) pass = true;
-      if (eta1 < -1.0 && eta1 > -6.0 && eta2 < -1.0 && eta2 > -6.0){
+      if (eta1 > 1.5 && eta1 < 6.0 && eta2 > 1.5 && eta2 < 6.0) pass = true;
+      if (eta1 < -1.5 && eta1 > -6.0 && eta2 < -1.5 && eta2 > -6.0){
 
 
 	//one does not simply flip the z's in an event...

@@ -10,8 +10,10 @@ SetLHCbStyle()
 etrigger = TCut("tag_L0ElectronDecision_TOS == 1 && tag_Hlt1SingleElectronNoIPDecision_TOS == 1 && tag_Hlt2EWSingleElectronVHighPtDecision_TOS == 1")
 etrigger_nohlt = TCut("tag_L0ElectronDecision_TOS == 1 && tag_Hlt1SingleElectronNoIPDecision_TOS == 1")
 
-dataMD2016     = TFile("/hepstore/sfarry/GridOutput/2679/ElectronID.MD.2016.root")
-dataMU2016     = TFile("/hepstore/sfarry/GridOutput/2680/ElectronID.MU.2016.root")
+#dataMD2016     = TFile("/hepstore/sfarry/GridOutput/2679/ElectronID.MD.2016.root")
+#dataMU2016     = TFile("/hepstore/sfarry/GridOutput/2680/ElectronID.MU.2016.root")
+dataMD2016     = TFile.Open("root://hepgrid11.ph.liv.ac.uk//dpm/ph.liv.ac.uk/home/lhcb/Run2Effs/ElectronID.MD.2016.root")
+dataMU2016     = TFile.Open("root://hepgrid11.ph.liv.ac.uk//dpm/ph.liv.ac.uk/home/lhcb/Run2Effs/ElectronID.MU.2016.root")
 dataMD2015     = TFile.Open("root://hepgrid11.ph.liv.ac.uk//dpm/ph.liv.ac.uk/home/lhcb/Run2Effs/ElectronID.MD.2015.root")
 dataMU2015     = TFile.Open("root://hepgrid11.ph.liv.ac.uk//dpm/ph.liv.ac.uk/home/lhcb/Run2Effs/ElectronID.MU.2015.root")
 
@@ -88,9 +90,10 @@ h1.Add(h2)
 
 c = TCanvas()
 h1.Draw()
+variations_hists = {}
 
 for i,v in enumerate(variations):
-    h3 = zee_mc2016.GetVar('tag_pt_'+str(v)).GetHist()
+    h3 = zee_mc2016.GetVar('tag_pt_'+str(v)).GetHist().Clone('h3_'+str(v))
     h3.Add(zee_mc2016.GetVar('probe_pt_'+str(v)).GetHist())
     h3.Scale(h1.Integral() / h3.Integral())
     h.SetBinContent(i+1, h1.Chi2Test(h3, "CHI2/NDF"))
@@ -98,6 +101,7 @@ for i,v in enumerate(variations):
         h3.SetLineColor(2)
     else:
         h3.SetLineColor(4)
+    variations_hists[v] = h3
     h3.Draw("same")
 
 from PlotTools import *
@@ -111,3 +115,17 @@ a.setProp('fillstyles', 0)
 a.setProp('ylabel', '#chi^{2} / nDoF')
 a.setProp('xlabel', 'k')
 a.drawROOT()
+
+b = Plot([h1, variations_hists[0.98], variations_hists[0.998], variations_hists[1.00], variations_hists[1.02], h1])
+b.setProp('location', '/user2/sfarry/workspaces/top/figures')
+b.setProp('filename', 'electron_momscale_pt.pdf')
+b.setProp('drawOpts', ['e1', 'h','h','h','h','h', 'e1'] )
+b.setProp('labels', ['data', 'k=0.98', 'k=0.997', 'k=1', 'k=1.02'])
+b.setProp('fillstyles', 0)
+b.setProp('ylabel', '[A.U.]')
+b.setProp('normalised', True)
+b.setProp('xlabel', 'p_{T} [GeV]')
+b.setProp('leglims', [0.7, 0.5, 0.9, 0.9])
+b.setProp('colors', ['black', 'red', 'blue', 'green', 'orange', 'black'])
+b.setProp('toCompare', {0 : [1,2,3,4,5]})
+b.drawROOT()
