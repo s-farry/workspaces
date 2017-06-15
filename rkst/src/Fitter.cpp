@@ -167,7 +167,7 @@ results Fitter::fit_jpsi_mass(RooDataSet* ds, string pass, string oFile, string 
 
   //Make mass plot
   TCanvas* canv = new TCanvas( "canv", "canv", 800.0, 600.0 );
-  plot -> GetXaxis() -> SetTitle( "M_{ee} [GeV]" );
+  plot -> GetXaxis() -> SetTitle( "M_{ee} [MeV]" );
   plot -> GetYaxis() -> SetTitleOffset( 1.5 );
   ds->plotOn( plot, RooFit::MarkerColor(kBlack), RooFit::LineColor(kBlack) );
   tot_model.plotOn(plot, RooFit::LineColor(kBlack));
@@ -187,7 +187,7 @@ results Fitter::fit_jpsi_mass(RooDataSet* ds, string pass, string oFile, string 
   p->SetBorderSize(0.0);
   plot->addObject(p);
   p->AddText(cut.c_str());
-  p->AddText(sstream.str().c_str());
+  //p->AddText(sstream.str().c_str());
   plot->Draw();
   p->Draw();
   canv->SaveAs( (location+"/jpsi_M_"+oFile+".pdf").c_str() );
@@ -433,13 +433,13 @@ int main(int argc, char* argv[]){
   jpsi2ee_mc2016.lo = 2500.;
   jpsi2ee_mc2016.hi = 3500.;
   jpsi2ee_mc2016.location = "/user2/sfarry/workspaces/rkst/figures";
-  jpsi2ee_mc2016.vars    = {"pt", "eta"};
-  jpsi2ee_mc2016.los     =  {500, 2.0};
-  jpsi2ee_mc2016.his     =  {5000, 4.5};
-  jpsi2ee_mc2016.bins    = { 4, 3 };
+  jpsi2ee_mc2016.vars    = {"pt", "eta", "tagbrem"};
+  jpsi2ee_mc2016.los     =  {500, 2.0, -0.5};
+  jpsi2ee_mc2016.his     =  {10000, 4.5, 3.5};
+  jpsi2ee_mc2016.bins    = { 4, 3, 4 };
   //alter bin edges
-  double pt_edges[] = {500, 600 ,1000, 2000, 5000};
-  double eta_edges[] = {2.0, 3.0, 4.0, 4.5};
+  double pt_edges[] = {500, 1000, 2000, 5000, 10000};
+  double eta_edges[] = {2.0, 2.75, 3.5, 4.5};
   jpsi2ee_mc2016.edges[0] = pt_edges;
   jpsi2ee_mc2016.edges[1] = eta_edges;
   jpsi2ee_mc2016.vars2d   = {{"pt", "eta"}};

@@ -39,6 +39,8 @@
 #include "RooGenericPdf.h"
 #include "RooNovosibirsk.h"
 #include "RooChebychev.h"
+#include "RooDataHist.h"
+
 
 
 using namespace std;
@@ -48,18 +50,21 @@ typedef std::map<string, std::pair<double, double> > results;
 
 class Fitter {
 public:
+  Fitter();
   string fitvar;
   double lo;
   double hi;
   string location;
+  bool binned;
 
+  int fitbins;
   int nvars;
   //string vars[];
   //double los[] ;
   //double his[] ;
   //int binss[]  ;
 
-  enum fit_t{z0, jpsi, bjpsik, bjpsikst, bjpsik_poly, bjpsik_novosibirsk, bjpsikst_novosibirsk, bjpsikst_polynomial, bjpsik_polynomial};
+  enum fit_t{none,z0, jpsi, bjpsik, bjpsikst, bjpsik_poly, bjpsik_novosibirsk, bjpsikst_novosibirsk, bjpsikst_polynomial, bjpsik_polynomial, eta, etagamma};
 
   fit_t fitmodel;
 
@@ -88,6 +93,10 @@ public:
 			string cut);
   results fit_z0_mass(RooDataSet* ds, string oFile,
 		      string cut);
+  results fit_none(RooDataSet* ds, string oFile,
+		      string cut);
+  results fit_eta_mass(RooDataSet* ds, string oFile,
+		       string cut, bool gamma = false);
   results fit_bjpsik_mass(RooDataSet* ds, string oFile,
 			  string cut, bool kstar = false );
   results fit_bjpsik_mass_polynomial(RooDataSet* ds, string oFile,

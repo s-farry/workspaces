@@ -1,4 +1,4 @@
-CXXFLAGS = -g -O0 -ansi -W -Wall -std=c++11 -ftemplate-depth=3000
+CXXFLAGS = -g -O0 -ansi -W -Wall -std=c++11 # -ftemplate-depth=3000
 ROOTLIBS = -lCore -lRIO -lNet -lHist -lTree -lMatrix -lThread -lMathCore -lPhysics -lPyROOT -lMinuit -lMinuit2 -lRooFit -lGpad
 ROOUNFOLDLIBS = -lRooUnfold
 PYTHON_VERSION = 2.7
@@ -13,12 +13,13 @@ ROOTLIBDIR = /afs/cern.ch/sw/lcg/app/releases/ROOT/6.04.00/x86_64-slc6-gcc48-opt
 ROOTINCDIR = /afs/cern.ch/sw/lcg/app/releases/ROOT/6.04.00/x86_64-slc6-gcc48-opt/root/include
 PYTHON_CPP_FLAGS = -I/cvmfs/lhcb.cern.ch/lib/lcg/releases/LCG_79/Python/2.7.9.p1/x86_64-slc6-gcc48-opt/include/python2.7
 ROOUNFOLDSYS = /user2/kdreimanis/workspace/RooUnfold-master/RooUnfold-master
+PYTHIA8 = /cvmfs/sft.cern.ch/lcg/external/MCGenerators_lcgcmt67b/pythia8/205/x86_64-slc6-gcc48-opt
 
-all	: fitBjpsiK.o fitBjpsiKst.o
+all	: fitBjpsiK.o fitBjpsiKst.o fitEta.o fitEtaGamma.o fitEtaGammaPythia.o fitEtaPythia.o eta_decay.so
 clean	: ${RM} fitBJpsiK.o
 
 %.so	: src/%.cpp
-	g++ $(CXXFLAGS) -shared -fPIC $^ -DWITHPYTHON  -I$(PYTHON_INCLUDE) -I$(BOOST_INC) -I$(ROOTSYS)/include -L$(ROOTSYS)/lib $(ROOTLIBS) -L$(BOOST_LIB) $(BOOSTLIBS) $(PYTHON_CPP_FLAGS) -o $@
+	g++ $(CXXFLAGS) -shared -fPIC $^ -DWITHPYTHON  -I$(PYTHIA8)/include -I$(BOOST_INC) -I$(ROOTSYS)/include -L$(ROOTSYS)/lib $(ROOTLIBS) -L$(BOOST_LIB) $(BOOSTLIBS) -L$(PYTHIA8)/lib -lpythia8 $(PYTHON_CPP_FLAGS) -o $@
 %.o	: src/%.cpp
 	g++ $(CXXFLAGS) -Isrc/ -I/usr/include -I$(ROOTSYS)/include -I$(ROOUNFOLDSYS)/src -I/user2/sfarry/workspaces/momentumscale/src -L$(ROOTSYS)/lib $(ROOTLIBS) -L/user2/sfarry/workspaces/momentumscale -l:Fitter.so -lDoubleCB $< -o $@
 %	: src/%.cpp

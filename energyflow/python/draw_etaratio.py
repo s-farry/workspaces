@@ -10,6 +10,8 @@ f = TFile("/user2/sfarry/workspaces/energyflow/tuples/etagamma_2016_turbo_fit.ro
 g = TFile("/user2/sfarry/workspaces/energyflow/tuples/eta_2016_turbo_fit.root")
 h = TFile("/user2/sfarry/workspaces/energyflow/tuples/etagamma_py8_fit.root")
 i = TFile("/user2/sfarry/workspaces/energyflow/tuples/eta_py8_fit.root")
+j = TFile("/user2/sfarry/workspaces/energyflow/tuples/eta_mc2016_fit.root")
+k = TFile("/user2/sfarry/workspaces/energyflow/tuples/etagamma_mc2016_fit.root")
 
 hh = TFile("/user2/sfarry/workspaces/energyflow/tuples/photonEff_v3.root")
 
@@ -19,17 +21,24 @@ etammg_turbo_eta = f.Get("Nsig_v_gamma_eta")
 etammg_turbo_pt  = f.Get("Nsig_v_gamma_pt")
 etammg_py8_eta   = h.Get("N_v_gamma_eta")
 etammg_py8_pt    = h.Get("N_v_gamma_pt")
+etammg_mc_eta    = k.Get("Nsig_v_gamma_eta")
+etammg_mc_pt     = k.Get("Nsig_v_gamma_pt")
 
 Netamm_turbo = g.Get("m_Nsig_tot_tot").GetVal()
 Netamm_py8   = i.Get("m_N_tot_tot").GetVal()
+Netamm_mc    = j.Get("m_Nsig_tot_tot").GetVal()
+
 
 Netammg_turbo = f.Get("m2_Nsig_tot").GetVal()
 Netammg_py8   = h.Get("m2_N_tot").GetVal()
+Netammg_mc    = k.Get("m2_Nsig_tot").GetVal()
 
 etammg_turbo_eta.Scale( 1.0 / Netamm_turbo )
 etammg_turbo_pt.Scale ( 1.0 / Netamm_turbo )
 etammg_py8_eta.Scale  ( 1.0 / Netamm_py8   )
 etammg_py8_pt.Scale   ( 1.0 / Netamm_py8   )
+etammg_mc_eta.Scale   ( 1.0 / Netamm_mc   )
+etammg_mc_pt.Scale    ( 1.0 / Netamm_mc   )
 
 eta_eff_eta = etammg_turbo_eta.Clone("eta_eff_eta")
 eta_eff_eta.Divide(etammg_py8_eta)
@@ -39,8 +48,10 @@ eta_eff_pt.Divide(etammg_py8_pt)
 
 turbo_ratio = float(Netammg_turbo) / (Netamm_turbo * bf_ratio)
 py8_ratio   = float(Netammg_py8)   / (Netamm_py8 * bf_ratio)
+mc_ratio    = float(Netammg_mc)    / (Netamm_mc * bf_ratio)
 
 totaleff_data = turbo_ratio / py8_ratio
+totaleff_mc   = mc_ratio / py8_ratio
 
 eta_pass_mc  = hh.Get("incl_g2rPhotons_eta")
 eta_tot_mc = hh.Get("incl_genPhotons_eta")

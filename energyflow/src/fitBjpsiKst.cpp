@@ -52,6 +52,7 @@ int main(int argc, char* argv[]){
   gROOT->ProcessLine(".x /user2/sfarry/workspaces/WJet/root/lhcbStyle.C");
 
   Fitter bjpsikst_2015;
+  //bjpsikst_2015.binned = true;
   bjpsikst_2015.fitvar="m2";
   bjpsikst_2015.fitmodel = Fitter::bjpsikst;
   bjpsikst_2015.vars    = {"gamma1_pt", "gamma2_pt"};
@@ -95,7 +96,7 @@ int main(int argc, char* argv[]){
     histsc = bjpsikst_2015.get_mass_v_vars(ds, "novosibirsk");
   }
   TFile* g = TFile::Open((output+".root").c_str(), "RECREATE");
-  if (hists)hists->Write();
+  if (hists)  hists->Write();
   if (histsb) histsb->Write();
   if (histsc) histsc->Write();
   g->Close();

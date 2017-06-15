@@ -50,6 +50,43 @@
 using namespace std;
 using namespace RooFit;
 
+Fitter::Fitter(){
+  binned = false;
+  fitbins = 100;
+}
+
+results Fitter::fit_none(RooDataSet* ds, string oFile, string cut){
+  RooRealVar m( fitvar.c_str(), fitvar.c_str(), lo, hi );
+  RooPlot* plot = m.frame();
+
+  //Make mass plot
+  TCanvas* canv = new TCanvas( "canv", "canv", 800.0, 600.0 );
+  plot->GetXaxis()->SetTitle("M(eta) [MeV]");
+  plot -> GetYaxis() -> SetTitle( "Events" );
+  plot -> GetYaxis() -> SetTitleOffset( 1.5 );
+  ds->plotOn( plot );
+
+  //print chi2 on plot and add tpavetext
+  ostringstream sstream;
+  sstream<<"N_{sig} = "<<ds->sumEntries();
+  TPaveText* p = new TPaveText(0.2, 0.7, 0.45, 0.9, "NDC");
+  p->SetFillStyle(0);
+  p->SetBorderSize(0.0);
+  plot->addObject(p);
+  p->AddText(cut.c_str());
+  p->AddText(sstream.str().c_str());
+  plot->Draw();
+  p->Draw();
+  string output;
+  output = "etamumu_pythia_"+oFile+".pdf";
+  if (location != "") output = location+"/"+output;
+
+  canv->SaveAs( (output).c_str() );
+  canv->Delete();
+  results params;
+  params["N"] = std::pair<double,double>(ds->sumEntries(), sqrt(ds->sumEntries()));
+  return params;
+}
 
 results Fitter::fit_bjpsik_mass(RooDataSet* ds, string oFile, string cut, bool kstar)
 {
@@ -94,8 +131,20 @@ results Fitter::fit_bjpsik_mass(RooDataSet* ds, string oFile, string cut, bool k
 
   RooAddPdf sum("sum", "crystal ball + gaussian + expo", RooArgList(cb_pdf, expo), RooArgList(Nsig, Nbkg));
 
+  if (binned){
+    if (kstar) m.setBins(fitbins);
+    else m.setBins(500);
+    RooDataHist dh("dh", "dh", RooArgSet(m), *ds);
+    sum.fitTo(dh, RooFit::Range(lo, hi));
+  }
+  else{
+    //sum.fitTo(*ds, RooFit::Extended());
+    sum.fitTo(*ds, RooFit::Range(lo, hi));
+  }
+
+
   //sum.fitTo(*ds, RooFit::Extended());
-  sum.fitTo(*ds, RooFit::Range(lo, hi));
+  //sum.fitTo(*ds, RooFit::Range(lo, hi));
 
   //Make mass plot
   TCanvas* canv = new TCanvas( "canv", "canv", 800.0, 600.0 );
@@ -113,7 +162,7 @@ results Fitter::fit_bjpsik_mass(RooDataSet* ds, string oFile, string cut, bool k
   ostringstream sstream, sstream2;
   sstream<<"#chi^{2}/nDoF = "<<plot->chiSquare();
   sstream2<<"N_{sig} = "<<Nsig.getVal();
-  TPaveText* p = new TPaveText(0.6, 0.7, 0.85, 0.9, "NDC");
+  TPaveText* p = new TPaveText(0.2, 0.7, 0.45, 0.9, "NDC");
   p->SetFillStyle(0);
   p->SetBorderSize(0.0);
   plot->addObject(p);
@@ -202,7 +251,18 @@ results Fitter::fit_bjpsik_mass_novosibirsk(RooDataSet* ds, string oFile, string
 
   RooAddPdf sum("sum", "crystal ball + gaussian + expo", RooArgList(bukin, expo), RooArgList(Nsig, Nbkg));
 
-  sum.fitTo(*ds, RooFit::Extended(), RooFit::Range(lo, hi));
+  //sum.fitTo(*ds, RooFit::Extended(), RooFit::Range(lo, hi));
+  if (binned){
+    m.setBins(fitbins);
+    RooDataHist dh("dh", "dh", RooArgSet(m), *ds);
+    sum.fitTo(dh, RooFit::Extended(), RooFit::Range(lo, hi));
+  }
+  else{
+    //sum.fitTo(*ds, RooFit::Extended());
+    sum.fitTo(*ds, RooFit::Extended(), RooFit::Range(lo, hi));
+  }
+
+
 
   //Make mass plot
   TCanvas* canv = new TCanvas( "canv", "canv", 800.0, 600.0 );
@@ -220,7 +280,7 @@ results Fitter::fit_bjpsik_mass_novosibirsk(RooDataSet* ds, string oFile, string
   ostringstream sstream, sstream2;
   sstream<<"#chi^{2}/nDoF = "<<plot->chiSquare();
   sstream2<<"N_{sig} = "<<Nsig.getVal();
-  TPaveText* p = new TPaveText(0.6, 0.7, 0.9, 0.9, "NDC");
+  TPaveText* p = new TPaveText(0.2, 0.7, 0.45, 0.9, "NDC");
   p->SetFillStyle(0);
   p->SetBorderSize(0.0);
   plot->addObject(p);
@@ -311,7 +371,15 @@ results Fitter::fit_bjpsik_mass_polynomial(RooDataSet* ds, string oFile, string 
   RooAddPdf sum("sum", "crystal ball + gaussian + expo", RooArgList(cb_pdf, p2), RooArgList(Nsig, Nbkg));
 
   //sum.fitTo(*ds, RooFit::Extended());
-  sum.fitTo(*ds, RooFit::Range(lo, hi));
+  if (binned){
+    m.setBins(fitbins);
+    RooDataHist dh("dh", "dh", RooArgSet(m), *ds);
+    sum.fitTo(dh, RooFit::Range(lo, hi));
+  }
+  else{
+    //sum.fitTo(*ds, RooFit::Extended());
+    sum.fitTo(*ds, RooFit::Range(lo, hi));
+  }
 
   //Make mass plot
   TCanvas* canv = new TCanvas( "canv", "canv", 800.0, 600.0 );
@@ -330,7 +398,7 @@ results Fitter::fit_bjpsik_mass_polynomial(RooDataSet* ds, string oFile, string 
   sstream<<"#chi^{2}/nDoF = "<<plot->chiSquare();
   ostringstream sstream2;
   sstream2<<"N_{sig} = "<<Nsig.getVal();
-  TPaveText* p = new TPaveText(0.6, 0.7, 0.9, 0.9, "NDC");
+  TPaveText* p = new TPaveText(0.2, 0.7, 0.45, 0.9, "NDC");
   p->SetFillStyle(0);
   p->SetBorderSize(0.0);
   plot->addObject(p);
@@ -437,6 +505,92 @@ results Fitter::fit_z0_mass(RooDataSet* ds, string oFile, string cut){
 
 }
 
+results Fitter::fit_eta_mass(RooDataSet* ds, string oFile, string cut, bool gamma){
+  RooRealVar m( fitvar.c_str(), fitvar.c_str(), lo, hi );
+  RooPlot* plot = m.frame();
+
+  // Crystal-Ball - Detector response + FSR
+  RooRealVar mean( "mean", "mean", 547, 530, 560 );
+  RooRealVar sigma( "sigma", "sigma", 6, 0, 200);
+  RooGaussian gauss( "gauss", "gauss", m, mean, sigma );
+
+  RooRealVar p0("p0", "p0", 1.0, -2.0, 2.0);
+  RooRealVar p1("p1", "p1", 0.002, -0.05, 0.05);
+  RooRealVar p2("p2", "p2", 2e-6, -0.0001, 0.0001);
+
+  if (gamma){
+    sigma.setVal(31);
+    p0.setVal(-1.0);
+    p1.setVal( 0.0036);
+    p2.setVal(   -3e-6);
+  }
+
+
+  //exponential - DY component + background
+  RooRealVar lambda("lambda", "slope", -1e-6, -30., 0.);
+  RooExponential expo("expo", "exponential PDF", m, lambda);
+  RooPolynomial poly("poly", "polynomial", m, RooArgList(p0, p1,p2));
+
+  //Set cache for FFT convolution
+  m.setBins(10000, "cache");
+  m.setMin("cache", 500);
+  m.setMax("cache", 600);
+
+  //Background fraction
+  RooRealVar s("s", "signal", 0.2, 0, 1);
+
+  RooAddPdf sum("sum", "crystal ball + gaussian + expo", RooArgList(gauss,poly), RooArgList(s));
+  if (binned){
+    m.setBins(fitbins);
+    RooDataHist dh("dh", "dh", RooArgSet(m), *ds);
+    sum.fitTo(dh, RooFit::Range(lo, hi));
+  }
+  else{
+    //sum.fitTo(*ds, RooFit::Extended());
+    sum.fitTo(*ds, RooFit::Range(lo, hi));
+  }
+  //Make mass plot
+  TCanvas* canv = new TCanvas( "canv", "canv", 800.0, 600.0 );
+  plot -> GetXaxis() -> SetTitle( "M_{#mu#mu} [GeV]" );
+  plot -> GetYaxis() -> SetTitleOffset( 1.5 );
+  ds->plotOn( plot );
+  sum.plotOn(plot);
+  sum.plotOn(plot, RooFit::Components("poly"), RooFit::LineColor(kRed)  , RooFit::LineStyle(kDashed));
+  sum.plotOn(plot, RooFit::Components("gauss"),   RooFit::LineColor(kGreen), RooFit::LineStyle(kDashed));
+
+
+  //print chi2 on plot and add tpavetext
+  ostringstream sstream;
+  sstream<<"#chi^{2}/nDoF = "<<plot->chiSquare();
+  TPaveText* p = new TPaveText(0.15, 0.5, 0.5, 0.7, "NDC");
+  p->SetFillStyle(0);
+  p->SetBorderSize(0.0);
+  plot->addObject(p);
+  p->AddText(cut.c_str());
+  p->AddText(sstream.str().c_str());
+  plot->Draw();
+  //p->Draw();
+  string output="";
+  if ( gamma ) output +="etagamma_m_"+oFile+".pdf";
+  else output += "eta_m_"+oFile+".pdf";
+  if (location != "") output = location +"/" + output;
+
+  canv->SaveAs( (output).c_str() );
+  canv->Delete();
+
+  int Ntot = ds->sumEntries();
+
+  results parms;
+  // return as pair with value and error of mean
+  parms["mean"]  = std::pair<double, double>(mean.getVal()  , mean.getError());
+  parms["sigma"] = std::pair<double, double>(sigma.getVal() , sigma.getError());
+  parms["p1"] = std::pair<double, double>(p1.getVal(), p1.getError());
+  parms["p2"] = std::pair<double, double>(p2.getVal(), p2.getError());
+  parms["s"]  = std::pair<double, double>(s.getVal(), s.getError());
+  parms["Nsig"] = std::pair<double, double>(s.getVal() * Ntot, s.getError() * Ntot);
+  return parms;
+
+}
 
 results Fitter::fit_jpsi_mass(RooDataSet* ds, string oFile, string cut ){
   RooRealVar m(fitvar.c_str(), fitvar.c_str(), lo, hi );
@@ -509,7 +663,7 @@ results Fitter::fit_jpsi_mass(RooDataSet* ds, string oFile, string cut ){
   //RooFFTConvPdf pdf( "pdf", "pdf", m, novo, bw );
 
   //Signal fraction
-  RooRealVar s("s", "signal", 0.65, 0, 1);
+  RooRealVar s("s", "signal", 0.6, 0, 1);
   //RooRealVar s2("s2", "signal 2", 0.1, 0, 1);
 
   //RooChebychev
@@ -781,11 +935,11 @@ TObjArray* Fitter::get_mass_v_vars(RooDataSet* ds, string label){
   
   TObjArray* objs = new TObjArray();
   
-  if (vars.size() != los.size() || vars.size() != his.size() || vars.size() != bins.size()){
+  if (vars.size() != 0 && (vars.size() != los.size() || vars.size() != his.size() || vars.size() != bins.size())){
     cout<<"mismatch in 1d vars"<<endl;
     return objs;
   }
-  if( vars2d.size() != los2d.size() || vars2d.size() != his2d.size() || vars2d.size() != bins2d.size()){
+  if( vars2d.size() != 0 && (vars2d.size() != los2d.size() || vars2d.size() != his2d.size() || vars2d.size() != bins2d.size())){
     cout<<"mismatch in 2d vars"<<endl;
     return objs;
   }
@@ -822,6 +976,16 @@ TObjArray* Fitter::get_mass_v_vars(RooDataSet* ds, string label){
   else if (fitmodel == Fitter::z0){
     result_tot   = fit_z0_mass(ds   , s1.str(), label2.str());
   }
+  else if (fitmodel == Fitter::eta){
+    result_tot   = fit_eta_mass(ds   , s1.str(), label2.str());
+  }
+  else if (fitmodel == Fitter::etagamma){
+    result_tot   = fit_eta_mass(ds   , s1.str(), label2.str(), true);
+  }
+  else if (fitmodel == Fitter::none){
+    result_tot  = fit_none(ds, s1.str(), label2.str());
+  }
+
   
   results::iterator ir;
 
@@ -920,6 +1084,16 @@ TObjArray* Fitter::get_mass_v_vars(RooDataSet* ds, string label){
       else if (fitmodel == Fitter::bjpsikst_novosibirsk){
 	result   = fit_bjpsik_mass_novosibirsk(ds_reduced   , s9.str(), label3.str(), true);
       }
+      else if (fitmodel == Fitter::eta){
+	result   = fit_eta_mass(ds_reduced   , s9.str(), label3.str());
+      }
+      else if (fitmodel == Fitter::etagamma){
+	result   = fit_eta_mass(ds_reduced   , s9.str(), label3.str(), true);
+      }
+      else if (fitmodel == Fitter::none){
+	result = fit_none(ds_reduced, s9.str(), label3.str());
+      }
+
       for (ir = result_tot.begin() ; ir != result_tot.end() ; ++ir){
 	hists1d[(*ir).first]->SetBinContent(j+1, result[(*ir).first].first);
 	hists1d[(*ir).first]->SetBinError(j+1, result[(*ir).first].second);
@@ -1035,6 +1209,16 @@ TObjArray* Fitter::get_mass_v_vars(RooDataSet* ds, string label){
 	else if (fitmodel == Fitter::bjpsikst_novosibirsk){
 	  result   = fit_bjpsik_mass_novosibirsk(ds_reduced   , s1.str(), label2.str(), true);
 	}
+	else if (fitmodel == Fitter::eta){
+	  result   = fit_eta_mass(ds_reduced   , s1.str(), label2.str());
+	}
+	else if (fitmodel == Fitter::etagamma){
+	  result   = fit_eta_mass(ds_reduced   , s1.str(), label2.str(), true);
+	}
+	else if (fitmodel == Fitter::none){
+	  result = fit_none(ds_reduced, s1.str(), label2.str());
+	}
+
 	for (ir = result_tot.begin() ; ir != result_tot.end() ; ++ir){
 	  hists2d[(*ir).first]->SetBinContent(k+1, j+1, result[(*ir).first].first);
 	  hists2d[(*ir).first]->SetBinError(k+1, j+1, result[(*ir).first].second);

@@ -18,8 +18,10 @@ TH1.AddDirectory(False)
 
 dpm = 'root://hepgrid11.ph.liv.ac.uk///dpm/ph.liv.ac.uk/home/lhcb/ghostrate/'
 
-f = TFile.Open(dpm+"GhostRate.NoBias.MD.2015.root")
-g = TFile.Open(dpm+"GhostRate.NoBias.MU.2015.root")
+#f = TFile.Open(dpm+"GhostRate.NoBias.MD.2015.root")
+#g = TFile.Open(dpm+"GhostRate.NoBias.MU.2015.root")
+f = TFile.Open("/hepstore/sfarry/GridOutput/2852/GhostRate.NoBias.MD.2015em.root")
+g = TFile.Open("/hepstore/sfarry/GridOutput/2853/GhostRate.NoBias.MU.2015em.root")
 t = f.Get("GhostRate/EFTree")
 u = g.Get("GhostRate/EFTree")
 
@@ -32,9 +34,9 @@ class ghostvar:
 	def __init__(self, name, bins, lo, hi, tex=''):
 		self.tex   = tex
 		self.name  = name
-		self.rec   = TH1F("rec_"+name, "rec_"+name, bins  , lo, hi)
-		self.fake  = TH1F("fake_"+name,"fake_"+name, bins , lo, hi)
-		self.fake_nowgt = TH1F("fake_"+name+"_nowgt", "fake_"+name+"_nowgt", bins, lo, hi)
+		self.rec   = TH1D("rec_"+name, "rec_"+name, bins  , lo, hi)
+		self.fake  = TH1D("fake_"+name,"fake_"+name, bins , lo, hi)
+		self.fake_nowgt = TH1D("fake_"+name+"_nowgt", "fake_"+name+"_nowgt", bins, lo, hi)
 		self.rec.Sumw2()
 		self.fake.Sumw2()
 		self.fake_nowgt.Sumw2()
@@ -61,13 +63,13 @@ history2  = ghostvar('history'  , 21, -0.5, 20.5, 'Track History')
 nveloclus = ghostvar('nveloclusters', 50, 0, 3000, 'Velo Clusters')
 npvs2     = ghostvar('npvs',  6, -0.5, 5.5, 'PVs')
 
-npvs_hist      = TH1F("npvs_hist", "npvs_hist", 6, -0.5, 5.5)
-nveloclus_hist = TH1F("nveloclus_hist", "nveloclus_hist", 100, 0, 3000)
+npvs_hist      = TH1D("npvs_hist", "npvs_hist", 6, -0.5, 5.5)
+nveloclus_hist = TH1D("nveloclus_hist", "nveloclus_hist", 100, 0, 3000)
 
 nentries       = 0
 nvelofwdtracks = 0
 '''
-h = TH1F("hist", "hist", 100, -0.2, 0.2)
+h = TH1D("hist", "hist", 100, -0.2, 0.2)
 
 v = IVariables()
 v.init(t)
@@ -83,10 +85,11 @@ for i in range(5000):
 for tree in [t, u]:
 	print "initialised"
 	v = IVariables()
+	print tree
 	v.init(tree)
 	for i in range(tree.GetEntries()):
-		#if i > 600000: break
-		if i%10000 == 0 : print "Entry ",i," of ",tree.GetEntries()
+		'''if i > 20000: break'''
+		if i%1000 == 0 : print "Entry ",i," of ",tree.GetEntries()
 		tree.GetEntry(i)
 		nvelotracks = v.varI('nVeloTracks')
 		nvelofwd    = v.varI("nVeloFwdTracks")
@@ -113,6 +116,7 @@ for tree in [t, u]:
 						history2.rec.Fill(history_val)
 						npvs2.rec.Fill(npvs_val)
 						nveloclus.rec.Fill(nveloclus_val)
+						if i%1000 == 0 or i == tree.GetEntries()-1: print ghostprob_val, pt_val, ghostprob.rec.Integral(0,51),pt.rec.Integral(0,51)
 					else:
 						pt.fake.Fill(pt_val, nvelofwd)
 						pt.fake_nowgt.Fill(pt_val)
@@ -142,7 +146,7 @@ from PlotTools import *
 from Style import *
 
 SetLHCbStyle()
-
+'''
 for i in [pt, eta, chi2ndof, ghostprob, history2, npvs2, nveloclus]:
 	o = Plot([i.rec, i.fake])
 	ymax = -1
@@ -182,9 +186,9 @@ for i in [pt, eta, chi2ndof, ghostprob, history2, npvs2, nveloclus]:
 	m.setProp('labels', ['2015 EM Data - Fakes'])
 	o.setProp('location', '/user2/sfarry/workspaces/ghosts/figures')
 	m.drawROOT()
+'''
 
-
-outputFile = TFile("/user2/sfarry/workspaces/ghosts/tuples/ghostrate_data2015.root", "RECREATE")
+outputFile = TFile("/user2/sfarry/workspaces/ghosts/tuples/ghostrate_data2015_test.root", "RECREATE")
 npvs_hist.Write()
 nveloclus_hist.Write()
 pt.save()

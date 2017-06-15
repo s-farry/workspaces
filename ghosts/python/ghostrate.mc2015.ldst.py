@@ -18,8 +18,10 @@ TH1.AddDirectory(False)
 
 dpm = 'root://hepgrid11.ph.liv.ac.uk///dpm/ph.liv.ac.uk/home/lhcb/ghostrate/'
 
-f = TFile.Open(dpm+"GhostRate.30000000.LDST.MD.MC2015.root")
-g = TFile.Open(dpm+"GhostRate.30000000.LDST.MU.MC2015.root")
+f = TFile.Open('/hepstore/sfarry/GridOutput/2866/GhostRate.30000000.MD.MC2015.LDST.root')
+g = TFile.Open('/hepstore/sfarry/GridOutput/2867/GhostRate.30000000.MU.MC2015.LDST.root')
+#f = TFile.Open(dpm+"GhostRate.30000000.LDST.MD.MC2015.root")
+#g = TFile.Open(dpm+"GhostRate.30000000.LDST.MU.MC2015.root")
 #f = TFile.Open(dpm+"GhostRate.30000000.LDST.MD.MC2015.NoGhostProb.root")
 #g = TFile.Open(dpm+"GhostRate.30000000.LDST.MU.MC2015.NoGhostProb.root")
 t = f.Get("GhostRate/EFTree")
@@ -29,11 +31,11 @@ class ghostvar:
 	def __init__(self, name, bins, lo, hi, tex=''):
 		self.tex   = tex
 		self.name  = name
-		self.rec   = TH1F("rec_"+name, "rec_"+name, bins  , lo, hi)
-		self.ghost = TH1F("ghost_"+name,"ghost_"+name,  bins  , lo, hi)
-		self.loose = TH1F("loose_"+name, "loose_"+name,bins, lo, hi)
-		self.fake  = TH1F("fake_"+name,"fake_"+name, bins , lo, hi)
-		self.fake_nowgt  = TH1F("fake_"+name+"_nowgt","fake_"+name+"_nowgt", bins , lo, hi)
+		self.rec   = TH1D("rec_"+name, "rec_"+name, bins  , lo, hi)
+		self.ghost = TH1D("ghost_"+name,"ghost_"+name,  bins  , lo, hi)
+		self.loose = TH1D("loose_"+name, "loose_"+name,bins, lo, hi)
+		self.fake  = TH1D("fake_"+name,"fake_"+name, bins , lo, hi)
+		self.fake_nowgt  = TH1D("fake_"+name+"_nowgt","fake_"+name+"_nowgt", bins , lo, hi)
 
 	def process(self):
 		self.ghost_rate = self.ghost.Clone("ghost_rate_"+self.name)
@@ -56,10 +58,10 @@ class ghostvar:
 		self.fake_rate.Write()
 		#outputFile.Close()
 
-pt       = ghostvar('pt'        , 100, 0, 1000, 'p_{T} [GeV]')
-eta      = ghostvar('eta'       , 100, 2.0, 5.0, '#eta')
-chi2ndof = ghostvar('chi2ndof'  , 100, 0, 5, '#chi^{2}/ndof.')
-ghostprob = ghostvar('ghostprob', 100, 0, 0.4, 'Ghost Probability')
+pt       = ghostvar('pt'        , 50, 0, 1000, 'p_{T} [GeV]')
+eta      = ghostvar('eta'       , 50, 2.0, 5.0, '#eta')
+chi2ndof = ghostvar('chi2ndof'  , 50, 0, 5, '#chi^{2}/ndof.')
+ghostprob = ghostvar('ghostprob', 50, 0, 0.4, 'Ghost Probability')
 history   = ghostvar('history'  , 21, -0.5, 20.5, 'Track History')
 nveloclus = ghostvar('nveloclusters', 50, 0, 3000, 'Velo Clusters')
 npvs2     = ghostvar('npvs',  6, -0.5, 5.5, 'PVs')
@@ -87,14 +89,14 @@ for tree in [t,u]:
 				chi2ndof_val  = v.var("chi2",j)/v.var("nDoF",j)
 				ghostprob_val = v.var("ghostprob",j)
 				history_val   = v.var("history", j)
-				nveloclus_val = v.var("nveloclus_val", j)
+				nveloclus_val = v.var("nVeloClusters", j)
 				if v.var('faketrack',j) == 0:
 					pt.rec.Fill(pt_val)
 					eta.rec.Fill(eta_val)
 					chi2ndof.rec.Fill(chi2ndof_val)
 					ghostprob.rec.Fill(ghostprob_val)
 					history.rec.Fill(history_val)
-					nveloclus.Fill(nveloclus_val)
+					nveloclus.rec.Fill(nveloclus_val)
 					nvelotracks = v.var('nVeloTracks',0)
 					if v.var('rec2gen_e',j) == 0:
 						pt.ghost.Fill(pt_val)
@@ -109,7 +111,7 @@ for tree in [t,u]:
 						chi2ndof.loose.Fill(chi2ndof_val)
 						ghostprob.loose.Fill(ghostprob_val)
 						history.loose.Fill(history_val)
-						nveloclus.ghost.Fill(nveloclus_val)
+						nveloclus.loose.Fill(nveloclus_val)
 				else:
 					pt.fake.Fill(pt_val, nvelofwd)
 					eta.fake.Fill(eta_val, nvelofwd)
@@ -135,7 +137,7 @@ nveloclus.process()
 
 #save everything in an output file
 
-outputFile = TFile("/user2/sfarry/workspaces/ghosts/tuples/ghostrate_mc2015_ldst.root", "RECREATE")
+outputFile = TFile("/user2/sfarry/workspaces/ghosts/tuples/ghostrate_mc2015_ldst_test.root", "RECREATE")
 pt.save()
 eta.save()
 chi2ndof.save()

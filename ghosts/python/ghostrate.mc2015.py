@@ -18,8 +18,10 @@ TH1.AddDirectory(False)
 
 dpm = 'root://hepgrid11.ph.liv.ac.uk///dpm/ph.liv.ac.uk/home/lhcb/ghostrate/'
 
-f = TFile.Open(dpm+"GhostRate.30000000.MD.MC2015.root")
-g = TFile.Open(dpm+"GhostRate.30000000.MU.MC2015.root")
+f = TFile.Open(dpm+"GhostRate.30000000.MD.MC2015.Sim08h.root")
+g = TFile.Open(dpm+"GhostRate.30000000.MU.MC2015.Sim08h.root")
+#f = TFile.Open("/hepstore/sfarry/GridOutput/2837/GhostRate.30000000.MU.MC2015.Sim08h.root")
+#g = TFile.Open("/hepstore/sfarry/GridOutput/2836/GhostRate.30000000.MD.MC2015.Sim08h.root")
 t = f.Get("GhostRate/EFTree")
 u = g.Get("GhostRate/EFTree")
 
@@ -31,10 +33,10 @@ class ghostvar:
 	def __init__(self, name, bins, lo, hi, tex=''):
 		self.tex   = tex
 		self.name  = name
-		self.rec   = TH1F("rec_"+name, "rec_"+name, bins  , lo, hi)
-		self.rec_nowgt   = TH1F("rec_"+name+"_nowgt", "rec_"+name, bins  , lo, hi)
-		self.fake  = TH1F("fake_"+name,"fake_"+name, bins , lo, hi)
-		self.fake_nowgt = TH1F("fake_"+name+"_nowgt", "fake_"+name+"_nowgt", bins, lo, hi)
+		self.rec   = TH1D("rec_"+name, "rec_"+name, bins  , lo, hi)
+		self.rec_nowgt   = TH1D("rec_"+name+"_nowgt", "rec_"+name, bins  , lo, hi)
+		self.fake  = TH1D("fake_"+name,"fake_"+name, bins , lo, hi)
+		self.fake_nowgt = TH1D("fake_"+name+"_nowgt", "fake_"+name+"_nowgt", bins, lo, hi)
 		self.rec.Sumw2()
 		self.rec_nowgt.Sumw2()
 		self.fake.Sumw2()
@@ -59,13 +61,13 @@ history2  = ghostvar('history'  , 21, -0.5, 20.5, 'Track History')
 nveloclus = ghostvar('nveloclusters', 50, 0, 3000, 'Velo Clusters')
 npvs2     = ghostvar('npvs',  6, -0.5, 5.5, 'PVs')
 
-npvs_hist      = TH1F("npvs_hist", "npvs_hist", 6, -0.5, 5.5)
-nveloclus_hist = TH1F("nveloclus_hist", "nveloclus_hist", 100, 0, 3000)
+npvs_hist      = TH1D("npvs_hist", "npvs_hist", 6, -0.5, 5.5)
+nveloclus_hist = TH1D("nveloclus_hist", "nveloclus_hist", 100, 0, 3000)
 
 nentries       = 0
 nvelofwdtracks = 0
 
-for tree in [t, u]:
+for tree in [t,u]:
 	print "initialised"
 	v = IVariables()
 	v.init(tree)
@@ -129,7 +131,7 @@ ghostprob.process()
 history2.process()
 nveloclus.process()
 npvs2.process()
-
+'''
 from PlotTools import *
 
 from Style import *
@@ -176,7 +178,7 @@ for i in [pt, eta, chi2ndof, ghostprob, history2, nveloclus, npvs2]:
 	m.setProp('labels', ['Ghosts', 'Fakes'])
 	m.setProp('location', '/user2/sfarry/workspaces/ghosts/figures')
 	m.drawROOT()
-
+'''
 outputFile = TFile("/user2/sfarry/workspaces/ghosts/tuples/ghostrate_mc2015.root", "RECREATE")
 npvs_hist.Write()
 nveloclus_hist.Write()

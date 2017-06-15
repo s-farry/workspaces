@@ -13,7 +13,7 @@ ROOTLIBS = -lCore -lRIO -lNet -lHist -lTree -lMatrix -lMathCore -lThread -lPhysi
 FASTJETLIBS = -lfastjet -lfastjettools
 PYTHON_CPP_FLAGS   = -I/cvmfs/lhcb.cern.ch/lib/lcg/releases/LCG_79/Python/2.7.9.p1/x86_64-slc6-gcc48-opt/include/python2.7
 # Define make targets.
-all           : muej mumuj tuneipchi2 LHEFCat makeLHEtoptuple applyipchi2tune
+all           : muej mumuj tuneipchi2 LHEFCat makeLHEtoptuple applyipchi2tune zbb makeZbbtuple
 clean         : rm muej mumuj
 
 %	: src/%.cc
